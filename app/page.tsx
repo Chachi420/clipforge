@@ -38,10 +38,10 @@ export default function Landing() {
               Start a campaign
             </Link>
           </div>
-          <div className="mt-12 flex items-center justify-center gap-8 text-white/40">
-            <span className="flex items-center gap-2 text-sm"><TrendingUp size={16} /> 440B+ views tracked</span>
-            <span className="flex items-center gap-2 text-sm"><Users size={16} /> 90,000+ clippers</span>
-            <span className="flex items-center gap-2 text-sm"><BadgeDollarSign size={16} /> 200+ campaigns</span>
+          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-white/40">
+            <span className="flex items-center gap-2 text-sm"><TrendingUp size={16} /> Pay per verified view</span>
+            <span className="flex items-center gap-2 text-sm"><Users size={16} /> No following required</span>
+            <span className="flex items-center gap-2 text-sm"><BadgeDollarSign size={16} /> Cancel anytime</span>
           </div>
         </section>
 
