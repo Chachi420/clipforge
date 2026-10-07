@@ -28,7 +28,7 @@ export default async function DashboardHome() {
   return (
     <>
       <Header title={`${greeting}, ${name}`} subtitle="Manage your campaigns" />
-      <div className="space-y-10 px-8 py-8">
+      <div className="space-y-10 px-4 py-6 sm:px-8 sm:py-8">
         <section>
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-lg font-bold">Your active campaigns</h2>

@@ -1,0 +1,130 @@
+"use client";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Check, X } from "lucide-react";
+import { Badge, Button, EmptyState, PlatformDot, inputCls } from "@/components/ui";
+import { approveAccount, rejectAccount, type PendingVerification } from "@/lib/admin-actions";
+import { PLATFORM_LABELS } from "@/lib/types";
+
+export default function VerificationsClient({ initial }: { initial: PendingVerification[] }) {
+  const [counts, setCounts] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
+
+  async function handleApprove(id: string) {
+    const n = Number(counts[id] ?? "");
+    if (!Number.isFinite(n) || n < 0) {
+      setError("Enter the follower count before approving.");
+      return;
+    }
+    setBusy(id);
+    setError(null);
+    try {
+      await approveAccount(id, Math.floor(n));
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message ?? "Approve failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleReject(id: string) {
+    if (!confirm("Reject this account? It will be removed; the user can re-add it.")) return;
+    setBusy(id);
+    setError(null);
+    try {
+      await rejectAccount(id);
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message ?? "Reject failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  if (initial.length === 0) {
+    return <EmptyState title="Queue clear" body="No accounts are waiting for verification." />;
+  }
+
+  return (
+    <div className="space-y-4">
+      {error && (
+        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
+      )}
+      <div className="overflow-hidden rounded-2xl border border-white/10">
+        <table className="w-full text-left text-sm">
+          <thead>
+            <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
+              <th className="px-4 py-3">Account</th>
+              <th className="px-4 py-3">User</th>
+              <th className="px-4 py-3">Code</th>
+              <th className="px-4 py-3">Connected</th>
+              <th className="px-4 py-3">Followers</th>
+              <th className="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {initial.map((v) => (
+              <tr key={v.id} className="border-b border-white/5 last:border-0">
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-2 font-medium text-white">
+                    <PlatformDot platform={v.platform} />
+                    {v.handle}
+                  </div>
+                  <div className="mt-0.5 text-xs capitalize text-white/40">
+                    {PLATFORM_LABELS[v.platform as keyof typeof PLATFORM_LABELS] ?? v.platform}
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="text-white/80">{v.displayName}</div>
+                  <div className="text-xs text-white/40">{v.userEmail}</div>
+                </td>
+                <td className="px-4 py-3">
+                  <code className="rounded-lg bg-black/40 px-2.5 py-1 font-mono text-sm font-bold tracking-widest text-white">
+                    {v.verificationCode}
+                  </code>
+                </td>
+                <td className="px-4 py-3 text-white/55">{v.connectedAt}</td>
+                <td className="px-4 py-3">
+                  <input
+                    type="number"
+                    min={0}
+                    value={counts[v.id] ?? ""}
+                    onChange={(e) => setCounts((c) => ({ ...c, [v.id]: e.target.value }))}
+                    placeholder="e.g. 2400"
+                    className={`${inputCls} max-w-[130px]`}
+                  />
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex justify-end gap-2">
+                    <Button
+                      onClick={() => handleApprove(v.id)}
+                      disabled={busy === v.id}
+                      className="!px-3 !py-1.5 text-xs"
+                    >
+                      <Check size={14} /> {busy === v.id ? "…" : "Approve"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleReject(v.id)}
+                      disabled={busy === v.id}
+                      className="!px-3 !py-1.5 text-xs"
+                    >
+                      <X size={14} /> Reject
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <p className="text-xs text-white/35">
+        Approve only after confirming the code is in the account&apos;s bio and it has at
+        least 1,000 followers. Rejecting removes the account; the user can re-add it.
+      </p>
+    </div>
+  );
+}

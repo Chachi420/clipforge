@@ -148,6 +148,18 @@ export async function getUserClips(userId: string, campaignId?: string): Promise
   return (data ?? []).map(toClip);
 }
 
+// ---------- public profiles ----------
+
+export async function getPublicProfile(userId: string): Promise<ClipperProfile | null> {
+  const p = await getProfile(userId);
+  if (!p || !p.publicProfile) return null;
+  return p;
+}
+
+export async function getPublicClips(userId: string): Promise<Clip[]> {
+  return getUserClips(userId);
+}
+
 // ---------- payouts ----------
 
 export async function getUserPayouts(userId: string): Promise<PayoutCycle[]> {

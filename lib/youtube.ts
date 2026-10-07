@@ -132,3 +132,48 @@ export function extractTikTokHandle(postUrl: string): string | null {
     return null;
   }
 }
+
+export interface VideoStats {
+  views: number;
+  likes: number;
+  comments: number;
+}
+
+/**
+ * Fetch view/like/comment stats for YouTube video IDs via videos.list.
+ * Batches up to 50 IDs per request. Returns an empty map when YOUTUBE_API_KEY
+ * is missing. Only real API numbers are ever returned — never invented.
+ */
+export async function fetchVideoStats(videoIds: string[]): Promise<Map<string, VideoStats>> {
+  const out = new Map<string, VideoStats>();
+  const key = apiKey();
+  const ids = Array.from(new Set(videoIds.filter(Boolean)));
+  if (!key || ids.length === 0) return out;
+  for (let i = 0; i < ids.length; i += 50) {
+    const batch = ids.slice(i, i + 50);
+    const q = new URLSearchParams({ part: "statistics", id: batch.join(","), key });
+    let res: Response;
+    try {
+      res = await fetch(`${API}/videos?${q.toString()}`, { next: { revalidate: 0 } });
+    } catch {
+      continue; // network error: skip this batch, keep going
+    }
+    if (!res.ok) continue; // quota/API error: skip batch, never fabricate
+    let data: any;
+    try {
+      data = await res.json();
+    } catch {
+      continue;
+    }
+    for (const item of data?.items ?? []) {
+      const st = item?.statistics;
+      if (!st) continue;
+      out.set(item.id, {
+        views: Number(st.viewCount ?? 0),
+        likes: Number(st.likeCount ?? 0),
+        comments: Number(st.commentCount ?? 0),
+      });
+    }
+  }
+  return out;
+}

@@ -8,7 +8,7 @@ export default function Header({ title, subtitle }: { title: string; subtitle?: 
 
   return (
     <header className="sticky top-0 z-30 border-b border-white/10 bg-base-950/90 backdrop-blur">
-      <div className="flex items-center justify-between gap-4 px-8 py-4">
+      <div className="flex items-center justify-between gap-4 px-4 py-4 sm:px-8">
         <div>
           <h1 className="text-xl font-bold text-white">{title}</h1>
           {subtitle && <p className="text-sm text-white/50">{subtitle}</p>}

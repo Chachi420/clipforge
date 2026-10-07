@@ -68,7 +68,7 @@ export default function SettingsView({ profile }: { profile: ClipperProfile }) {
   return (
     <>
       <Header title="Settings" subtitle="Manage your profile and preferences" />
-      <div className="space-y-6 px-8 py-8">
+      <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
         <Card className="p-6">
           <div className="flex items-center gap-4">
             {profile.avatarUrl ? (
@@ -168,7 +168,7 @@ export default function SettingsView({ profile }: { profile: ClipperProfile }) {
         <Card className="p-6">
           <h3 className="mb-1 font-bold">Clip activity</h3>
           <p className="mb-4 text-sm text-white/45">Last 12 months</p>
-          <div className="mb-5 grid grid-cols-3 gap-4 text-sm">
+          <div className="mb-5 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
             <div><div className="text-xl font-bold">{profile.clipsSubmitted.toLocaleString()}</div><div className="text-white/45">Clips submitted</div></div>
             <div><div className="text-xl font-bold">{profile.avgClipsPerDay}</div><div className="text-white/45">Avg clips / day</div></div>
             <div><div className="text-xl font-bold">{profile.activeDays}</div><div className="text-white/45">Active days</div></div>

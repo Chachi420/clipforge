@@ -53,7 +53,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
   return (
     <>
       <Header title="Campaigns" subtitle={`${initial.length} campaigns available`} />
-      <div className="px-8 py-8">
+      <div className="px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-base-850 p-4">
           <p className="text-sm text-white/60">New to campaigns? Learn how they work before you join.</p>
           <div className="flex gap-2">

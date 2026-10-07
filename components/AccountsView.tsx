@@ -145,7 +145,7 @@ export default function AccountsView({ initial }: { initial: SocialAccount[] }) 
   return (
     <>
       <Header title="Accounts" subtitle="Connect the accounts you post clips from" />
-      <div className="px-8 py-8">
+      <div className="px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-6 flex items-center justify-between">
           <p className="max-w-xl text-sm text-white/50">
             Only clips posted from <span className="font-semibold text-white/75">verified accounts</span> count

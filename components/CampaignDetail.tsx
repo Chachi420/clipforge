@@ -43,7 +43,7 @@ export default function CampaignDetail({
   return (
     <>
       <Header title={campaign.name} subtitle="Campaign details" />
-      <div className="space-y-6 px-8 py-8">
+      <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
         <div className="flex flex-wrap items-center gap-3">
           <Link href="/dashboard/campaigns" className="flex items-center gap-1.5 text-sm text-white/55 hover:text-white">
             <ArrowLeft size={16} /> Campaigns

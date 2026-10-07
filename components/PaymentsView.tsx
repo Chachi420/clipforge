@@ -69,7 +69,7 @@ export default function PaymentsView({
   return (
     <>
       <Header title="Payments" subtitle="Manage your earnings and payment methods" />
-      <div className="space-y-6 px-8 py-8">
+      <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
         <div className="grid gap-4 md:grid-cols-3">
           <Card className="p-5">
             <Stat label="Est. payout" value={live ? formatMoney(live.estimatedAmount) : "$0.00"} sub="Current cycle estimate" />
@@ -137,8 +137,8 @@ export default function PaymentsView({
               No payouts yet. Submit clips to a campaign and your earnings will appear here after each cycle closes.
             </p>
           ) : (
-            <div className="overflow-hidden rounded-xl border border-white/10">
-              <table className="w-full text-left text-sm">
+            <div className="overflow-x-auto rounded-xl border border-white/10">
+              <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
                   <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
                     <th className="px-4 py-3">Cycle</th>

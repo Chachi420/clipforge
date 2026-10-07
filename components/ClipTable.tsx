@@ -12,8 +12,8 @@ export function ClipTable({ clips }: { clips: Clip[] }) {
 
   return (
     <>
-      <div className="overflow-hidden rounded-2xl border border-white/10">
-        <table className="w-full text-left text-sm">
+      <div className="overflow-x-auto rounded-2xl border border-white/10">
+        <table className="w-full min-w-[640px] text-left text-sm">
           <thead>
             <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
               <th className="px-4 py-3">Status</th>
