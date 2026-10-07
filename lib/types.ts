@@ -4,7 +4,7 @@ export type Platform = "tiktok" | "instagram" | "youtube" | "x";
 export type CampaignStatus = "active" | "paused" | "private";
 export type CampaignType = "per_view" | "bounty" | "pot";
 export type PayoutMethod = "paypal" | "usdt_eth" | "usdc_eth";
-export type TrackingStatus = "tracking" | "not_tracking" | "flagged";
+export type TrackingStatus = "tracking" | "not_tracking" | "flagged" | "pending_review";
 
 export interface Campaign {
   id: string;
@@ -90,6 +90,9 @@ export interface SocialAccount {
   platform: Platform;
   handle: string;
   verified: boolean;
+  verificationCode: string;
+  followerCount: number;
+  verifiedAt: string | null;
 }
 
 export type AuthProvider = "google" | "azure";

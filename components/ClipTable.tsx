@@ -30,7 +30,7 @@ export function ClipTable({ clips }: { clips: Clip[] }) {
                 className="cursor-pointer border-b border-white/5 transition last:border-0 hover:bg-white/[0.03]">
                 <td className="px-4 py-3">
                   <Badge tone={c.trackingStatus === "tracking" ? "green" : "amber"}>
-                    {c.trackingStatus === "tracking" ? "Tracking" : "Not tracking"}
+                    {c.trackingStatus === "tracking" ? "Tracking" : c.trackingStatus === "pending_review" ? "Pending review" : "Not tracking"}
                   </Badge>
                 </td>
                 <td className="px-4 py-3">
@@ -97,7 +97,7 @@ function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }
             <div className="flex items-center justify-between">
               <span className="text-sm text-white/60">Tracking status</span>
               <Badge tone={clip.trackingStatus === "tracking" ? "green" : "amber"}>
-                {clip.trackingStatus === "tracking" ? "Tracking" : "Not tracking"}
+                {clip.trackingStatus === "tracking" ? "Tracking" : clip.trackingStatus === "pending_review" ? "Pending review" : "Not tracking"}
               </Badge>
             </div>
             <div className="mt-3 flex justify-end">

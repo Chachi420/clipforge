@@ -203,6 +203,9 @@ export async function getUserSocialAccounts(userId: string): Promise<SocialAccou
   const { data } = await supabase.from("social_accounts").select("*").eq("user_id", userId).order("connected_at");
   return (data ?? []).map((r: any) => ({
     id: r.id, platform: r.platform, handle: r.handle, verified: r.verified,
+    verificationCode: r.verification_code ?? "",
+    followerCount: r.follower_count ?? 0,
+    verifiedAt: r.verified_at,
   }));
 }
 

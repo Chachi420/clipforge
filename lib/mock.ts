@@ -150,10 +150,10 @@ export const paymentMethods: PaymentMethodRow[] = [
 ];
 
 export const socialAccounts: SocialAccount[] = [
-  { id: "a1", platform: "instagram", handle: "@kick.zone_", verified: true },
-  { id: "a2", platform: "instagram", handle: "@kickk.zone_", verified: false },
-  { id: "a3", platform: "instagram", handle: "@_streamerhub_", verified: true },
-  { id: "a4", platform: "tiktok", handle: "@tyh6yiydys", verified: false },
+  { id: "a1", platform: "instagram", handle: "@kick.zone_", verified: true, verificationCode: "CF-DEMO01", followerCount: 12400, verifiedAt: "2026-09-01" },
+  { id: "a2", platform: "instagram", handle: "@kickk.zone_", verified: false, verificationCode: "CF-DEMO02", followerCount: 0, verifiedAt: null },
+  { id: "a3", platform: "instagram", handle: "@_streamerhub_", verified: true, verificationCode: "CF-DEMO03", followerCount: 8600, verifiedAt: "2026-09-01" },
+  { id: "a4", platform: "tiktok", handle: "@tyh6yiydys", verified: false, verificationCode: "CF-DEMO04", followerCount: 0, verifiedAt: null },
 ];
 
 export const teams: Team[] = [];

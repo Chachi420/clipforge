@@ -19,9 +19,12 @@ export default function UploadClipDialog({
     setSaving(true);
     setError(null);
     try {
-      const { inserted } = await uploadClips(campaignId, urls);
+      const { inserted, heldForReview } = await uploadClips(campaignId, urls);
       onClose();
       router.refresh();
+      if (heldForReview > 0) {
+        alert(`${inserted} clip${inserted === 1 ? "" : "s"} uploaded. ${heldForReview} could not be matched to a verified account automatically and ${heldForReview === 1 ? "is" : "are"} pending review.`);
+      }
     } catch (e: any) {
       setError(e.message ?? "Upload failed.");
     } finally {
