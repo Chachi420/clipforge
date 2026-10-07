@@ -1,0 +1,34 @@
+import Header from "@/components/Header";
+import { ClipTable } from "@/components/ClipTable";
+import { Stat } from "@/components/ui";
+import { getClips } from "@/lib/db";
+import { formatCompact } from "@/lib/format";
+
+export default async function ClipsPage() {
+  const clips = await getClips();
+  const totalViews = clips.reduce((s, c) => s + c.views, 0);
+  const engagement = clips.reduce((s, c) => s + c.likes + c.comments, 0);
+
+  return (
+    <>
+      <Header title="Clips" subtitle="Manage your clips and track performance" />
+      <div className="space-y-6 px-8 py-8">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="rounded-2xl border border-white/10 bg-base-850 p-5">
+            <Stat label="Total clips" value={formatCompact(clips.length)} sub="All your content" />
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-base-850 p-5">
+            <Stat label="Total views" value={formatCompact(totalViews)} sub="Across all platforms" />
+          </div>
+          <div className="rounded-2xl border border-white/10 bg-base-850 p-5">
+            <Stat label="Engagement" value={formatCompact(engagement)} sub="Likes + comments" />
+          </div>
+        </div>
+        <div>
+          <h2 className="mb-4 font-bold">Your clips</h2>
+          <ClipTable clips={clips} />
+        </div>
+      </div>
+    </>
+  );
+}
