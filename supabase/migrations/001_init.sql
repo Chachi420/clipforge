@@ -23,20 +23,48 @@ do $$ begin
   create type cycle_status as enum ('live','pending_review','awaiting_mark_paid','paid');
 exception when duplicate_object then null; end $$;
 
--- ---------- profiles (one row per Discord user) ----------
+-- ---------- profiles (one row per auth user; id = auth.users.id) ----------
 create table if not exists profiles (
-  id uuid primary key default gen_random_uuid(),
-  discord_id text unique not null,
-  discord_username text not null,
+  id uuid primary key references auth.users(id) on delete cascade,
+  provider text not null default 'google',   -- google | azure
+  provider_user_id text,
   email text,
-  display_name text not null,
+  display_name text not null default 'Clipper',
   bio text,
   avatar_url text,
   status text not null default 'active',
   public_profile boolean not null default false,
+  role text not null default 'clipper',      -- clipper | brand | admin
   joined_at timestamptz not null default now(),
-  created_at timestamptz not null default now()
+  created_at timestamptz not null default now(),
+  unique(provider, provider_user_id)
 );
+
+-- auto-create a profile row on first OAuth sign-in
+create or replace function handle_new_user()
+returns trigger language plpgsql security definer set search_path = public as $$
+begin
+  insert into public.profiles (id, provider, provider_user_id, email, display_name, avatar_url)
+  values (
+    new.id,
+    coalesce(new.raw_app_meta_data->>'provider', 'google'),
+    new.raw_user_meta_data->>'sub',
+    new.email,
+    coalesce(
+      new.raw_user_meta_data->>'full_name',
+      new.raw_user_meta_data->>'name',
+      split_part(coalesce(new.email, 'clipper'), '@', 1)
+    ),
+    new.raw_user_meta_data->>'avatar_url'
+  )
+  on conflict (id) do nothing;
+  return new;
+end $$;
+
+drop trigger if exists on_auth_user_created on auth.users;
+create trigger on_auth_user_created
+  after insert on auth.users
+  for each row execute function handle_new_user();
 
 -- ---------- social accounts ----------
 create table if not exists social_accounts (
@@ -204,23 +232,15 @@ create policy "campaigns are publicly readable" on campaigns for select using (t
 create policy "bounties are publicly readable" on bounties for select using (true);
 
 -- Owners can read/update their own rows (service role bypasses for workers/admin)
-create policy "own profile" on profiles for all using (auth.uid()::text = discord_id);
-create policy "own social accounts" on social_accounts for all using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own memberships" on campaign_members for all using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own clips" on clips for all using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own payouts" on payouts for select using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own payment methods" on payment_methods for all using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own teams" on teams for all using (
-  owner_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own team memberships" on team_members for select using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
-create policy "own notifications" on notifications for all using (
-  user_id in (select id from profiles where discord_id = auth.uid()::text));
+create policy "own profile" on profiles for all using (auth.uid() = id);
+create policy "own social accounts" on social_accounts for all using (user_id = auth.uid());
+create policy "own memberships" on campaign_members for all using (user_id = auth.uid());
+create policy "own clips" on clips for all using (user_id = auth.uid());
+create policy "own payouts" on payouts for select using (user_id = auth.uid());
+create policy "own payment methods" on payment_methods for all using (user_id = auth.uid());
+create policy "own teams" on teams for all using (owner_id = auth.uid());
+create policy "own team memberships" on team_members for select using (user_id = auth.uid());
+create policy "own notifications" on notifications for all using (user_id = auth.uid());
 
 -- ---------- helper: campaign stats ----------
 create or replace function campaign_stats(c_id uuid)

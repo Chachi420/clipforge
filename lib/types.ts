@@ -92,10 +92,16 @@ export interface SocialAccount {
   verified: boolean;
 }
 
+export type AuthProvider = "google" | "azure";
+
+export const AUTH_PROVIDER_LABELS: Record<AuthProvider, string> = {
+  google: "Google",
+  azure: "Microsoft",
+};
+
 export interface ClipperProfile {
   id: string;
-  discordId: string;
-  discordUsername: string;
+  provider: AuthProvider;
   email: string;
   displayName: string;
   bio: string | null;

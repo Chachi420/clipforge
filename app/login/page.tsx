@@ -3,6 +3,7 @@ import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
+import type { AuthProvider } from "@/lib/types";
 
 // NEXT_PUBLIC_ vars are inlined at build time, so this is client-safe.
 const isLive = Boolean(
@@ -10,19 +11,19 @@ const isLive = Boolean(
 );
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<AuthProvider | null>(null);
   const router = useRouter();
 
-  async function signInWithDiscord() {
+  async function signIn(provider: AuthProvider) {
     if (!isLive) {
       // Demo mode: no Supabase configured — go straight to the dashboard.
       router.push("/dashboard");
       return;
     }
-    setLoading(true);
+    setLoading(provider);
     const supabase = createClient();
     await supabase.auth.signInWithOAuth({
-      provider: "discord",
+      provider,
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
   }
@@ -33,11 +34,14 @@ export default function LoginPage() {
         <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-2xl font-black text-white">C</div>
         <h1 className="text-2xl font-black">Welcome back</h1>
         <p className="mt-2 text-sm text-white/55">
-          Sign in as a clipper — content creators sign in with Discord.
+          Sign in as a clipper with your Google or Microsoft account.
         </p>
-        <div className="mt-8">
-          <Button onClick={signInWithDiscord} disabled={loading} className="w-full py-3">
-            {loading ? "Redirecting…" : "Continue with Discord"}
+        <div className="mt-8 space-y-3">
+          <Button onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
+            {loading === "google" ? "Redirecting…" : "Continue with Google"}
+          </Button>
+          <Button onClick={() => signIn("azure")} disabled={loading !== null} variant="outline" className="w-full py-3">
+            {loading === "azure" ? "Redirecting…" : "Continue with Microsoft"}
           </Button>
         </div>
         <p className="mt-6 text-xs text-white/35">

@@ -8,7 +8,7 @@ their own social accounts, and earn per verified view.
 
 - **Frontend:** Next.js 14 (App Router) + TypeScript + Tailwind CSS
 - **Backend:** Supabase (Postgres + Auth + RLS). Schema in `supabase/migrations/001_init.sql`, demo seed in `supabase/seed.sql`.
-- **Auth:** Discord OAuth via Supabase Auth (Supabase Auth → Providers → enable Discord).
+- **Auth:** Google + Microsoft (Azure) OAuth via Supabase Auth.
 
 ## Quick start
 
@@ -22,7 +22,7 @@ Without Supabase env vars the app runs in **demo mode** against a built-in datas
 
 1. Create a Supabase project, run `supabase/migrations/001_init.sql` then `supabase/seed.sql`
    (or `supabase db push`).
-2. Enable the Discord provider in Supabase Auth and add redirect URLs:
+2. Enable the Google and Azure providers in Supabase Auth and add redirect URLs:
    `http://localhost:3000/auth/callback` and your production `/auth/callback`.
 3. Copy `.env.example` to `.env.local` and fill in the keys. The data layer
    (`lib/db.ts`) switches to Supabase automatically.
@@ -32,7 +32,7 @@ Without Supabase env vars the app runs in **demo mode** against a built-in datas
 | Route | Screen |
 |---|---|
 | `/` | Marketing landing (two-sided positioning) |
-| `/login` | Clipper sign-in (Discord OAuth) |
+| `/login` | Clipper sign-in (Google / Microsoft) |
 | `/dashboard` | Home — active / recommended / past campaigns |
 | `/dashboard/campaigns` | Campaign marketplace + filters, Rules & How-it-works dialogs |
 | `/dashboard/campaigns/[slug]` | Campaign detail: info, bounties, payout cycles, clips, upload dialog |

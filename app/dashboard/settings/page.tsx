@@ -2,6 +2,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import { Badge, Button, Card } from "@/components/ui";
+import { AUTH_PROVIDER_LABELS } from "@/lib/types";
 import { profile } from "@/lib/mock";
 
 function Heatmap() {
@@ -50,7 +51,7 @@ export default function SettingsPage() {
                 <Badge tone="green">{profile.status}</Badge>
                 <span>Joined {profile.joinedAt}</span>
                 <span>·</span>
-                <span>Discord OAuth</span>
+                <span>{AUTH_PROVIDER_LABELS[profile.provider]} login</span>
               </div>
             </div>
           </div>
@@ -106,9 +107,8 @@ export default function SettingsPage() {
         <Card className="p-6">
           <h3 className="mb-4 font-bold">Account info</h3>
           <dl className="space-y-2 text-sm">
-            <div className="flex justify-between"><dt className="text-white/45">Discord ID</dt><dd className="font-mono text-white/75">{profile.discordId}</dd></div>
             <div className="flex justify-between"><dt className="text-white/45">Email</dt><dd className="text-white/75">{profile.email}</dd></div>
-            <div className="flex justify-between"><dt className="text-white/45">Auth provider</dt><dd className="text-white/75">Discord OAuth</dd></div>
+            <div className="flex justify-between"><dt className="text-white/45">Auth provider</dt><dd className="text-white/75">{AUTH_PROVIDER_LABELS[profile.provider]}</dd></div>
           </dl>
         </Card>
 

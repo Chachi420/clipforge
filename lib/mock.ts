@@ -7,8 +7,7 @@ import type {
 
 export const profile: ClipperProfile = {
   id: "u_demo",
-  discordId: "1477356839430656080",
-  discordUsername: "clipperdemo",
+  provider: "google",
   email: "clipper@example.com",
   displayName: "Demo Clipper",
   bio: null,
