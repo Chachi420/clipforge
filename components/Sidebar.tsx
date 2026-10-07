@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import {
   Bug, Clapperboard, CreditCard, Home, Lightbulb, Settings, Users, Wallet,
 } from "lucide-react";
-import { profile } from "@/lib/mock";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
@@ -15,7 +14,11 @@ const NAV = [
   { href: "/dashboard/accounts", label: "Accounts", icon: Lightbulb },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({
+  profile,
+}: {
+  profile: { displayName: string; email: string; avatarUrl: string };
+}) {
   const pathname = usePathname();
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-base-900 px-4 py-6">

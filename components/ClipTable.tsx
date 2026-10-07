@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Badge, Button, Dialog, PlatformDot } from "./ui";
 import { PLATFORM_LABELS, type Clip } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
+import { deleteClip } from "@/lib/actions";
 
 export function ClipTable({ clips }: { clips: Clip[] }) {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -55,6 +57,21 @@ export function ClipTable({ clips }: { clips: Clip[] }) {
 
 function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }) {
   const [tab, setTab] = useState<"overview" | "analytics">("overview");
+  const [deleting, setDeleting] = useState(false);
+  const router = useRouter();
+
+  async function handleDelete() {
+    if (!confirm("Delete this clip? Tracking will stop.")) return;
+    setDeleting(true);
+    try {
+      await deleteClip(clip.id);
+      onClose();
+      router.refresh();
+    } catch (e: any) {
+      alert(e.message ?? "Could not delete clip.");
+      setDeleting(false);
+    }
+  }
   return (
     <Dialog title="Clip details" subtitle={`${PLATFORM_LABELS[clip.platform]} post · ${clip.accountHandle}`} onClose={onClose} wide>
       <div className="mb-4 flex gap-2">
@@ -84,7 +101,9 @@ function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }
               </Badge>
             </div>
             <div className="mt-3 flex justify-end">
-              <Button variant="outline" onClick={onClose}>Delete clip</Button>
+              <Button variant="outline" onClick={handleDelete} disabled={deleting}>
+                {deleting ? "Deleting…" : "Delete clip"}
+              </Button>
             </div>
           </div>
         </div>

@@ -2,21 +2,32 @@ import Link from "next/link";
 import Header from "@/components/Header";
 import CampaignCard from "@/components/CampaignCard";
 import { Button } from "@/components/ui";
-import { getCampaigns } from "@/lib/db";
-import { profile } from "@/lib/mock";
+import { getCampaigns, getProfile, isLive } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth";
+import { profile as mockProfile } from "@/lib/mock";
 
 export default async function DashboardHome() {
-  const campaigns = await getCampaigns();
-  const joined = campaigns.filter((c) => c.isJoined);
+  let userId: string | undefined;
+  let name = mockProfile.displayName;
+  if (isLive()) {
+    const user = await getSessionUser();
+    userId = user?.id;
+    if (userId) {
+      const p = await getProfile(userId);
+      if (p) name = p.displayName;
+    }
+  }
+  const campaigns = await getCampaigns(userId);
+  const joined = campaigns.filter((c) => c.isJoined && c.status === "active");
   const active = campaigns.filter((c) => !c.isJoined && c.status === "active").slice(0, 3);
-  const past = campaigns.filter((c) => c.status === "paused").slice(0, 3);
+  const past = campaigns.filter((c) => c.status !== "active").slice(0, 3);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
 
   return (
     <>
-      <Header title={`${greeting}, ${profile.displayName}`} subtitle="Manage your campaigns" />
+      <Header title={`${greeting}, ${name}`} subtitle="Manage your campaigns" />
       <div className="space-y-10 px-8 py-8">
         <section>
           <div className="mb-4 flex items-center justify-between">
@@ -26,7 +37,12 @@ export default async function DashboardHome() {
             </Link>
           </div>
           {joined.length === 0 ? (
-            <p className="text-sm text-white/45">You haven&apos;t joined any campaigns yet.</p>
+            <div className="rounded-2xl border border-dashed border-white/15 px-6 py-10 text-center">
+              <p className="text-sm text-white/55">You haven&apos;t joined any campaigns yet.</p>
+              <Link href="/dashboard/campaigns" className="mt-4 inline-block">
+                <Button>Browse campaigns</Button>
+              </Link>
+            </div>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {joined.map((c) => <CampaignCard key={c.id} campaign={c} />)}
@@ -41,12 +57,14 @@ export default async function DashboardHome() {
           </div>
         </section>
 
-        <section>
-          <h2 className="mb-4 text-lg font-bold">Your past campaigns</h2>
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {past.map((c) => <CampaignCard key={c.id} campaign={c} />)}
-          </div>
-        </section>
+        {past.length > 0 && (
+          <section>
+            <h2 className="mb-4 text-lg font-bold">Ended or paused</h2>
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+              {past.map((c) => <CampaignCard key={c.id} campaign={c} />)}
+            </div>
+          </section>
+        )}
       </div>
     </>
   );

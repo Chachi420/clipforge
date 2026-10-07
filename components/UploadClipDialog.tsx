@@ -1,10 +1,33 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button, Dialog, inputCls } from "./ui";
+import { uploadClips } from "@/lib/actions";
 
-export default function UploadClipDialog({ campaignName, onClose }: { campaignName: string; onClose: () => void }) {
+export default function UploadClipDialog({
+  campaignId, campaignName, onClose,
+}: {
+  campaignId: string; campaignName: string; onClose: () => void;
+}) {
   const [text, setText] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
   const urls = text.split("\n").map((l) => l.trim()).filter(Boolean);
+
+  async function submit() {
+    setSaving(true);
+    setError(null);
+    try {
+      const { inserted } = await uploadClips(campaignId, urls);
+      onClose();
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message ?? "Upload failed.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <Dialog title="Upload clips" subtitle={campaignName} onClose={onClose}>
@@ -16,16 +39,11 @@ export default function UploadClipDialog({ campaignName, onClose }: { campaignNa
         className={inputCls}
       />
       <p className="mt-2 text-xs text-white/40">Supports TikTok, Instagram, YouTube, X.</p>
+      {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose}>Cancel</Button>
-        <Button
-          disabled={urls.length === 0}
-          onClick={() => {
-            alert(`Demo mode: ${urls.length} clip URL(s) would be submitted for tracking.`);
-            onClose();
-          }}
-        >
-          Upload {urls.length} clip{urls.length === 1 ? "" : "s"}
+        <Button disabled={urls.length === 0 || saving} onClick={submit}>
+          {saving ? "Uploading…" : `Upload ${urls.length} clip${urls.length === 1 ? "" : "s"}`}
         </Button>
       </div>
     </Dialog>

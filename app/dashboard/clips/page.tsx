@@ -1,11 +1,13 @@
 import Header from "@/components/Header";
 import { ClipTable } from "@/components/ClipTable";
 import { Stat } from "@/components/ui";
-import { getClips } from "@/lib/db";
+import { getUserClips } from "@/lib/db";
+import { getSessionUser } from "@/lib/auth";
 import { formatCompact } from "@/lib/format";
 
 export default async function ClipsPage() {
-  const clips = await getClips();
+  const user = await getSessionUser().catch(() => null);
+  const clips = await getUserClips(user?.id ?? "");
   const totalViews = clips.reduce((s, c) => s + c.views, 0);
   const engagement = clips.reduce((s, c) => s + c.likes + c.comments, 0);
 

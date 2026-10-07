@@ -6,6 +6,7 @@ import Header from "@/components/Header";
 import UploadClipDialog from "@/components/UploadClipDialog";
 import { ClipTable } from "@/components/ClipTable";
 import { Badge, Button, Card, ProgressBar, Stat, inputCls } from "@/components/ui";
+import { joinCampaign } from "@/lib/actions";
 import { PAYOUT_METHOD_LABELS, type Bounty, type Campaign, type Clip, type PayoutCycle } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
 
@@ -17,6 +18,20 @@ export default function CampaignDetail({
   const [showUpload, setShowUpload] = useState(false);
   const [bountyQuery, setBountyQuery] = useState("");
   const [cycleTab, setCycleTab] = useState<"pending" | "paid">("pending");
+  const [joining, setJoining] = useState(false);
+  const [joined, setJoined] = useState(!!campaign.isJoined);
+
+  async function handleJoin() {
+    setJoining(true);
+    try {
+      await joinCampaign(campaign.id);
+      setJoined(true);
+    } catch (e: any) {
+      alert(e.message ?? "Could not join campaign.");
+    } finally {
+      setJoining(false);
+    }
+  }
 
   const shownBounties = bounties.filter((b) =>
     b.name.toLowerCase().includes(bountyQuery.toLowerCase())
@@ -40,10 +55,20 @@ export default function CampaignDetail({
           <Button variant="outline" onClick={() => {}}>
             <Share2 size={15} /> Share
           </Button>
-          <Button onClick={() => setShowUpload(true)}>
+          {!joined && campaign.status === "active" && (
+            <Button variant="outline" onClick={handleJoin} disabled={joining}>
+              {joining ? "Joining…" : "Join campaign"}
+            </Button>
+          )}
+          <Button onClick={() => setShowUpload(true)} disabled={!joined}>
             <Upload size={15} /> Upload clip
           </Button>
         </div>
+        {!joined && campaign.status === "active" && (
+          <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 text-sm text-white/70">
+            Join this campaign to start submitting clips and earning.
+          </div>
+        )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="p-6">
@@ -171,7 +196,7 @@ export default function CampaignDetail({
         </div>
       </div>
 
-      {showUpload && <UploadClipDialog campaignName={campaign.name} onClose={() => setShowUpload(false)} />}
+      {showUpload && <UploadClipDialog campaignId={campaign.id} campaignName={campaign.name} onClose={() => setShowUpload(false)} />}
     </>
   );
 }
