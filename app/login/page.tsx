@@ -51,31 +51,31 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-base-950 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-base-850 p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-2xl font-black text-white">C</div>
-        <h1 className="text-2xl font-black">Welcome back</h1>
-        <p className="mt-2 text-sm text-white/55">
+    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
+      <div className="glass glass-sheen w-full max-w-md rounded-3xl p-8 text-center">
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-lime text-2xl font-black text-ink">C</div>
+        <h1 className="display text-2xl">Welcome back</h1>
+        <p className="mt-2 text-sm text-ink-faint">
           Sign in as a clipper with your Google or Microsoft account.
         </p>
         <div className="mt-8 space-y-3">
-          <Button onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
+          <Button variant="lime" onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
             <GoogleLogo /> {loading === "google" ? "Redirecting…" : "Continue with Google"}
           </Button>
           <Button onClick={() => signIn("azure")} disabled={loading !== null} variant="outline" className="w-full py-3">
             <MicrosoftLogo /> {loading === "azure" ? "Redirecting…" : "Continue with Microsoft"}
           </Button>
         </div>
-        <p className="mt-6 text-xs text-white/35">
+        <p className="mt-6 text-xs text-ink-faint">
           Don&apos;t worry — we&apos;ll check if you already have an account. If not, we&apos;ll get you started.
         </p>
         {!isLive && (
-          <p className="mt-4 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-300">
+          <p className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
             Demo mode: Supabase isn&apos;t configured, so this signs you into a demo dashboard.
           </p>
         )}
-        <div className="mt-6 border-t border-white/10 pt-4 text-xs text-white/40">
-          Are you a brand? <span className="cursor-pointer font-semibold text-white/70 hover:text-white">Sign in as a client →</span>
+        <div className="mt-6 border-t border-line/10 pt-4 text-xs text-ink-faint">
+          Are you a brand? <span className="cursor-pointer font-semibold text-ink-soft hover:text-ink">Sign in as a client →</span>
         </div>
       </div>
     </div>

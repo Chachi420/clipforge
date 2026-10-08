@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import {
   Clapperboard, CreditCard, Home, Lightbulb, Users, Wallet,
 } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const NAV = [
   { href: "/dashboard", label: "Home", icon: Home },
@@ -18,10 +19,10 @@ const NAV = [
 export default function MobileNav() {
   const pathname = usePathname();
   return (
-    <nav className="sticky top-0 z-40 border-b border-white/10 bg-base-950/95 backdrop-blur lg:hidden">
+    <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/90 backdrop-blur-xl lg:hidden">
       <div className="flex items-center gap-1 overflow-x-auto px-3 py-2">
         <Link href="/dashboard" className="mr-2 flex shrink-0 items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-accent text-base font-black text-white">C</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-lime text-base font-black text-ink">C</span>
         </Link>
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = href === "/dashboard" ? pathname === href : pathname.startsWith(href);
@@ -29,8 +30,8 @@ export default function MobileNav() {
             <Link
               key={href}
               href={href}
-              className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                active ? "bg-accent/15 text-white" : "text-white/55 hover:text-white"
+              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition ${
+                active ? "bg-lime text-ink shadow-card" : "text-ink-soft hover:text-ink"
               }`}
             >
               <Icon size={15} />
@@ -38,6 +39,9 @@ export default function MobileNav() {
             </Link>
           );
         })}
+        <div className="ml-auto shrink-0 pl-2">
+          <ThemeToggle />
+        </div>
       </div>
     </nav>
   );

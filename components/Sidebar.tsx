@@ -21,11 +21,11 @@ export default function Sidebar({
 }) {
   const pathname = usePathname();
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-base-900 px-4 py-6">
+    <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-line/10 bg-surface/70 px-4 py-6 backdrop-blur-xl">
       <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-lg font-black text-white">C</span>
-        <span className="text-lg font-black tracking-tight text-white">
-          CLIPFORGE <span className="ml-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/60">BETA</span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime text-lg font-black text-ink">C</span>
+        <span className="text-lg font-black tracking-tight text-ink">
+          CLIPFORGE <span className="ml-1 rounded bg-ink/10 px-1.5 py-0.5 text-[10px] font-bold text-ink-faint">BETA</span>
         </span>
       </Link>
 
@@ -36,8 +36,8 @@ export default function Sidebar({
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                active ? "bg-white/10 text-white" : "text-white/55 hover:bg-white/5 hover:text-white"
+              className={`pill justify-start px-4 py-2.5 text-sm transition ${
+                active ? "bg-lime text-ink shadow-card" : "text-ink-soft hover:bg-ink/5 hover:text-ink"
               }`}
             >
               <Icon size={18} />
@@ -47,27 +47,27 @@ export default function Sidebar({
         })}
       </nav>
 
-      <div className="mb-4 rounded-xl border border-white/10 p-3">
-        <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/40">Feedback</div>
+      <div className="mb-4 rounded-2xl border border-line/10 bg-surface-deep/60 p-3">
+        <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-ink-faint">Feedback</div>
         <div className="flex gap-2">
-          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white/5 px-2 py-2 text-xs font-medium text-white/70 hover:bg-white/10">
+          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-ink/5 px-2 py-2 text-xs font-medium text-ink-soft hover:bg-ink/10">
             <Bug size={14} /> Report bug
           </button>
-          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-white/5 px-2 py-2 text-xs font-medium text-white/70 hover:bg-white/10">
+          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-ink/5 px-2 py-2 text-xs font-medium text-ink-soft hover:bg-ink/10">
             <Lightbulb size={14} /> Request feature
           </button>
         </div>
       </div>
 
-      <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-sm font-bold text-accent-soft">
+      <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-surface/80 p-3">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-lime/25 text-sm font-bold text-lime-deep">
           {profile.displayName.slice(0, 1)}
         </span>
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-white">{profile.displayName}</div>
-          <div className="truncate text-xs text-white/40">{profile.email}</div>
+          <div className="truncate text-sm font-semibold text-ink">{profile.displayName}</div>
+          <div className="truncate text-xs text-ink-faint">{profile.email}</div>
         </div>
-        <Link href="/dashboard/settings" className="text-white/40 hover:text-white" aria-label="Settings">
+        <Link href="/dashboard/settings" className="text-ink-faint hover:text-ink" aria-label="Settings">
           <Settings size={16} />
         </Link>
       </div>

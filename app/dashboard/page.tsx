@@ -31,16 +31,16 @@ export default async function DashboardHome() {
       <div className="space-y-10 px-4 py-6 sm:px-8 sm:py-8">
         <section>
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-lg font-bold">Your active campaigns</h2>
+            <h2 className="display text-lg">Your active campaigns</h2>
             <Link href="/dashboard/campaigns">
               <Button variant="outline">Join a new campaign</Button>
             </Link>
           </div>
           {joined.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-white/15 px-6 py-10 text-center">
-              <p className="text-sm text-white/55">You haven&apos;t joined any campaigns yet.</p>
+            <div className="rounded-3xl border border-dashed border-line/20 px-6 py-10 text-center">
+              <p className="text-sm text-ink-soft">You haven&apos;t joined any campaigns yet.</p>
               <Link href="/dashboard/campaigns" className="mt-4 inline-block">
-                <Button>Browse campaigns</Button>
+                <Button variant="lime">Browse campaigns</Button>
               </Link>
             </div>
           ) : (
@@ -51,7 +51,7 @@ export default async function DashboardHome() {
         </section>
 
         <section>
-          <h2 className="mb-4 text-lg font-bold">Recommended for you</h2>
+          <h2 className="display mb-4 text-lg">Recommended for you</h2>
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {active.map((c) => <CampaignCard key={c.id} campaign={c} />)}
           </div>
@@ -59,7 +59,7 @@ export default async function DashboardHome() {
 
         {past.length > 0 && (
           <section>
-            <h2 className="mb-4 text-lg font-bold">Ended or paused</h2>
+            <h2 className="display mb-4 text-lg">Ended or paused</h2>
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {past.map((c) => <CampaignCard key={c.id} campaign={c} />)}
             </div>

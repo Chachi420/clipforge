@@ -30,7 +30,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
   return (
-    <div className="flex min-h-screen bg-base-950">
+    <div className="flex min-h-screen bg-paper">
       <div className="hidden lg:block">
         <Sidebar
           profile={{ displayName: profile.displayName, email: profile.email, avatarUrl: profile.avatarUrl }}
