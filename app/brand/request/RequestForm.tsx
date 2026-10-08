@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui";
+import { Button, inputCls } from "@/components/ui";
 import { requestBrandAccess } from "@/lib/brand-actions";
 
 const BUDGETS = [
@@ -12,8 +12,7 @@ const BUDGETS = [
   { v: "25k_plus", label: "$25,000+ / month" },
 ];
 
-const inputCls =
-  "w-full rounded-xl border border-white/10 bg-base-900 px-4 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-accent focus:outline-none";
+const labelCls = "mb-1.5 block text-xs font-semibold text-ink-soft";
 
 export default function RequestForm({ defaultEmail }: { defaultEmail: string }) {
   const router = useRouter();
@@ -46,26 +45,26 @@ export default function RequestForm({ defaultEmail }: { defaultEmail: string }) 
     <form onSubmit={onSubmit} className="mt-8 space-y-4 text-left">
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-white/60">Company name *</label>
+          <label className={labelCls}>Company name *</label>
           <input name="company" required placeholder="Acme Inc." className={inputCls} />
         </div>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-white/60">Your name *</label>
+          <label className={labelCls}>Your name *</label>
           <input name="name" required placeholder="Jane Doe" className={inputCls} />
         </div>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-white/60">Work email *</label>
+          <label className={labelCls}>Work email *</label>
           <input name="email" type="email" required defaultValue={defaultEmail} className={inputCls} />
         </div>
         <div>
-          <label className="mb-1.5 block text-xs font-semibold text-white/60">Website</label>
+          <label className={labelCls}>Website</label>
           <input name="website" placeholder="https://…" className={inputCls} />
         </div>
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-white/60">Monthly budget *</label>
+        <label className={labelCls}>Monthly budget *</label>
         <select name="budget" required defaultValue="" className={inputCls}>
           <option value="" disabled>Select a range…</option>
           {BUDGETS.map((b) => (
@@ -74,7 +73,7 @@ export default function RequestForm({ defaultEmail }: { defaultEmail: string }) 
         </select>
       </div>
       <div>
-        <label className="mb-1.5 block text-xs font-semibold text-white/60">
+        <label className={labelCls}>
           What do you want to promote?
         </label>
         <textarea
@@ -84,11 +83,11 @@ export default function RequestForm({ defaultEmail }: { defaultEmail: string }) 
           className={inputCls}
         />
       </div>
-      {err && <p className="text-sm text-red-400">{err}</p>}
-      <Button type="submit" disabled={saving} className="w-full py-3">
+      {err && <p className="text-sm text-red-600 dark:text-red-400">{err}</p>}
+      <Button type="submit" variant="lime" disabled={saving} className="w-full py-3">
         {saving ? "Sending…" : "Request brand access"}
       </Button>
-      <p className="text-center text-xs text-white/35">
+      <p className="text-center text-xs text-ink-faint">
         We review every request by hand — usually within one business day.
       </p>
     </form>

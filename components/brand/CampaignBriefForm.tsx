@@ -72,7 +72,7 @@ export default function CampaignBriefForm() {
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
+          <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
         )}
 
         <Field label="Campaign name">
@@ -88,7 +88,7 @@ export default function CampaignBriefForm() {
           <Field label="Category">
             <select className={inputCls} value={category} onChange={(e) => setCategory(e.target.value)}>
               {CATEGORIES.map((c) => (
-                <option key={c} value={c} className="bg-base-900">
+                <option key={c} value={c} className="bg-surface">
                   {c}
                 </option>
               ))}
@@ -101,7 +101,7 @@ export default function CampaignBriefForm() {
               onChange={(e) => setPayoutMethod(e.target.value as PayoutMethod)}
             >
               {PAYOUT_METHODS.map((m) => (
-                <option key={m} value={m} className="bg-base-900">
+                <option key={m} value={m} className="bg-surface">
                   {PAYOUT_METHOD_LABELS[m]}
                 </option>
               ))}
@@ -118,8 +118,8 @@ export default function CampaignBriefForm() {
                 onClick={() => setType(t.value)}
                 className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   type === t.value
-                    ? "border-accent/60 bg-accent/15 text-white"
-                    : "border-white/10 bg-base-900 text-white/60 hover:text-white"
+                    ? "border-lime-deep/60 bg-lime/20 text-ink"
+                    : "border-line/10 bg-surface text-ink-soft hover:text-ink"
                 }`}
               >
                 {t.label}
@@ -138,8 +138,8 @@ export default function CampaignBriefForm() {
                 aria-pressed={platforms.includes(p)}
                 className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   platforms.includes(p)
-                    ? "border-accent/60 bg-accent/15 text-white"
-                    : "border-white/10 bg-base-900 text-white/60 hover:text-white"
+                    ? "border-lime-deep/60 bg-lime/20 text-ink"
+                    : "border-line/10 bg-surface text-ink-soft hover:text-ink"
                 }`}
               >
                 {PLATFORM_LABELS[p]}
@@ -182,8 +182,8 @@ export default function CampaignBriefForm() {
                 onClick={() => setDurationMode(m)}
                 className={`flex-1 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   durationMode === m
-                    ? "border-accent/60 bg-accent/15 text-white"
-                    : "border-white/10 bg-base-900 text-white/60 hover:text-white"
+                    ? "border-lime-deep/60 bg-lime/20 text-ink"
+                    : "border-line/10 bg-surface text-ink-soft hover:text-ink"
                 }`}
               >
                 {m === "deadline" ? "Deadline" : "Budget runs out"}
@@ -234,7 +234,7 @@ export default function CampaignBriefForm() {
         </Field>
 
         <div className="flex items-center justify-between gap-4 pt-1">
-          <p className="text-xs text-white/35">
+          <p className="text-xs text-ink-faint">
             Submitted as a draft — it goes live only after our team approves it.
           </p>
           <Button type="submit" disabled={submitting}>

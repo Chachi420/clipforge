@@ -117,12 +117,12 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
           />
         </Field>
         <div className="sm:col-span-2">
-          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-white/40">
+          <span className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-ink-faint">
             Platforms
           </span>
           <div className="flex flex-wrap gap-3">
             {PLATFORMS.map((p) => (
-              <label key={p} className="flex cursor-pointer items-center gap-2 text-sm text-white/70">
+              <label key={p} className="flex cursor-pointer items-center gap-2 text-sm text-ink">
                 <input
                   type="checkbox"
                   checked={platforms.includes(p)}
@@ -146,7 +146,7 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
           </Field>
         </div>
         {message && (
-          <p className={`text-sm sm:col-span-2 ${message.tone === "ok" ? "text-emerald-400" : "text-red-400"}`}>
+          <p className={`text-sm sm:col-span-2 ${message.tone === "ok" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
             {message.text}
           </p>
         )}

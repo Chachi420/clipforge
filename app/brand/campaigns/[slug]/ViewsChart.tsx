@@ -10,8 +10,8 @@ const PAD_L = 8;
 const PAD_R = 8;
 const PAD_T = 12;
 const PAD_B = 24;
-const VIEWS_COLOR = "#5eead4"; // teal
-const SPEND_COLOR = "#fbbf24"; // amber
+const VIEWS_COLOR = "#14b8a6"; // teal-500 — readable on light and dark glass
+const SPEND_COLOR = "#f59e0b"; // amber-500 — readable on light and dark glass
 
 function shortDate(iso: string): string {
   const [y, m, d] = iso.split("-");
@@ -40,7 +40,7 @@ export default function ViewsChart({ data }: { data: DayPoint[] }) {
     return (
       <Card className="p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-white">Last 30 days</h2>
+          <h2 className="text-sm font-semibold text-ink">Last 30 days</h2>
           <Legend />
         </div>
         <EmptyState
@@ -68,10 +68,10 @@ export default function ViewsChart({ data }: { data: DayPoint[] }) {
   return (
     <Card className="p-6">
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">Last 30 days</h2>
+        <h2 className="text-sm font-semibold text-ink">Last 30 days</h2>
         <Legend />
       </div>
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label="Views and spend over the last 30 days">
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full text-ink" role="img" aria-label="Views and spend over the last 30 days">
         <defs>
           <linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor={VIEWS_COLOR} stopOpacity="0.35" />
@@ -79,31 +79,33 @@ export default function ViewsChart({ data }: { data: DayPoint[] }) {
           </linearGradient>
         </defs>
         {/* gridlines */}
-        {[0.25, 0.5, 0.75].map((f) => {
-          const y = PAD_T + (H - PAD_T - PAD_B) * f;
-          return (
-            <line key={f} x1={PAD_L} x2={W - PAD_R} y1={y} y2={y} stroke="#ffffff" strokeOpacity="0.06" />
-          );
-        })}
+        <g className="text-ink-faint" stroke="currentColor" strokeOpacity="0.35">
+          {[0.25, 0.5, 0.75].map((f) => {
+            const y = PAD_T + (H - PAD_T - PAD_B) * f;
+            return <line key={f} x1={PAD_L} x2={W - PAD_R} y1={y} y2={y} />;
+          })}
+        </g>
         {/* views area */}
         <path d={viewsArea} fill="url(#viewsFill)" />
         <path d={viewsLine} fill="none" stroke={VIEWS_COLOR} strokeWidth="2" strokeLinejoin="round" />
         {/* spend line */}
         <path d={spendLine} fill="none" stroke={SPEND_COLOR} strokeWidth="2" strokeDasharray="6 3" strokeLinejoin="round" />
         {/* y labels */}
-        <text x={PAD_L + 2} y={PAD_T - 3} fontSize="10" fill="#ffffff" opacity="0.55">
-          {formatCompact(maxViews)} views
-        </text>
-        <text x={W - PAD_R - 2} y={PAD_T - 3} fontSize="10" fill={SPEND_COLOR} opacity="0.8" textAnchor="end">
-          {formatMoney(maxSpend)}
-        </text>
+        <g className="text-ink-faint" fill="currentColor" fontSize="10">
+          <text x={PAD_L + 2} y={PAD_T - 3} opacity="0.9">
+            {formatCompact(maxViews)} views
+          </text>
+          <text x={W - PAD_R - 2} y={PAD_T - 3} textAnchor="end" fill={SPEND_COLOR} opacity="0.9">
+            {formatMoney(maxSpend)}
+          </text>
+        </g>
         {/* x labels */}
         {xLabels.map(({ i, label }) => {
           const n = data.length;
           const x = PAD_L + (n === 1 ? (W - PAD_L - PAD_R) / 2 : (i / (n - 1)) * (W - PAD_L - PAD_R));
           const anchor = i === 0 ? "start" : i === n - 1 ? "end" : "middle";
           return (
-            <text key={i} x={x} y={H - 8} fontSize="10" fill="#ffffff" opacity="0.45" textAnchor={anchor}>
+            <text key={i} x={x} y={H - 8} fontSize="10" fill="currentColor" className="text-ink-faint" opacity="0.75" textAnchor={anchor}>
               {label}
             </text>
           );
@@ -115,7 +117,7 @@ export default function ViewsChart({ data }: { data: DayPoint[] }) {
 
 function Legend() {
   return (
-    <div className="flex items-center gap-4 text-xs text-white/60">
+    <div className="flex items-center gap-4 text-xs text-ink-soft">
       <span className="flex items-center gap-1.5">
         <span className="h-2 w-4 rounded-sm" style={{ background: VIEWS_COLOR }} /> Views
       </span>

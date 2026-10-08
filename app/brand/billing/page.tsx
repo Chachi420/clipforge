@@ -13,10 +13,10 @@ export default async function BillingPage() {
   ]);
 
   return (
-    <div className="space-y-6 px-8 py-8">
+    <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">Billing</h1>
-        <p className="mt-1 text-sm text-white/50">
+        <h1 className="display text-3xl">Billing</h1>
+        <p className="mt-1 text-sm text-ink-soft">
           Funds, spend and top-up history. All amounts in USD.
         </p>
       </div>
@@ -29,13 +29,13 @@ export default async function BillingPage() {
           <Stat label="Total spend" value={formatMoney(balance.spent)} />
         </Card>
         <Card
-          className={`p-6 ${balance.balance < 0 ? "border-red-500/40" : "border-emerald-500/40"}`}
+          className={`p-6 ${balance.balance < 0 ? "border-red-500/40" : "border-lime-deep/40"}`}
         >
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-white/40">
+          <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
             Available balance
           </div>
           <div
-            className={`mt-1 text-2xl font-bold ${balance.balance < 0 ? "text-red-400" : "text-emerald-400"}`}
+            className={`mt-1 font-display text-3xl font-bold ${balance.balance < 0 ? "text-red-600 dark:text-red-400" : "text-lime-deep dark:text-lime"}`}
           >
             {formatMoney(balance.balance)}
           </div>
@@ -43,17 +43,17 @@ export default async function BillingPage() {
       </div>
 
       <Card className="p-6">
-        <h2 className="text-lg font-bold text-white">Add funds</h2>
-        <p className="mt-2 max-w-xl text-sm text-white/60">
+        <h2 className="font-display text-lg font-bold text-ink">Add funds</h2>
+        <p className="mt-2 max-w-xl text-sm text-ink-soft">
           Top-ups are arranged with your account manager — there are no automated
           payments in v1. Once funds are received, an admin records the top-up and
           it appears in your ledger below.
         </p>
-        <p className="mt-3 text-sm text-white/80">
+        <p className="mt-3 text-sm text-ink">
           Email{" "}
           <a
             href="mailto:billing@clipforge.example"
-            className="font-semibold text-accent underline decoration-accent/40 underline-offset-2"
+            className="font-semibold text-lime-deep underline decoration-lime-deep/40 underline-offset-2"
           >
             billing@clipforge.example
           </a>{" "}
@@ -62,38 +62,40 @@ export default async function BillingPage() {
       </Card>
 
       <div>
-        <h2 className="mb-3 text-lg font-bold text-white">Top-up history</h2>
+        <h2 className="mb-3 font-display text-lg font-bold text-ink">Top-up history</h2>
         {topups.length === 0 ? (
           <EmptyState title="No top-ups recorded yet." body="Funded amounts will appear here once your account manager records a top-up." />
         ) : (
-          <div className="overflow-x-auto overflow-hidden rounded-2xl border border-white/10">
-            <table className="w-full min-w-[560px] text-left text-sm">
-              <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
-                  <th className="px-4 py-3">Date</th>
-                  <th className="px-4 py-3 text-right">Amount</th>
-                  <th className="px-4 py-3">Method</th>
-                  <th className="px-4 py-3">Reference</th>
-                </tr>
-              </thead>
-              <tbody>
-                {topups.map((t) => (
-                  <tr key={t.id} className="border-b border-white/5 last:border-0">
-                    <td className="px-4 py-3 text-white/70">{t.createdAt.slice(0, 10)}</td>
-                    <td className="px-4 py-3 text-right font-bold text-emerald-400">
-                      {formatMoney(t.amount)}
-                    </td>
-                    <td className="px-4 py-3 capitalize text-white/70">
-                      {t.method ?? <span className="text-xs text-white/35">—</span>}
-                    </td>
-                    <td className="px-4 py-3 text-white/55">
-                      {t.reference ?? <span className="text-xs text-white/35">—</span>}
-                    </td>
+          <Card className="overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[560px] text-left text-sm">
+                <thead>
+                  <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
+                    <th className="px-4 py-3">Date</th>
+                    <th className="px-4 py-3 text-right">Amount</th>
+                    <th className="px-4 py-3">Method</th>
+                    <th className="px-4 py-3">Reference</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-line/10">
+                  {topups.map((t) => (
+                    <tr key={t.id}>
+                      <td className="px-4 py-3 text-ink-soft">{t.createdAt.slice(0, 10)}</td>
+                      <td className="px-4 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
+                        {formatMoney(t.amount)}
+                      </td>
+                      <td className="px-4 py-3 capitalize text-ink-soft">
+                        {t.method ?? <span className="text-xs text-ink-faint">—</span>}
+                      </td>
+                      <td className="px-4 py-3 text-ink-soft">
+                        {t.reference ?? <span className="text-xs text-ink-faint">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </Card>
         )}
       </div>
     </div>

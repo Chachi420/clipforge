@@ -19,7 +19,7 @@ export default function CampaignTable({ campaigns }: { campaigns: BrandCampaign[
       <div className="overflow-x-auto">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-left text-[11px] uppercase tracking-wider text-white/40">
+            <tr className="border-b border-line/10 text-left text-[11px] uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3 font-semibold">Campaign</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 font-semibold">Spend vs budget</th>
@@ -27,20 +27,20 @@ export default function CampaignTable({ campaigns }: { campaigns: BrandCampaign[
               <th className="px-4 py-3 font-semibold">Clips</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-line/10">
             {campaigns.map((c) => (
               <tr
                 key={c.id}
-                className="border-b border-white/5 transition last:border-0 hover:bg-white/[0.02]"
+                className="transition hover:bg-ink/[0.03]"
               >
                 <td className="px-4 py-3">
                   <Link
                     href={`/brand/campaigns/${c.slug}`}
-                    className="font-semibold text-white hover:text-accent-soft"
+                    className="font-semibold text-ink hover:text-lime-deep"
                   >
                     {c.name}
                   </Link>
-                  <div className="mt-0.5 text-xs text-white/40">{c.category}</div>
+                  <div className="mt-0.5 text-xs text-ink-faint">{c.category}</div>
                 </td>
                 <td className="px-4 py-3">
                   <Badge tone={STATUS_TONE[c.status]}>{CAMPAIGN_STATUS_LABELS[c.status]}</Badge>
@@ -49,22 +49,22 @@ export default function CampaignTable({ campaigns }: { campaigns: BrandCampaign[
                   {c.budgetCap != null && c.budgetCap > 0 ? (
                     <div className="min-w-[150px]">
                       <ProgressBar pct={(c.spend / c.budgetCap) * 100} />
-                      <div className="mt-1.5 text-xs text-white/60">
+                      <div className="mt-1.5 text-xs text-ink-soft">
                         {formatMoney(c.spend)}{" "}
-                        <span className="text-white/30">of {formatMoney(c.budgetCap)}</span>
+                        <span className="text-ink-faint">of {formatMoney(c.budgetCap)}</span>
                       </div>
                     </div>
                   ) : (
                     <div>
-                      <div className="text-xs text-white/40">No cap</div>
-                      <div className="mt-0.5 text-xs text-white/60">
+                      <div className="text-xs text-ink-faint">No cap</div>
+                      <div className="mt-0.5 text-xs text-ink-soft">
                         {formatMoney(c.spend)} spent
                       </div>
                     </div>
                   )}
                 </td>
-                <td className="px-4 py-3 text-white/80">{formatCompact(c.totalViews)}</td>
-                <td className="px-4 py-3 text-white/80">{c.clipCount}</td>
+                <td className="px-4 py-3 text-ink-soft">{formatCompact(c.totalViews)}</td>
+                <td className="px-4 py-3 text-ink-soft">{c.clipCount}</td>
               </tr>
             ))}
           </tbody>

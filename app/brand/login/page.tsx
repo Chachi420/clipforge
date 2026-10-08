@@ -2,7 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import ThemeToggle from "@/components/ThemeToggle";
 import { useRouter } from "next/navigation";
 
 const isLive = Boolean(
@@ -39,37 +40,40 @@ export default function BrandLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-base-950 px-4">
-      <div className="w-full max-w-md rounded-3xl border border-white/10 bg-base-850 p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-accent text-2xl font-black text-white">C</div>
-        <h1 className="text-2xl font-black">Brand sign in</h1>
-        <p className="mt-2 text-sm text-white/55">
+    <div className="relative flex min-h-screen items-center justify-center bg-paper px-4">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
+      <Card className="w-full max-w-md p-8 text-center">
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-lime text-2xl font-black text-ink">C</div>
+        <h1 className="display text-2xl">Brand sign in</h1>
+        <p className="mt-2 text-sm text-ink-soft">
           Access your ClipForge brand dashboard — campaigns, verified views, billing.
         </p>
         <div className="mt-8">
-          <Button onClick={signIn} disabled={loading} className="w-full py-3">
+          <Button onClick={signIn} disabled={loading} variant="lime" className="w-full py-3">
             <GoogleLogo /> {loading ? "Redirecting…" : "Continue with Google"}
           </Button>
         </div>
-        <p className="mt-6 text-xs text-white/35">
+        <p className="mt-6 text-xs text-ink-faint">
           Brand accounts are provisioned by our team. New here?{" "}
-          <Link href="/brand/request" className="font-semibold text-white/70 hover:text-white">
+          <Link href="/brand/request" className="font-semibold text-lime-deep hover:text-ink">
             Request brand access
           </Link>
           .
         </p>
         {!isLive && (
-          <p className="mt-4 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-300">
+          <p className="mt-4 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
             Demo mode: Supabase isn&apos;t configured, so this signs you into a demo brand dashboard.
           </p>
         )}
-        <div className="mt-6 border-t border-white/10 pt-4 text-xs text-white/40">
+        <div className="mt-6 border-t border-line/10 pt-4 text-xs text-ink-faint">
           Are you a clipper?{" "}
-          <Link href="/login" className="font-semibold text-white/70 hover:text-white">
+          <Link href="/login" className="font-semibold text-ink-soft hover:text-ink">
             Sign in as a clipper →
           </Link>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

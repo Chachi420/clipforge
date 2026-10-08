@@ -7,7 +7,7 @@ import {
   getViewsTimeseries,
 } from "@/lib/brand-db";
 import { getBounties } from "@/lib/db";
-import { Badge, Card, Stat } from "@/components/ui";
+import { Badge, NightCard, Stat } from "@/components/ui";
 import { CAMPAIGN_STATUS_LABELS, type CampaignStatus } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
 import PauseResumeButton from "./PauseResumeButton";
@@ -46,8 +46,8 @@ export default async function BrandCampaignDetailPage({
       {/* Header */}
       <div className="flex flex-wrap items-center gap-3">
         <div className="min-w-0">
-          <h1 className="truncate text-2xl font-bold text-white">{campaign.name}</h1>
-          <div className="mt-1.5 flex flex-wrap items-center gap-2">
+          <h1 className="display truncate text-3xl">{campaign.name}</h1>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <Badge tone={STATUS_TONES[campaign.status]}>
               {CAMPAIGN_STATUS_LABELS[campaign.status]}
             </Badge>
@@ -63,13 +63,13 @@ export default async function BrandCampaignDetailPage({
       </div>
 
       {/* KPI row */}
-      <Card className="grid grid-cols-2 gap-6 p-6 sm:grid-cols-5">
-        <Stat label="Verified views" value={formatCompact(campaign.totalViews)} />
-        <Stat label="Spend" value={formatMoney(campaign.spend)} />
-        <Stat label="eCPM" value={formatMoney(ecpm)} sub="spend per 1k views" />
-        <Stat label="Clips live" value={String(campaign.clipCount)} />
-        <Stat label="Clippers" value={String(campaign.clipperCount)} />
-      </Card>
+      <NightCard className="grid grid-cols-2 gap-6 p-6 sm:grid-cols-5">
+        <Stat dark label="Verified views" value={formatCompact(campaign.totalViews)} />
+        <Stat dark label="Spend" value={formatMoney(campaign.spend)} />
+        <Stat dark label="eCPM" value={formatMoney(ecpm)} sub="spend per 1k views" />
+        <Stat dark label="Clips live" value={String(campaign.clipCount)} />
+        <Stat dark label="Clippers" value={String(campaign.clipperCount)} />
+      </NightCard>
 
       {/* Views chart */}
       <ViewsChart data={timeseries} />

@@ -46,8 +46,8 @@ export default async function BrandCampaignsPage({
     <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Campaigns</h1>
-          <p className="mt-1 text-sm text-white/50">
+          <h1 className="display text-3xl">Campaigns</h1>
+          <p className="mt-1 text-sm text-ink-soft">
             Every brief you have submitted, across all statuses.
           </p>
         </div>
@@ -61,8 +61,8 @@ export default async function BrandCampaignsPage({
             href={t.key === "all" ? "/brand/campaigns" : `/brand/campaigns?status=${t.key}`}
             className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
               t.key === activeKey
-                ? "bg-white/10 text-white"
-                : "text-white/50 hover:bg-white/5 hover:text-white"
+                ? "bg-lime text-ink shadow-card"
+                : "text-ink-soft hover:bg-ink/5 hover:text-ink"
             }`}
           >
             {t.label}

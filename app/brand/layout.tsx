@@ -21,7 +21,7 @@ export default async function BrandLayout({ children }: { children: React.ReactN
 
   if (!isLive()) {
     return (
-      <div className="flex min-h-screen bg-base-950">
+      <div className="flex min-h-screen bg-paper">
         <div className="hidden lg:block">
           <BrandSidebar
             brand={{ name: "Demo Brand", contactEmail: "brand@example.com", logoUrl: "" }}
@@ -45,7 +45,7 @@ export default async function BrandLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="flex min-h-screen bg-base-950">
+    <div className="flex min-h-screen bg-paper">
       <div className="hidden lg:block">
         <BrandSidebar brand={brand} />
       </div>

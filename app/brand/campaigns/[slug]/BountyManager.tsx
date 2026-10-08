@@ -77,7 +77,7 @@ export default function BountyManager({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-white">{bounties.length} bounties</h2>
+        <h2 className="text-sm font-semibold text-ink">{bounties.length} bounties</h2>
         <Button onClick={() => setShowForm((s) => !s)} variant={showForm ? "ghost" : "primary"}>
           {showForm ? "Cancel" : "New bounty"}
         </Button>
@@ -131,7 +131,7 @@ export default function BountyManager({
                 />
               </Field>
             </div>
-            {error && <p className="text-sm text-red-400 sm:col-span-2">{error}</p>}
+            {error && <p className="text-sm text-red-600 dark:text-red-400 sm:col-span-2">{error}</p>}
             <div className="sm:col-span-2">
               <Button type="submit" disabled={busy}>
                 {busy ? "Creating…" : "Create bounty"}
@@ -153,16 +153,16 @@ export default function BountyManager({
               <div className="flex flex-wrap items-center gap-3">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="truncate font-semibold text-white">{b.name}</h3>
+                    <h3 className="truncate font-semibold text-ink">{b.name}</h3>
                     <span
                       className={`text-[11px] font-semibold uppercase tracking-wide ${
-                        b.isActive ? "text-emerald-400" : "text-white/40"
+                        b.isActive ? "text-emerald-600 dark:text-emerald-400" : "text-ink-faint"
                       }`}
                     >
                       {b.isActive ? "Active" : "Paused"}
                     </span>
                   </div>
-                  <p className="mt-1 text-sm text-white/50">
+                  <p className="mt-1 text-sm text-ink-soft">
                     {formatMoney(b.ratePer100k)} / 100K views · {b.clipCount} clips ·{" "}
                     {formatCompact(b.totalViews)} views
                     {b.budgetCap ? ` · cap ${formatMoney(b.budgetCap)}` : ""}
@@ -173,7 +173,7 @@ export default function BountyManager({
                     </div>
                   ) : null}
                 </div>
-                <label className="flex cursor-pointer items-center gap-2 text-xs text-white/60">
+                <label className="flex cursor-pointer items-center gap-2 text-xs text-ink-soft">
                   <input
                     type="checkbox"
                     checked={b.isActive}
@@ -184,14 +184,14 @@ export default function BountyManager({
                 </label>
                 <button
                   onClick={() => handleDelete(b)}
-                  className="rounded-lg p-2 text-white/40 hover:bg-red-500/10 hover:text-red-400"
+                  className="rounded-lg p-2 text-ink-faint hover:bg-red-500/10 hover:text-red-600 dark:text-red-400"
                   aria-label={`Delete ${b.name}`}
                 >
                   <Trash2 size={16} />
                 </button>
               </div>
               {b.requirements && (
-                <p className="mt-3 border-t border-white/10 pt-3 text-sm text-white/55">
+                <p className="mt-3 border-t border-line/10 pt-3 text-sm text-ink-soft">
                   {b.requirements}
                 </p>
               )}

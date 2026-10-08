@@ -32,10 +32,10 @@ export default function BrandSettingsForm({ brand }: { brand: Brand }) {
   return (
     <Card className="space-y-5 p-6">
       {error && (
-        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
+        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
       )}
       {success && (
-        <p className="rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">
+        <p className="rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-600 dark:text-emerald-300">
           {success}
         </p>
       )}

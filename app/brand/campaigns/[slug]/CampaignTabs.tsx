@@ -40,15 +40,15 @@ export default function CampaignTabs({
 
   return (
     <div>
-      <div className="mb-4 flex gap-1 overflow-x-auto border-b border-white/10">
+      <div className="mb-4 flex gap-1 overflow-x-auto border-b border-line/10">
         {TABS.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`whitespace-nowrap px-4 py-2.5 text-sm font-semibold transition ${
               tab === t
-                ? "border-b-2 border-accent text-white"
-                : "border-b-2 border-transparent text-white/50 hover:text-white/80"
+                ? "border-b-2 border-lime-deep text-ink"
+                : "border-b-2 border-transparent text-ink-faint hover:text-ink"
             }`}
           >
             {t}
@@ -78,7 +78,7 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[720px] text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-left text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            <tr className="divide-x divide-line/5 border-b border-line/10 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3">Platform</th>
               <th className="px-4 py-3">Account</th>
               <th className="px-4 py-3 text-right">Views</th>
@@ -88,11 +88,11 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
               <th className="px-4 py-3">Post</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-line/10">
             {clips.map((c) => (
               <tr
                 key={c.id}
-                className={`border-b border-white/5 last:border-0 hover:bg-white/[0.03] ${
+                className={`transition hover:bg-ink/[0.03] ${
                   c.trackingStatus === "flagged"
                     ? "bg-red-500/[0.07]"
                     : c.trackingStatus === "pending_review"
@@ -101,17 +101,17 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
                 }`}
               >
                 <td className="px-4 py-3">
-                  <span className="flex items-center gap-2 text-white/80">
+                  <span className="flex items-center gap-2 text-ink-soft">
                     <PlatformDot platform={c.platform} />
                     {PLATFORM_LABELS[c.platform]}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-white/80">@{c.accountHandle}</td>
-                <td className="px-4 py-3 text-right font-semibold text-white">
+                <td className="px-4 py-3 text-ink-soft">@{c.accountHandle}</td>
+                <td className="px-4 py-3 text-right font-semibold text-ink">
                   {formatCompact(c.views)}
                 </td>
-                <td className="px-4 py-3 text-right text-white/70">{formatCompact(c.likes)}</td>
-                <td className="px-4 py-3 text-right text-white/70">{c.engagementPct}%</td>
+                <td className="px-4 py-3 text-right text-ink-soft">{formatCompact(c.likes)}</td>
+                <td className="px-4 py-3 text-right text-ink-soft">{c.engagementPct}%</td>
                 <td className="px-4 py-3">
                   <Badge tone={TRACKING_TONES[c.trackingStatus]}>
                     {TRACKING_LABELS[c.trackingStatus]}
@@ -122,7 +122,7 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
                     href={c.postUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm text-sky-400 hover:text-sky-300"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-lime-deep hover:text-ink"
                   >
                     View <ExternalLink size={13} />
                   </a>
@@ -150,22 +150,22 @@ function ClippersTab({ clippers }: { clippers: CampaignClipperRow[] }) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[560px] text-sm">
           <thead>
-            <tr className="border-b border-white/10 text-left text-[11px] font-semibold uppercase tracking-wider text-white/40">
+            <tr className="border-b border-line/10 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3">Clipper</th>
               <th className="px-4 py-3 text-right">Clips</th>
               <th className="px-4 py-3 text-right">Views</th>
               <th className="px-4 py-3 text-right">Earnings</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-line/10">
             {clippers.map((c) => (
-              <tr key={c.userId} className="border-b border-white/5 last:border-0 hover:bg-white/[0.03]">
-                <td className="px-4 py-3 font-medium text-white">{c.displayName}</td>
-                <td className="px-4 py-3 text-right text-white/70">{c.clips}</td>
-                <td className="px-4 py-3 text-right font-semibold text-white">
+              <tr key={c.userId} className="transition hover:bg-ink/[0.03]">
+                <td className="px-4 py-3 font-medium text-ink">{c.displayName}</td>
+                <td className="px-4 py-3 text-right text-ink-soft">{c.clips}</td>
+                <td className="px-4 py-3 text-right font-semibold text-ink">
                   {formatCompact(c.views)}
                 </td>
-                <td className="px-4 py-3 text-right font-semibold text-emerald-400">
+                <td className="px-4 py-3 text-right font-semibold text-emerald-600 dark:text-emerald-400">
                   {formatMoney(c.earnings)}
                 </td>
               </tr>

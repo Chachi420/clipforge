@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Clapperboard, CreditCard, Home, Settings } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const NAV = [
   { href: "/brand", label: "Overview", icon: Home },
@@ -17,9 +18,9 @@ export default function BrandSidebar({
 }) {
   const pathname = usePathname();
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-white/10 bg-base-900 px-4 py-6">
+    <aside className="glass flex h-screen w-64 shrink-0 flex-col border-r border-line/10 px-4 py-6">
       <Link href="/brand" className="mb-8 flex items-center gap-2 px-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-accent text-lg font-black text-white">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime text-lg font-black text-ink">
           {brand.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={brand.logoUrl} alt="" className="h-9 w-9 rounded-xl object-cover" />
@@ -27,8 +28,8 @@ export default function BrandSidebar({
             "C"
           )}
         </span>
-        <span className="text-lg font-black tracking-tight text-white">
-          CLIPFORGE <span className="ml-1 rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-bold text-white/60">BRAND</span>
+        <span className="text-lg font-black tracking-tight text-ink">
+          CLIPFORGE <span className="ml-1 rounded bg-ink/10 px-1.5 py-0.5 text-[10px] font-bold text-ink-soft">BRAND</span>
         </span>
       </Link>
 
@@ -39,8 +40,10 @@ export default function BrandSidebar({
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-                active ? "bg-white/10 text-white" : "text-white/55 hover:bg-white/5 hover:text-white"
+              className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition ${
+                active
+                  ? "bg-lime font-semibold text-ink shadow-card"
+                  : "text-ink-soft hover:bg-ink/5 hover:text-ink"
               }`}
             >
               <Icon size={18} />
@@ -50,13 +53,21 @@ export default function BrandSidebar({
         })}
       </nav>
 
-      <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-accent/20 text-sm font-bold text-accent-soft">
-          {brand.name.slice(0, 1).toUpperCase()}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-white">{brand.name}</div>
-          <div className="truncate text-xs text-white/40">{brand.contactEmail}</div>
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-2">
+          <span className="text-xs font-semibold uppercase tracking-wider text-ink-faint">
+            Theme
+          </span>
+          <ThemeToggle />
+        </div>
+        <div className="flex items-center gap-3 rounded-2xl bg-ink/5 p-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-lime text-sm font-bold text-ink">
+            {brand.name.slice(0, 1).toUpperCase()}
+          </span>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-sm font-semibold text-ink">{brand.name}</div>
+            <div className="truncate text-xs text-ink-faint">{brand.contactEmail}</div>
+          </div>
         </div>
       </div>
     </aside>

@@ -8,8 +8,8 @@ export default async function NewCampaignBriefPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6 px-6 py-8">
       <div>
-        <h1 className="text-2xl font-bold text-white">New campaign brief</h1>
-        <p className="mt-1 text-sm text-white/50">
+        <h1 className="display text-3xl">New campaign brief</h1>
+        <p className="mt-1 text-sm text-ink-soft">
           Submit a brief — our team reviews and approves it (usually within 24h).
         </p>
       </div>

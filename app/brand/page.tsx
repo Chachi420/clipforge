@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Card, EmptyState, Stat } from "@/components/ui";
+import { EmptyState, NightCard, Stat } from "@/components/ui";
 import { requireBrand } from "@/lib/brand-actions";
 import { getBrandCampaigns, getBrandKpis } from "@/lib/brand-db";
 import { isLive } from "@/lib/db";
@@ -28,32 +28,42 @@ export default async function BrandOverviewPage() {
     <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">{brandName}</h1>
-          <p className="mt-1 text-sm text-white/50">
+          <h1 className="display text-3xl">{brandName}</h1>
+          <p className="mt-1 text-sm text-ink-soft">
             Spend, views and clips across your campaigns.
           </p>
         </div>
         <NewCampaignButton />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <Card className="p-5">
+      <NightCard className="p-6 sm:p-8">
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <Stat
+            dark
             label="Active campaigns"
             value={String(kpis.activeCampaigns)}
             sub="Live now"
           />
-        </Card>
-        <Card className="p-5">
-          <Stat label="Spend MTD" value={formatMoney(kpis.spendMtd)} sub="Verified views spend" />
-        </Card>
-        <Card className="p-5">
-          <Stat label="Verified views MTD" value={formatCompact(kpis.viewsMtd)} sub="This month" />
-        </Card>
-        <Card className="p-5">
-          <Stat label="Avg eCPM" value={formatMoney(kpis.avgEcpm)} sub="Per 1,000 views" />
-        </Card>
-      </div>
+          <Stat
+            dark
+            label="Spend MTD"
+            value={formatMoney(kpis.spendMtd)}
+            sub="Verified views spend"
+          />
+          <Stat
+            dark
+            label="Verified views MTD"
+            value={formatCompact(kpis.viewsMtd)}
+            sub="This month"
+          />
+          <Stat
+            dark
+            label="Avg eCPM"
+            value={formatMoney(kpis.avgEcpm)}
+            sub="Per 1,000 views"
+          />
+        </div>
+      </NightCard>
 
       {campaigns.length === 0 ? (
         <EmptyState
@@ -64,10 +74,10 @@ export default async function BrandOverviewPage() {
       ) : (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-white">Campaigns</h2>
+            <h2 className="font-display text-lg font-bold text-ink">Campaigns</h2>
             <Link
               href="/brand/campaigns"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-accent-soft hover:text-white"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-lime-deep hover:text-ink"
             >
               View all <ArrowRight size={14} />
             </Link>
