@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-base-950">
+    <div className="min-h-screen bg-paper text-ink">
       <main className="mx-auto max-w-6xl px-6 py-14">
-        <h1 className="text-4xl font-black text-white">Contact ClipForge</h1>
-        <p className="mt-3 max-w-2xl text-white/60">
+        <h1 className="display text-4xl md:text-5xl">Contact ClipForge</h1>
+        <p className="mt-3 max-w-2xl text-ink-soft">
           Questions, partnerships, or campaign inquiries — we reply within 2 business days.
         </p>
 
@@ -23,7 +23,7 @@ export default function ContactPage() {
 
         <FaqAccordion />
       </main>
-      <footer className="border-t border-white/10 py-8 text-center text-sm text-white/40">
+      <footer className="border-t border-line/10 py-8 text-center text-sm text-ink-faint">
         ClipForge — a demo rebuild for product research.
       </footer>
     </div>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { BookOpen, ChevronDown, Menu, X } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { DOCS_NAV, getDocsArticle } from "@/lib/docs-articles";
 
 export default function DocsShell({ slug }: { slug: string }) {
@@ -13,7 +14,7 @@ export default function DocsShell({ slug }: { slug: string }) {
     <nav className="space-y-6">
       {DOCS_NAV.map((section) => (
         <div key={section.title}>
-          <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-white/40">
+          <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-ink-faint">
             {section.title}
           </div>
           <ul className="space-y-1">
@@ -22,10 +23,10 @@ export default function DocsShell({ slug }: { slug: string }) {
                 <Link
                   href={a.slug === "welcome" ? "/docs" : `/docs/${a.slug}`}
                   onClick={() => setOpen(false)}
-                  className={`block rounded-lg px-3 py-2 text-sm transition ${
+                  className={`block rounded-xl px-3 py-2 text-sm transition ${
                     a.slug === slug
-                      ? "bg-accent/15 font-semibold text-accent-soft"
-                      : "text-white/60 hover:bg-white/5 hover:text-white"
+                      ? "bg-lime/15 font-semibold text-lime-deep"
+                      : "text-ink-soft hover:bg-ink/5 hover:text-ink"
                   }`}
                 >
                   {a.title}
@@ -39,45 +40,48 @@ export default function DocsShell({ slug }: { slug: string }) {
   );
 
   return (
-    <div className="min-h-screen bg-base-950">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <Link href="/" className="text-xl font-black tracking-tight">
-          CLIPFORGE
-        </Link>
-        <div className="flex gap-3">
-          <Link
-            href="/blog"
-            className="rounded-xl px-4 py-2 text-sm font-semibold text-white/70 hover:text-white"
-          >
-            Blog
+    <div className="min-h-screen bg-paper text-ink">
+      <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/70 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <Link href="/" className="font-display text-xl font-bold tracking-tight">
+            CLIPFORGE
           </Link>
-          <Link
-            href="/login"
-            className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-soft"
-          >
-            Start clipping
-          </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/blog"
+              className="text-sm font-semibold text-ink-soft hover:text-ink"
+            >
+              Blog
+            </Link>
+            <Link
+              href="/login"
+              className="pill bg-lime px-5 py-2.5 text-sm font-bold text-ink hover:bg-lime-soft"
+            >
+              Start clipping
+            </Link>
+          </div>
         </div>
       </nav>
 
       <main className="mx-auto max-w-6xl px-6 pb-20">
         <header className="flex items-center justify-between py-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-accent-soft">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-lime-deep">
               <BookOpen size={14} /> Docs
             </div>
-            <h1 className="mt-2 text-3xl font-black">ClipForge Guides</h1>
+            <h1 className="display mt-2 text-3xl md:text-4xl">ClipForge Guides</h1>
           </div>
           <button
             onClick={() => setOpen(!open)}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/15 px-4 py-2 text-sm font-semibold text-white/70 md:hidden"
+            className="inline-flex items-center gap-2 rounded-xl border border-line/15 px-4 py-2 text-sm font-semibold text-ink-soft md:hidden"
           >
             {open ? <X size={16} /> : <Menu size={16} />} Contents
           </button>
         </header>
 
         {open && (
-          <div className="mb-6 rounded-2xl border border-white/10 bg-base-850 p-6 md:hidden">
+          <div className="glass mb-6 rounded-3xl p-6 md:hidden">
             {nav}
           </div>
         )}
@@ -90,21 +94,21 @@ export default function DocsShell({ slug }: { slug: string }) {
           <article className="min-w-0 flex-1">
             {article ? (
               <>
-                <div className="text-xs font-bold uppercase tracking-wider text-white/40">
+                <div className="text-xs font-bold uppercase tracking-wider text-ink-faint">
                   {article.section}
                 </div>
-                <h2 className="mt-2 text-3xl font-black">{article.title}</h2>
+                <h2 className="display mt-2 text-3xl md:text-4xl">{article.title}</h2>
                 <div className="mt-2">{article.body}</div>
 
-                <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-6">
+                <div className="mt-12 flex items-center justify-between border-t border-line/10 pt-6">
                   <DocPager slug={slug} dir={-1} />
                   <DocPager slug={slug} dir={1} />
                 </div>
               </>
             ) : (
               <div>
-                <h2 className="text-2xl font-black">Article not found</h2>
-                <p className="mt-2 text-white/60">
+                <h2 className="display text-2xl">Article not found</h2>
+                <p className="mt-2 text-ink-soft">
                   Pick a guide from the contents to keep reading.
                 </p>
               </div>
@@ -113,7 +117,7 @@ export default function DocsShell({ slug }: { slug: string }) {
         </div>
       </main>
 
-      <footer className="border-t border-white/10 py-8 text-center text-sm text-white/40">
+      <footer className="border-t border-line/10 py-8 text-center text-sm text-ink-faint">
         ClipForge — a demo rebuild for product research.
       </footer>
     </div>
@@ -129,7 +133,7 @@ function DocPager({ slug, dir }: { slug: string; dir: -1 | 1 }) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-2 text-sm font-semibold text-white/50 hover:text-accent-soft"
+      className="inline-flex items-center gap-2 text-sm font-semibold text-ink-faint hover:text-lime-deep"
     >
       {dir === -1 ? (
         <>

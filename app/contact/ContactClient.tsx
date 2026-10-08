@@ -41,8 +41,8 @@ export function ContactForm() {
 
   return (
     <Card className="p-8">
-      <h2 className="text-xl font-bold text-white">Send us a message</h2>
-      <p className="mt-1 text-sm text-white/60">
+      <h2 className="font-display text-xl font-bold tracking-tight text-ink">Send us a message</h2>
+      <p className="mt-1 text-sm text-ink-soft">
         This opens your email app with everything filled in — nothing is sent automatically.
       </p>
       <form onSubmit={onSubmit} className="mt-6 space-y-5">
@@ -74,7 +74,7 @@ export function ContactForm() {
             onChange={(e) => setTopic(e.target.value as (typeof TOPICS)[number])}
           >
             {TOPICS.map((t) => (
-              <option key={t} value={t} className="bg-base-900">
+              <option key={t} value={t} className="bg-surface text-ink">
                 {t}
               </option>
             ))}
@@ -100,7 +100,7 @@ export function FaqAccordion() {
 
   return (
     <div className="mt-10">
-      <h2 className="text-xl font-bold text-white">Frequently asked questions</h2>
+      <h2 className="font-display text-xl font-bold tracking-tight text-ink">Frequently asked questions</h2>
       <div className="mt-4 space-y-3">
         {FAQS.map((f, i) => (
           <Card key={i} className="overflow-hidden">
@@ -110,11 +110,11 @@ export function FaqAccordion() {
               aria-expanded={open === i}
               className="flex w-full items-center justify-between gap-4 p-5 text-left"
             >
-              <span className="text-sm font-semibold text-white">{f.q}</span>
-              <span className="shrink-0 text-lg text-white/50">{open === i ? "−" : "+"}</span>
+              <span className="text-sm font-semibold text-ink">{f.q}</span>
+              <span className="shrink-0 text-lg text-ink-faint">{open === i ? "−" : "+"}</span>
             </button>
             {open === i && (
-              <p className="px-5 pb-5 text-sm leading-relaxed text-white/60">{f.a}</p>
+              <p className="px-5 pb-5 text-sm leading-relaxed text-ink-soft">{f.a}</p>
             )}
           </Card>
         ))}
@@ -127,25 +127,25 @@ export function ContactCards() {
   return (
     <div className="mt-8 grid gap-5 sm:grid-cols-2">
       <Card className="p-6">
-        <h2 className="text-base font-bold text-white">Email us</h2>
-        <p className="mt-1 text-sm text-white/60">
+        <h2 className="text-base font-bold text-ink">Email us</h2>
+        <p className="mt-1 text-sm text-ink-soft">
           We reply within 2 business days.
         </p>
         <a
           href={`mailto:${SUPPORT_EMAIL}`}
-          className="mt-4 inline-block text-sm font-semibold text-accent hover:underline"
+          className="mt-4 inline-block text-sm font-semibold text-lime-deep hover:underline"
         >
           {SUPPORT_EMAIL}
         </a>
       </Card>
       <Card className="p-6">
-        <h2 className="text-base font-bold text-white">Running a brand?</h2>
-        <p className="mt-1 text-sm text-white/60">
+        <h2 className="text-base font-bold text-ink">Running a brand?</h2>
+        <p className="mt-1 text-sm text-ink-soft">
           Request a campaign walkthrough and submit your first brief.
         </p>
         <Link
           href="/brand/login"
-          className="mt-4 inline-block text-sm font-semibold text-accent hover:underline"
+          className="mt-4 inline-block text-sm font-semibold text-lime-deep hover:underline"
         >
           Go to the brand portal →
         </Link>
