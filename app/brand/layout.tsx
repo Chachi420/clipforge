@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import BrandSidebar from "@/components/BrandSidebar";
 import BrandMobileNav from "@/components/BrandMobileNav";
 import { requireBrand } from "@/lib/brand-actions";
@@ -10,8 +11,14 @@ export const dynamic = "force-dynamic";
  * Brand shell: hard role separation. Only profiles.role='brand' get in;
  * everyone else is sent to the clipper dashboard. In demo mode (no Supabase)
  * renders a demo brand shell so `next build` stays green.
+ * The login page renders bare (no shell, no guard).
  */
 export default async function BrandLayout({ children }: { children: React.ReactNode }) {
+  const pathname = headers().get("x-pathname");
+  if (pathname === "/brand/login") {
+    return <>{children}</>;
+  }
+
   if (!isLive()) {
     return (
       <div className="flex min-h-screen bg-base-950">

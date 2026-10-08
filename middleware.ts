@@ -9,7 +9,15 @@ export async function middleware(request: NextRequest) {
   // Demo mode (no Supabase configured): let everything through.
   if (!hasSupabase) return NextResponse.next();
 
-  const response = NextResponse.next({ request });
+  const { pathname } = request.nextUrl;
+
+  // Expose the pathname to server components (layouts can't read it directly).
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-pathname", pathname);
+
+  const response = NextResponse.next({
+    request: { headers: requestHeaders },
+  });
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -26,7 +34,6 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { pathname } = request.nextUrl;
   const { data: { user } } = await supabase.auth.getUser();
 
   if (!user && (pathname.startsWith("/dashboard") ||
