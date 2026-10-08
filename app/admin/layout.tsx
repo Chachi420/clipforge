@@ -15,8 +15,10 @@ function isAdminEmail(email: string | undefined | null): boolean {
 
 const NAV = [
   { href: "/admin", label: "Overview" },
+  { href: "/admin/campaigns", label: "Campaigns" },
   { href: "/admin/verifications", label: "Verifications" },
   { href: "/admin/payouts", label: "Payouts" },
+  { href: "/admin/billing", label: "Billing" },
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
