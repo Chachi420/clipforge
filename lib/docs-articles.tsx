@@ -12,11 +12,11 @@ export type DocsArticle = {
   body: ReactNode;
 };
 
-const h2 = "mt-8 text-xl font-bold text-white";
-const p = "mt-3 leading-relaxed text-white/70";
-const ul = "mt-3 list-disc space-y-2 pl-6 text-white/70 marker:text-accent-soft";
-const ol = "mt-3 list-decimal space-y-2 pl-6 text-white/70 marker:font-bold marker:text-accent-soft";
-const strong = "text-white";
+const h2 = "mt-8 text-xl font-bold text-ink";
+const p = "mt-3 leading-relaxed text-ink-soft";
+const ul = "mt-3 list-disc space-y-2 pl-6 text-ink-soft marker:text-lime-deep";
+const ol = "mt-3 list-decimal space-y-2 pl-6 text-ink-soft marker:font-bold marker:text-lime-deep";
+const strong = "text-ink";
 
 export const DOCS_NAV: DocsSection[] = [
   {

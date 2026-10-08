@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 export default function TermsOfServicePage() {
   return (
     <article>
-      <h1 className="text-4xl font-black text-white">Terms of Service</h1>
-      <p className="mt-3 text-sm text-white/40">Last updated: October 2026 · Beta terms</p>
+      <h1 className="display text-4xl">Terms of Service</h1>
+      <p className="mt-3 text-sm text-ink-faint">Last updated: October 2026 · Beta terms</p>
 
       <h2 className={h2Cls}>1. The service</h2>
       <p className={pCls}>

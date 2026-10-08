@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 export default function PrivacyPolicyPage() {
   return (
     <article>
-      <h1 className="text-4xl font-black text-white">Privacy Policy</h1>
-      <p className="mt-3 text-sm text-white/40">Last updated: October 2026 · Beta policy</p>
+      <h1 className="display text-4xl">Privacy Policy</h1>
+      <p className="mt-3 text-sm text-ink-faint">Last updated: October 2026 · Beta policy</p>
 
       <h2 className={h2Cls}>What we collect</h2>
       <p className={pCls}>To run the marketplace, we collect:</p>
@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
       <p className={pCls}>
         You can update your profile at any time from your dashboard. To request a copy or
         deletion of your data, email{" "}
-        <a href="mailto:support@clipforge.example" className="font-semibold text-accent hover:underline">
+        <a href="mailto:support@clipforge.example" className="font-semibold text-lime-deep hover:underline">
           support@clipforge.example
         </a>{" "}
         from your account email. We&apos;ll respond within 2 business days. Note that we may

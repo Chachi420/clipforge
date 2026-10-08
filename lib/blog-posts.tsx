@@ -18,9 +18,9 @@ export const BLOG_CATEGORIES: BlogCategory[] = [
   "Tools",
 ];
 
-const h2 = "mt-10 text-2xl font-bold text-white";
-const p = "mt-4 leading-relaxed text-white/70";
-const ul = "mt-4 list-disc space-y-2 pl-6 text-white/70 marker:text-accent-soft";
+const h2 = "mt-10 text-2xl font-bold text-ink";
+const p = "mt-4 leading-relaxed text-ink-soft";
+const ul = "mt-4 list-disc space-y-2 pl-6 text-ink-soft marker:text-lime-deep";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
@@ -43,35 +43,35 @@ export const BLOG_POSTS: BlogPost[] = [
         <p className={p}>
           On ClipForge the whole loop looks like this:
         </p>
-        <ol className="mt-4 list-decimal space-y-3 pl-6 text-white/70 marker:font-bold marker:text-accent-soft">
+        <ol className="mt-4 list-decimal space-y-3 pl-6 text-ink-soft marker:font-bold marker:text-lime-deep">
           <li>
-            <strong className="text-white">Sign up.</strong> Create your account with
+            <strong className="text-ink">Sign up.</strong> Create your account with
             Google — it takes under a minute and there is no fee to join.
           </li>
           <li>
-            <strong className="text-white">Verify your accounts.</strong> Add the social
+            <strong className="text-ink">Verify your accounts.</strong> Add the social
             accounts you post from (TikTok, Instagram, YouTube, X). ClipForge gives you a
             unique verification code to put in each account&apos;s bio; a bot checks the
             bio for the code and confirms the account has at least 1,000 followers. Once
             verified, the account shows as Active.
           </li>
           <li>
-            <strong className="text-white">Join a campaign.</strong> Browse live campaigns
+            <strong className="text-ink">Join a campaign.</strong> Browse live campaigns
             in the dashboard. Each one shows its rate per 100K views, the platforms it
             accepts, and any bounties — join the ones that fit your accounts.
           </li>
           <li>
-            <strong className="text-white">Post your clips.</strong> Make short videos
+            <strong className="text-ink">Post your clips.</strong> Make short videos
             about the campaign following its brief (what to show, what to say, what to
             avoid).
           </li>
           <li>
-            <strong className="text-white">Submit the URL.</strong> Paste the link to each
+            <strong className="text-ink">Submit the URL.</strong> Paste the link to each
             published post into ClipForge. It has to come from one of your Active,
             verified accounts — links from unverified accounts are rejected automatically.
           </li>
           <li>
-            <strong className="text-white">Earn.</strong> Views are re-scanned
+            <strong className="text-ink">Earn.</strong> Views are re-scanned
             periodically and your earnings climb as they come in. When a payout cycle
             closes and views are verified, your payout goes out via PayPal or crypto.
           </li>
@@ -127,25 +127,25 @@ export const BLOG_POSTS: BlogPost[] = [
         <h2 className={h2}>Rate tiers: what campaigns pay per 100K views</h2>
         <p className={p}>
           ClipForge campaigns price payouts per 100,000 verified views. Across the
-          industry, rates tend to fall into rough bands. These are <strong className="text-white">ranges, not promises</strong> — every
+          industry, rates tend to fall into rough bands. These are <strong className="text-ink">ranges, not promises</strong> — every
           campaign sets its own rate, and the rate is shown up front before you join:
         </p>
         <ul className={ul}>
           <li>
-            <strong className="text-white">$10–30 per 100K views — entry tier.</strong>{" "}
+            <strong className="text-ink">$10–30 per 100K views — entry tier.</strong>{" "}
             High-volume campaigns from smaller brands. Easy briefs, lots of competition.
           </li>
           <li>
-            <strong className="text-white">$30–75 per 100K views — standard tier.</strong>{" "}
+            <strong className="text-ink">$30–75 per 100K views — standard tier.</strong>{" "}
             The most common band. Established brands with real budgets and clear briefs.
           </li>
           <li>
-            <strong className="text-white">$75–150 per 100K views — premium tier.</strong>{" "}
+            <strong className="text-ink">$75–150 per 100K views — premium tier.</strong>{" "}
             Bigger brands, stricter briefs, sometimes niche audiences or specific
             platforms.
           </li>
           <li>
-            <strong className="text-white">$150–300+ per 100K views — high-paying tier.</strong>{" "}
+            <strong className="text-ink">$150–300+ per 100K views — high-paying tier.</strong>{" "}
             Rare. Usually time-limited pushes, launches, or campaigns that need a very
             specific style of clip.
           </li>
@@ -176,7 +176,7 @@ export const BLOG_POSTS: BlogPost[] = [
         </p>
         <h2 className={h2}>A realistic timeline</h2>
         <p className={p}>
-          Here&apos;s the part most guides skip: <strong className="text-white">most beginners won&apos;t make thousands in
+          Here&apos;s the part most guides skip: <strong className="text-ink">most beginners won&apos;t make thousands in
           month one.</strong> A realistic first month looks like learning the dashboard,
           posting your first 10–20 clips, and seeing a handful of them cross their view
           thresholds — maybe your first small payout, maybe not yet. Clippers who treat
@@ -244,22 +244,22 @@ export const BLOG_POSTS: BlogPost[] = [
         <h2 className={h2}>What actually matters (more than the app)</h2>
         <ul className={ul}>
           <li>
-            <strong className="text-white">Captions, always.</strong> Most short-form
+            <strong className="text-ink">Captions, always.</strong> Most short-form
             video is watched on mute. Burned-in captions keep viewers watching — and
             watch time is what the algorithms reward.
           </li>
           <li>
-            <strong className="text-white">A hook in the first 2 seconds.</strong> The
+            <strong className="text-ink">A hook in the first 2 seconds.</strong> The
             opening frame and first line decide whether someone swipes. State the payoff,
             ask the question, or show the surprising moment up front.
           </li>
           <li>
-            <strong className="text-white">Pacing: cut the dead air.</strong> Remove
+            <strong className="text-ink">Pacing: cut the dead air.</strong> Remove
             pauses, ums, and slow intros. A 20-second clip should feel like it
             couldn&apos;t be 18.
           </li>
           <li>
-            <strong className="text-white">Native 9:16.</strong> Film and export vertical
+            <strong className="text-ink">Native 9:16.</strong> Film and export vertical
             at 1080×1920. Letterboxed or sideways clips look amateur and get
             skipped.
           </li>
@@ -326,7 +326,7 @@ export const BLOG_POSTS: BlogPost[] = [
         </p>
         <h2 className={h2}>Keep posts public until payout</h2>
         <p className={p}>
-          This is the rule that protects your money: <strong className="text-white">do not delete, privatize, or
+          This is the rule that protects your money: <strong className="text-ink">do not delete, privatize, or
           unlist a submitted clip until the payout cycle closes.</strong> ClipForge
           re-scans views periodically to verify earnings, and a clip it can&apos;t see
           is a clip it can&apos;t pay you for. Leave every submitted post public until

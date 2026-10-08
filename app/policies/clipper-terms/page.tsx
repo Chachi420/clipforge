@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 export default function ClipperTermsPage() {
   return (
     <article>
-      <h1 className="text-4xl font-black text-white">Clipper Terms</h1>
-      <p className="mt-3 text-sm text-white/40">Last updated: October 2026 · Beta terms</p>
+      <h1 className="display text-4xl">Clipper Terms</h1>
+      <p className="mt-3 text-sm text-ink-faint">Last updated: October 2026 · Beta terms</p>
       <p className={pCls}>
         These terms apply to everyone earning as a clipper on ClipForge, on top of the
         general Terms of Service.
