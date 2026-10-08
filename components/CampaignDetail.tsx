@@ -5,7 +5,7 @@ import { ArrowLeft, Share2, Upload } from "lucide-react";
 import Header from "@/components/Header";
 import UploadClipDialog from "@/components/UploadClipDialog";
 import { ClipTable } from "@/components/ClipTable";
-import { Badge, Button, Card, ProgressBar, Stat, inputCls } from "@/components/ui";
+import { Badge, Button, Card, NightCard, ProgressBar, Stat, inputCls } from "@/components/ui";
 import { joinCampaign } from "@/lib/actions";
 import { PAYOUT_METHOD_LABELS, type Bounty, type Campaign, type Clip, type PayoutCycle } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
@@ -45,7 +45,7 @@ export default function CampaignDetail({
       <Header title={campaign.name} subtitle="Campaign details" />
       <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
         <div className="flex flex-wrap items-center gap-3">
-          <Link href="/dashboard/campaigns" className="flex items-center gap-1.5 text-sm text-white/55 hover:text-white">
+          <Link href="/dashboard/campaigns" className="flex items-center gap-1.5 text-sm text-ink-soft hover:text-ink">
             <ArrowLeft size={16} /> Campaigns
           </Link>
           <Badge tone={campaign.status === "active" ? "green" : "amber"}>{campaign.status}</Badge>
@@ -60,19 +60,19 @@ export default function CampaignDetail({
               {joining ? "Joining…" : "Join campaign"}
             </Button>
           )}
-          <Button onClick={() => setShowUpload(true)} disabled={!joined}>
+          <Button variant="lime" onClick={() => setShowUpload(true)} disabled={!joined}>
             <Upload size={15} /> Upload clip
           </Button>
         </div>
         {!joined && campaign.status === "active" && (
-          <div className="rounded-2xl border border-accent/30 bg-accent/5 p-4 text-sm text-white/70">
+          <div className="rounded-3xl border border-lime/30 bg-lime/10 p-4 text-sm text-ink-soft">
             Join this campaign to start submitting clips and earning.
           </div>
         )}
 
         <div className="grid gap-4 md:grid-cols-2">
           <Card className="p-6">
-            <h3 className="mb-4 font-bold">Campaign info</h3>
+            <h3 className="mb-4 font-bold text-ink">Campaign info</h3>
             <div className="grid grid-cols-2 gap-4">
               <Stat label="Rate per 100K" value={`$${campaign.ratePer100k}–$${Math.max(campaign.ratePer100k, 300)}`} />
               <Stat label="Active bounties" value={`${bounties.filter((b) => b.isActive).length}`} />
@@ -81,72 +81,72 @@ export default function CampaignDetail({
             </div>
           </Card>
           <Card className="p-6">
-            <h3 className="mb-4 font-bold">Campaign details</h3>
+            <h3 className="mb-4 font-bold text-ink">Campaign details</h3>
             <dl className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-white/45">Program structure</dt>
-                <dd className="text-right text-white/80">{campaign.payoutMode === "pot" ? "Pot-style proportional payout" : "Flat rate per verified view"}</dd>
+                <dt className="text-ink-faint">Program structure</dt>
+                <dd className="text-right text-ink-soft">{campaign.payoutMode === "pot" ? "Pot-style proportional payout" : "Flat rate per verified view"}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-white/45">Payment method</dt>
-                <dd className="text-white/80">{PAYOUT_METHOD_LABELS[campaign.payoutMethod]}</dd>
+                <dt className="text-ink-faint">Payment method</dt>
+                <dd className="text-ink-soft">{PAYOUT_METHOD_LABELS[campaign.payoutMethod]}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-white/45">Account limit</dt>
-                <dd className="text-white/80">{campaign.accountLimit ? `${campaign.accountLimit} accounts` : "Unlimited"}</dd>
+                <dt className="text-ink-faint">Account limit</dt>
+                <dd className="text-ink-soft">{campaign.accountLimit ? `${campaign.accountLimit} accounts` : "Unlimited"}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-white/45">Duration</dt>
-                <dd className="text-white/80 capitalize">{campaign.durationMode === "budget" ? "Until budget spent" : "Fixed deadline"}</dd>
+                <dt className="text-ink-faint">Duration</dt>
+                <dd className="text-ink-soft capitalize">{campaign.durationMode === "budget" ? "Until budget spent" : "Fixed deadline"}</dd>
               </div>
             </dl>
-            <p className="mt-4 border-t border-white/10 pt-4 text-xs leading-relaxed text-white/45">{campaign.rules}</p>
+            <p className="mt-4 border-t border-line/10 pt-4 text-xs leading-relaxed text-ink-faint">{campaign.rules}</p>
           </Card>
         </div>
 
         <Card className="p-6">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
             <div>
-              <h3 className="font-bold">Campaign bounties</h3>
-              <p className="text-sm text-white/45">Special incentive rates with qualification requirements.</p>
+              <h3 className="font-bold text-ink">Campaign bounties</h3>
+              <p className="text-sm text-ink-faint">Special incentive rates with qualification requirements.</p>
             </div>
             <input value={bountyQuery} onChange={(e) => setBountyQuery(e.target.value)}
               placeholder="Search bounties…" className={`${inputCls} max-w-xs`} />
           </div>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {shownBounties.map((b) => (
-              <div key={b.id} className="rounded-xl border border-white/10 p-4">
+              <div key={b.id} className="rounded-2xl border border-line/10 p-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold">{b.name}</span>
+                  <span className="font-bold text-ink">{b.name}</span>
                   <Badge tone={b.isActive ? "green" : "default"}>{b.isActive ? "Active" : "Ended"}</Badge>
                 </div>
-                <div className="mt-1 text-sm font-semibold text-emerald-400">${b.ratePer100k}/100K</div>
-                {b.requirements && <div className="mt-2 text-xs text-white/45">Requires: {b.requirements}</div>}
-                <div className="mt-3 text-xs text-white/45">
+                <div className="mt-1 text-sm font-semibold text-lime-deep">${b.ratePer100k}/100K</div>
+                {b.requirements && <div className="mt-2 text-xs text-ink-faint">Requires: {b.requirements}</div>}
+                <div className="mt-3 text-xs text-ink-faint">
                   {formatCompact(b.clipCount)} clips · {formatCompact(b.totalViews)} views
                 </div>
                 {b.budgetCap && (
                   <div className="mt-2">
                     <ProgressBar pct={b.budgetUsedPct} />
-                    <div className="mt-1 text-[11px] text-white/35">{b.budgetUsedPct}% of budget used</div>
+                    <div className="mt-1 text-[11px] text-ink-faint">{b.budgetUsedPct}% of budget used</div>
                   </div>
                 )}
               </div>
             ))}
           </div>
-          {shownBounties.length === 0 && <p className="py-8 text-center text-sm text-white/45">No bounties match.</p>}
+          {shownBounties.length === 0 && <p className="py-8 text-center text-sm text-ink-faint">No bounties match.</p>}
         </Card>
 
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h3 className="font-bold">Your payouts</h3>
-              <p className="text-sm text-white/45">Track earnings, pending cycles, and history for this campaign.</p>
+              <h3 className="font-bold text-ink">Your payouts</h3>
+              <p className="text-sm text-ink-faint">Track earnings, pending cycles, and history for this campaign.</p>
             </div>
             <div className="flex gap-2">
               {(["pending", "paid"] as const).map((t) => (
                 <button key={t} onClick={() => setCycleTab(t)}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium capitalize ${cycleTab === t ? "bg-accent text-white" : "bg-white/5 text-white/60"}`}>
+                  className={`rounded-full px-3 py-1.5 text-sm font-medium capitalize ${cycleTab === t ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
                   {t} {t === "pending" ? pendingCycles.length : paidCycles.length}
                 </button>
               ))}
@@ -154,21 +154,21 @@ export default function CampaignDetail({
           </div>
 
           {liveCycle && (
-            <div className="mb-4 rounded-xl border border-accent/30 bg-accent/5 p-4">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-accent-soft">Current cycle (live)</div>
+            <NightCard className="mb-4 p-5">
+              <div className="text-[11px] font-bold uppercase tracking-wider text-lime">Current cycle (live)</div>
               <div className="mt-1 flex items-baseline gap-3">
-                <span className="text-2xl font-black">{formatMoney(liveCycle.estimatedAmount)}</span>
-                <span className="text-xs text-white/45">estimated — updates as your clips accrue views</span>
+                <span className="display text-3xl text-white">{formatMoney(liveCycle.estimatedAmount)}</span>
+                <span className="text-xs text-white/60">estimated — updates as your clips accrue views</span>
               </div>
-            </div>
+            </NightCard>
           )}
 
           <div className="space-y-3">
             {(cycleTab === "pending" ? pendingCycles : paidCycles).map((c) => (
-              <div key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 p-4">
+              <div key={c.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line/10 p-4">
                 <div>
-                  <div className="font-semibold">{campaign.name} #{c.cycleNumber}</div>
-                  <div className="text-xs text-white/45">
+                  <div className="font-semibold text-ink">{campaign.name} #{c.cycleNumber}</div>
+                  <div className="text-xs text-ink-faint">
                     {c.periodStart} → {c.periodEnd}
                     {c.snapshotAt ? ` · Snapshotted ${c.snapshotAt}` : ""}
                   </div>
@@ -177,19 +177,19 @@ export default function CampaignDetail({
                   <Badge tone={c.status === "paid" ? "green" : "amber"}>
                     {c.status === "paid" ? "Paid" : "Awaiting admin review"}
                   </Badge>
-                  <span className="font-bold text-emerald-400">{formatMoney(c.estimatedAmount)}</span>
+                  <span className="font-bold text-lime-deep">{formatMoney(c.estimatedAmount)}</span>
                 </div>
               </div>
             ))}
             {(cycleTab === "pending" ? pendingCycles : paidCycles).length === 0 && (
-              <p className="py-6 text-center text-sm text-white/45">Nothing here yet.</p>
+              <p className="py-6 text-center text-sm text-ink-faint">Nothing here yet.</p>
             )}
           </div>
         </Card>
 
         <div>
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-bold">Your clips ({clips.length})</h3>
+            <h3 className="display text-lg">Your clips ({clips.length})</h3>
             <Button variant="outline" onClick={() => setShowUpload(true)}>Upload new clip</Button>
           </div>
           <ClipTable clips={clips} />

@@ -41,8 +41,8 @@ export default function UploadClipDialog({
         placeholder={"Paste clip URLs here (one per line, up to 25)..."}
         className={inputCls}
       />
-      <p className="mt-2 text-xs text-white/40">Supports TikTok, Instagram, YouTube, X.</p>
-      {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
+      <p className="mt-2 text-xs text-ink-faint">Supports TikTok, Instagram, YouTube, X.</p>
+      {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose}>Cancel</Button>
         <Button disabled={urls.length === 0 || saving} onClick={submit}>

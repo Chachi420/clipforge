@@ -41,13 +41,13 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
       <Header title="Teams" subtitle="Create a team and earn commissions" />
       <div className="px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-6 flex justify-end">
-          <Button onClick={() => setShowCreate(true)}><Plus size={15} /> Create team</Button>
+          <Button variant="lime" onClick={() => setShowCreate(true)}><Plus size={15} /> Create team</Button>
         </div>
         {initial.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/15 px-6 py-14 text-center">
-            <Users size={28} className="mb-3 text-white/30" />
-            <div className="text-base font-semibold text-white">No team created</div>
-            <p className="mt-2 max-w-sm text-sm text-white/50">
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-line/20 px-6 py-14 text-center">
+            <Users size={28} className="mb-3 text-ink-faint" />
+            <div className="text-base font-semibold text-ink">No team created</div>
+            <p className="mt-2 max-w-sm text-sm text-ink-faint">
               Create a team to start earning commissions from referrals. Share your referral link
               and earn a cut of everything your team earns.
             </p>
@@ -56,17 +56,17 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {initial.map((t) => (
               <Card key={t.id} className="p-5">
-                <div className="font-bold text-white">{t.name}</div>
-                <div className="mt-3 flex items-center justify-between rounded-xl bg-white/5 px-3 py-2">
-                  <code className="text-sm font-mono text-white/70">{t.referralCode}</code>
+                <div className="font-bold text-ink">{t.name}</div>
+                <div className="mt-3 flex items-center justify-between rounded-2xl border border-line/10 bg-surface-deep/70 px-3 py-2">
+                  <code className="font-mono text-sm text-ink-soft">{t.referralCode}</code>
                   <button
                     onClick={() => copyCode(t.referralCode)}
-                    className="flex items-center gap-1.5 text-xs font-medium text-white/60 hover:text-white"
+                    className="flex items-center gap-1.5 text-xs font-medium text-ink-faint hover:text-ink"
                   >
                     <Copy size={13} /> {copied === t.referralCode ? "Copied!" : "Copy link"}
                   </button>
                 </div>
-                <div className="mt-3 text-xs text-white/40">
+                <div className="mt-3 text-xs text-ink-faint">
                   Share this referral link with new clippers to earn commissions.
                 </div>
               </Card>
@@ -80,7 +80,7 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
           <Field label="Team name">
             <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Night Shift Clippers" />
           </Field>
-          {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
+          {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
           <div className="mt-5 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setShowCreate(false)}>Cancel</Button>
             <Button disabled={!name.trim() || saving} onClick={handleCreate}>

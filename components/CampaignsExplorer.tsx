@@ -54,8 +54,8 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
     <>
       <Header title="Campaigns" subtitle={`${initial.length} campaigns available`} />
       <div className="px-4 py-6 sm:px-8 sm:py-8">
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-white/10 bg-base-850 p-4">
-          <p className="text-sm text-white/60">New to campaigns? Learn how they work before you join.</p>
+        <div className="glass mb-6 flex flex-wrap items-center justify-between gap-3 rounded-3xl p-4">
+          <p className="text-sm text-ink-soft">New to campaigns? Learn how they work before you join.</p>
           <div className="flex gap-2">
             <Button variant="outline" onClick={() => setShowRules(true)}>Rules</Button>
             <Button variant="outline" onClick={() => setShowHow(true)}>How it works</Button>
@@ -66,7 +66,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {list.map((c) => <CampaignCard key={c.id} campaign={c} />)}
         </div>
-        {list.length === 0 && <p className="py-16 text-center text-white/45">No campaigns match these filters.</p>}
+        {list.length === 0 && <p className="py-16 text-center text-ink-faint">No campaigns match these filters.</p>}
       </div>
 
       {showFilters && (
@@ -79,7 +79,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
               </select>
             </Field>
             <Field label={`Minimum payout — $${filters.minPayout} per 100k`}>
-              <input type="range" min={0} max={300} step={15} className="w-full accent-[#ff4d2e]"
+              <input type="range" min={0} max={300} step={15} className="w-full accent-lime-deep"
                 value={filters.minPayout}
                 onChange={(e) => setFilters({ ...filters, minPayout: Number(e.target.value) })} />
             </Field>
@@ -87,7 +87,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
               <div className="flex gap-2">
                 {STATUSES.map((s) => (
                   <button key={s} onClick={() => setFilters({ ...filters, status: s })}
-                    className={`rounded-lg px-3 py-1.5 text-sm capitalize ${filters.status === s ? "bg-accent text-white" : "bg-white/5 text-white/60"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.status === s ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
                     {s}
                   </button>
                 ))}
@@ -97,7 +97,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
               <div className="flex flex-wrap gap-2">
                 {TYPES.map((t) => (
                   <button key={t.v} onClick={() => setFilters({ ...filters, type: t.v })}
-                    className={`rounded-lg px-3 py-1.5 text-sm ${filters.type === t.v ? "bg-accent text-white" : "bg-white/5 text-white/60"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm ${filters.type === t.v ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
                     {t.l}
                   </button>
                 ))}
@@ -119,7 +119,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
                         ? filters.platforms.filter((x) => x !== p)
                         : [...filters.platforms, p],
                     })}
-                    className={`rounded-lg px-3 py-1.5 text-sm capitalize ${filters.platforms.includes(p) ? "bg-accent text-white" : "bg-white/5 text-white/60"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.platforms.includes(p) ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
                     {p}
                   </button>
                 ))}
@@ -135,7 +135,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
 
       {showRules && (
         <Dialog title="Campaign rules" subtitle="Read these before you post" onClose={() => setShowRules(false)}>
-          <ol className="list-decimal space-y-3 pl-5 text-sm text-white/70">
+          <ol className="list-decimal space-y-3 pl-5 text-sm text-ink-soft">
             {CAMPAIGN_RULES.map((r, i) => <li key={i}>{r}</li>)}
           </ol>
           <div className="mt-6"><Button className="w-full" onClick={() => setShowRules(false)}>I understand</Button></div>
@@ -146,9 +146,9 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
         <Dialog title="How campaigns work" onClose={() => setShowHow(false)} wide>
           <div className="grid gap-4 md:grid-cols-2">
             {HOW_IT_WORKS.map((h) => (
-              <div key={h.title} className="rounded-xl border border-white/10 p-4">
-                <div className="font-bold text-white">{h.title}</div>
-                <p className="mt-1.5 text-sm text-white/55">{h.body}</p>
+              <div key={h.title} className="rounded-2xl border border-line/10 p-4">
+                <div className="font-bold text-ink">{h.title}</div>
+                <p className="mt-1.5 text-sm text-ink-soft">{h.body}</p>
               </div>
             ))}
           </div>

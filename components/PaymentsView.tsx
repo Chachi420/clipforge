@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Plus, Trash2 } from "lucide-react";
 import Header from "@/components/Header";
-import { Badge, Button, Card, Dialog, Field, Stat, inputCls } from "@/components/ui";
+import { Badge, Button, Card, Dialog, Field, NightCard, Stat, inputCls } from "@/components/ui";
 import { addPaymentMethod, deletePaymentMethod, setDefaultPaymentMethod } from "@/lib/actions";
 import { PAYOUT_METHOD_LABELS, type PaymentMethodRow, type PayoutCycle, type PayoutMethod } from "@/lib/types";
 import { formatMoney } from "@/lib/format";
@@ -71,9 +71,9 @@ export default function PaymentsView({
       <Header title="Payments" subtitle="Manage your earnings and payment methods" />
       <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
         <div className="grid gap-4 md:grid-cols-3">
-          <Card className="p-5">
-            <Stat label="Est. payout" value={live ? formatMoney(live.estimatedAmount) : "$0.00"} sub="Current cycle estimate" />
-          </Card>
+          <NightCard className="p-5">
+            <Stat dark label="Est. payout" value={live ? formatMoney(live.estimatedAmount) : "$0.00"} sub="Current cycle estimate" />
+          </NightCard>
           <Card className="p-5">
             <Stat label="Active campaigns" value={`${awaiting.length}`} sub="With pending payouts" />
           </Card>
@@ -84,35 +84,35 @@ export default function PaymentsView({
 
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-bold">Payment methods</h3>
+            <h3 className="font-bold text-ink">Payment methods</h3>
             <Button variant="outline" onClick={() => setShowAdd(true)}>
               <Plus size={15} /> Add payment method
             </Button>
           </div>
           <div className="space-y-2">
             {methods.map((m) => (
-              <div key={m.id} className="flex items-center justify-between rounded-xl border border-white/10 p-4">
+              <div key={m.id} className="flex items-center justify-between rounded-2xl border border-line/10 p-4">
                 <div>
-                  <div className="flex items-center gap-2 font-semibold">
+                  <div className="flex items-center gap-2 font-semibold text-ink">
                     {PAYOUT_METHOD_LABELS[m.type]}
                     {m.isDefault && <Badge tone="blue">Default</Badge>}
                   </div>
-                  <div className="font-mono text-xs text-white/45">{m.masked}</div>
+                  <div className="font-mono text-xs text-ink-faint">{m.masked}</div>
                 </div>
                 <div className="flex gap-2">
                   {!m.isDefault && (
-                    <button onClick={() => handleDefault(m.id)} className="rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-white/70 hover:bg-white/10">
+                    <button onClick={() => handleDefault(m.id)} className="rounded-full bg-ink/5 px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-ink/10">
                       Set default
                     </button>
                   )}
-                  <button onClick={() => handleDelete(m.id)} className="rounded-lg bg-white/5 p-2 text-red-300/80 hover:bg-white/10" aria-label="Remove">
+                  <button onClick={() => handleDelete(m.id)} className="rounded-full bg-ink/5 p-2 text-red-600 hover:bg-ink/10 dark:text-red-300" aria-label="Remove">
                     <Trash2 size={14} />
                   </button>
                 </div>
               </div>
             ))}
             {methods.length === 0 && (
-              <p className="py-6 text-center text-sm text-white/45">
+              <p className="py-6 text-center text-sm text-ink-faint">
                 No payment methods yet. Add one to receive payouts — PayPal or crypto (USDT/USDC on Ethereum).
               </p>
             )}
@@ -121,26 +121,26 @@ export default function PaymentsView({
 
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
-            <h3 className="font-bold">Payout history</h3>
+            <h3 className="font-bold text-ink">Payout history</h3>
             <Button variant="ghost" onClick={() => alert("Export coming soon.")}>
               <Download size={15} /> Export .xlsx
             </Button>
           </div>
           {awaitingTotal > 0 && (
-            <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-              <span className="font-bold text-amber-300">{formatMoney(awaitingTotal)}</span>
-              <span className="text-white/55"> awaiting payout — {awaiting.length} cycle{awaiting.length === 1 ? "" : "s"} awaiting Mark Paid</span>
+            <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
+              <span className="font-bold text-amber-700 dark:text-amber-300">{formatMoney(awaitingTotal)}</span>
+              <span className="text-ink-soft"> awaiting payout — {awaiting.length} cycle{awaiting.length === 1 ? "" : "s"} awaiting Mark Paid</span>
             </div>
           )}
           {cycles.filter((c) => c.status !== "live").length === 0 ? (
-            <p className="py-8 text-center text-sm text-white/45">
+            <p className="py-8 text-center text-sm text-ink-faint">
               No payouts yet. Submit clips to a campaign and your earnings will appear here after each cycle closes.
             </p>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-white/10">
+            <div className="glass overflow-x-auto rounded-3xl">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
+                  <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
                     <th className="px-4 py-3">Cycle</th>
                     <th className="px-4 py-3">Status</th>
                     <th className="px-4 py-3">Date</th>
@@ -150,15 +150,15 @@ export default function PaymentsView({
                 <tbody>
                   {cycles.filter((c) => c.status !== "live").map((c) => (
                     <tr key={c.id} onClick={() => setReceiptId(c.id)}
-                      className="cursor-pointer border-b border-white/5 transition last:border-0 hover:bg-white/[0.03]">
-                      <td className="px-4 py-3 font-medium text-white">{c.campaignName} #{c.cycleNumber}</td>
+                      className="cursor-pointer border-b border-line/10 transition last:border-0 hover:bg-ink/[0.03]">
+                      <td className="px-4 py-3 font-medium text-ink">{c.campaignName} #{c.cycleNumber}</td>
                       <td className="px-4 py-3">
                         <Badge tone={c.status === "paid" ? "green" : "amber"}>{STATUS_LABEL[c.status]}</Badge>
                       </td>
-                      <td className="px-4 py-3 text-white/55">
+                      <td className="px-4 py-3 text-ink-soft">
                         {c.snapshotAt ? `Snapshotted ${c.snapshotAt}` : `${c.periodStart} → ${c.periodEnd}`}
                       </td>
-                      <td className="px-4 py-3 text-right font-semibold text-emerald-400">{formatMoney(c.estimatedAmount)}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-lime-deep">{formatMoney(c.estimatedAmount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -186,7 +186,7 @@ export default function PaymentsView({
                 placeholder={mType === "paypal" ? "you@example.com" : "0x…"}
               />
             </Field>
-            {error && <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-300">{error}</p>}
+            {error && <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>
               <Button disabled={saving || !mId.trim()} onClick={handleAdd}>
@@ -201,16 +201,16 @@ export default function PaymentsView({
         <Dialog title="Payout receipt" subtitle={`${receipt.campaignName} · #${receipt.cycleNumber}`} onClose={() => setReceiptId(null)}>
           <dl className="space-y-4 text-sm">
             <div className="flex justify-between">
-              <dt className="text-white/45">Status</dt>
+              <dt className="text-ink-faint">Status</dt>
               <dd><Badge tone={receipt.status === "paid" ? "green" : "amber"}>{STATUS_LABEL[receipt.status]}</Badge></dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-white/45">Pay period</dt>
-              <dd className="text-white/80">{receipt.periodStart} → {receipt.periodEnd}</dd>
+              <dt className="text-ink-faint">Pay period</dt>
+              <dd className="text-ink-soft">{receipt.periodStart} → {receipt.periodEnd}</dd>
             </div>
-            <div className="flex justify-between border-t border-white/10 pt-4">
-              <dt className="font-bold">Estimated amount</dt>
-              <dd className="font-black text-emerald-400">{formatMoney(receipt.estimatedAmount)}</dd>
+            <div className="flex justify-between border-t border-line/10 pt-4">
+              <dt className="font-bold text-ink">Estimated amount</dt>
+              <dd className="font-black text-lime-deep">{formatMoney(receipt.estimatedAmount)}</dd>
             </div>
           </dl>
           <div className="mt-6 flex justify-end">
