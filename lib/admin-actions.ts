@@ -336,3 +336,82 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     users: users.count ?? 0,
   };
 }
+
+export interface PendingBrandRequest {
+  id: string;
+  companyName: string;
+  contactName: string;
+  email: string;
+  website: string | null;
+  budgetRange: string;
+  message: string | null;
+  createdAt: string;
+}
+
+/** All pending brand access requests, oldest first. */
+export async function getPendingBrandRequests(): Promise<PendingBrandRequest[]> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data, error } = await db
+    .from("brand_requests")
+    .select("id, company_name, contact_name, email, website, budget_range, message, created_at")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    companyName: r.company_name,
+    contactName: r.contact_name,
+    email: r.email,
+    website: r.website,
+    budgetRange: r.budget_range,
+    message: r.message,
+    createdAt: r.created_at,
+  }));
+}
+
+/** Approve a brand request: sets profiles.role='brand' and creates the brands row. */
+export async function approveBrandRequest(id: string) {
+  await requireAdmin();
+  const db = adminDb();
+  const { data: row } = await db
+    .from("brand_requests")
+    .select("id, user_id, company_name, contact_name, email")
+    .eq("id", id)
+    .eq("status", "pending")
+    .single();
+  if (!row) throw new Error("Pending request not found.");
+
+  const { error: roleErr } = await db
+    .from("profiles")
+    .update({ role: "brand" })
+    .eq("id", (row as any).user_id);
+  if (roleErr) throw new Error(roleErr.message);
+
+  const { error: brandErr } = await db.from("brands").insert({
+    owner_id: (row as any).user_id,
+    name: (row as any).company_name,
+    contact_email: (row as any).email,
+  });
+  if (brandErr) throw new Error(brandErr.message);
+
+  const { error: reqErr } = await db
+    .from("brand_requests")
+    .update({ status: "approved", reviewed_at: new Date().toISOString() })
+    .eq("id", id);
+  if (reqErr) throw new Error(reqErr.message);
+
+  revalidatePath("/admin");
+}
+
+export async function rejectBrandRequest(id: string) {
+  await requireAdmin();
+  const db = adminDb();
+  const { error } = await db
+    .from("brand_requests")
+    .update({ status: "rejected", reviewed_at: new Date().toISOString() })
+    .eq("id", id)
+    .eq("status", "pending");
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin");
+}

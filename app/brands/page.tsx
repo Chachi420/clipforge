@@ -40,7 +40,7 @@ export default function BrandsLanding() {
         <Link href="/" className="text-xl font-black tracking-tight">CLIPFORGE</Link>
         <div className="flex gap-3">
           <Link href="/brand/login" className="rounded-xl px-4 py-2 text-sm font-semibold text-white/70 hover:text-white">Brand sign in</Link>
-          <Link href="/brand/login" className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-soft">Start a campaign</Link>
+          <Link href="/brand/request" className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-soft">Start a campaign</Link>
         </div>
       </nav>
 
@@ -54,7 +54,7 @@ export default function BrandsLanding() {
             Tell us the goal. We run the campaign. You pay only for verified views.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link href="/brand/login" className="inline-flex items-center gap-2 rounded-2xl bg-accent px-7 py-3.5 font-bold text-white hover:bg-accent-soft">
+            <Link href="/brand/request" className="inline-flex items-center gap-2 rounded-2xl bg-accent px-7 py-3.5 font-bold text-white hover:bg-accent-soft">
               Start a campaign <ArrowRight size={18} />
             </Link>
             <Link href="/contact" className="rounded-2xl border border-white/15 px-7 py-3.5 font-bold text-white/80 hover:bg-white/5">

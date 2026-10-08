@@ -53,10 +53,10 @@ export default function BrandLoginPage() {
         </div>
         <p className="mt-6 text-xs text-white/35">
           Brand accounts are provisioned by our team. New here?{" "}
-          <Link href="/login" className="font-semibold text-white/70 hover:text-white">
-            Contact us
-          </Link>{" "}
-          to get set up.
+          <Link href="/brand/request" className="font-semibold text-white/70 hover:text-white">
+            Request brand access
+          </Link>
+          .
         </p>
         {!isLive && (
           <p className="mt-4 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-300">

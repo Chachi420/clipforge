@@ -280,3 +280,58 @@ export async function updateBrandProfile(input: {
   if (error) throw new Error(error.message);
   revalidatePath("/brand", "layout");
 }
+
+export interface BrandRequestInput {
+  companyName: string;
+  contactName: string;
+  email: string;
+  website?: string;
+  budgetRange: string;
+  message?: string;
+}
+
+const BUDGET_RANGES = ["under_1k", "1k_5k", "5k_25k", "25k_plus"];
+
+/** Signed-in user requests brand access. One request per user (upsert). */
+export async function requestBrandAccess(input: BrandRequestInput) {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/brand/login");
+
+  const companyName = input.companyName.trim();
+  const contactName = input.contactName.trim();
+  const email = input.email.trim().toLowerCase();
+  if (companyName.length < 2) throw new Error("Company name must be 2+ characters.");
+  if (contactName.length < 2) throw new Error("Contact name must be 2+ characters.");
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Enter a valid work email.");
+  if (!BUDGET_RANGES.includes(input.budgetRange)) throw new Error("Pick a budget range.");
+
+  const { error } = await supabase.from("brand_requests").upsert(
+    {
+      user_id: user.id,
+      company_name: companyName,
+      contact_name: contactName,
+      email,
+      website: input.website?.trim() || null,
+      budget_range: input.budgetRange,
+      message: input.message?.trim() || null,
+      status: "pending",
+      reviewed_at: null,
+    },
+    { onConflict: "user_id" }
+  );
+  if (error) throw new Error(error.message);
+}
+
+/** Current user's brand request, if any. */
+export async function getMyBrandRequest() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+  const { data } = await supabase
+    .from("brand_requests")
+    .select("status, company_name, created_at")
+    .eq("user_id", user.id)
+    .maybeSingle();
+  return data as { status: string; company_name: string; created_at: string } | null;
+}
