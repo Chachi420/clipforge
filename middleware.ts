@@ -26,17 +26,26 @@ export async function middleware(request: NextRequest) {
     }
   );
 
+  const { pathname } = request.nextUrl;
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
-    return NextResponse.redirect(new URL("/login", request.url));
+
+  if (!user && (pathname.startsWith("/dashboard") || pathname.startsWith("/brand"))) {
+    const login = pathname.startsWith("/brand") ? "/brand/login" : "/login";
+    return NextResponse.redirect(new URL(login, request.url));
   }
-  // Logged-in users hitting /login go straight to the dashboard.
-  if (user && request.nextUrl.pathname === "/login") {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  // Logged-in users hitting a login page go to their home.
+  if (user && (pathname === "/login" || pathname === "/brand/login")) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    const dest = (profile as any)?.role === "brand" ? "/brand" : "/dashboard";
+    return NextResponse.redirect(new URL(dest, request.url));
   }
   return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login"],
+  matcher: ["/dashboard/:path*", "/login", "/brand/:path*", "/brand/login"],
 };

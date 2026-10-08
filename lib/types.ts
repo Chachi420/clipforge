@@ -1,7 +1,7 @@
 // Domain types for ClipForge. Mirrors the Supabase schema 1:1.
 
 export type Platform = "tiktok" | "instagram" | "youtube" | "x";
-export type CampaignStatus = "active" | "paused" | "private";
+export type CampaignStatus = "active" | "paused" | "private" | "pending";
 export type CampaignType = "per_view" | "bounty" | "pot";
 export type PayoutMethod = "paypal" | "usdt_eth" | "usdc_eth";
 export type TrackingStatus = "tracking" | "not_tracking" | "flagged" | "pending_review";
@@ -136,4 +136,57 @@ export const PAYOUT_METHOD_LABELS: Record<PayoutMethod, string> = {
   paypal: "PayPal",
   usdt_eth: "USDT (ETH)",
   usdc_eth: "USDC (ETH)",
+};
+
+// ---------- brand side ----------
+
+export interface Brand {
+  id: string;
+  ownerId: string;
+  name: string;
+  logoUrl: string;
+  contactEmail: string;
+  createdAt: string;
+}
+
+export interface BrandTopup {
+  id: string;
+  brandId: string;
+  amount: number;
+  method: string | null;
+  reference: string | null;
+  recordedBy: string | null;
+  createdAt: string;
+}
+
+/** Campaign row enriched for the brand dashboard (spend, views, clips). */
+export interface BrandCampaign extends Campaign {
+  brandId: string | null;
+  spend: number;
+  totalViews: number;
+  clipCount: number;
+  clipperCount: number;
+}
+
+export interface BrandKpis {
+  activeCampaigns: number;
+  spendMtd: number;
+  viewsMtd: number;
+  avgEcpm: number;
+}
+
+export interface CampaignClipperRow {
+  userId: string;
+  displayName: string;
+  email: string;
+  clips: number;
+  views: number;
+  earnings: number;
+}
+
+export const CAMPAIGN_STATUS_LABELS: Record<CampaignStatus, string> = {
+  active: "Active",
+  paused: "Paused",
+  private: "Private",
+  pending: "Pending approval",
 };
