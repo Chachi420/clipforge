@@ -1,19 +1,13 @@
 import Link from "next/link";
 import { ArrowRight, BadgeDollarSign, Check, Scissors, TrendingUp, Users } from "lucide-react";
-import { Faq, MarketingFooter, CtaBand, Tabs } from "@/components/marketing";
+import ThemeToggle from "@/components/ThemeToggle";
+import { Faq, MarketingFooter, CtaBand } from "@/components/marketing";
+import { HeroTilt, Orb, PinnedProcess, RevealInit } from "@/components/landing-motion";
 
-const STEPS = [
-  { n: "01", title: "Pick a campaign", body: "Browse live campaigns from real brands. See the rate, platforms, and bounties up front — then join in one tap." },
-  { n: "02", title: "Connect your accounts", body: "Link the TikTok, Reels, Shorts, or X accounts you post from and verify them once." },
-  { n: "03", title: "Add your payout method", body: "PayPal or crypto (USDC / USDT). Earnings land automatically when a cycle closes." },
-  { n: "04", title: "Drop your clips", body: "Post to your connected accounts, paste the link. Views are pulled straight from the platform." },
-  { n: "05", title: "Get paid per view", body: "Earnings climb live as views roll in. Payouts are sent when the cycle closes and views are verified." },
-];
-
-const BRAND_STEPS = [
-  { n: "01", title: "Brief", body: "Tell us your goal, your content, your budget, and the per-view rate you're comfortable with." },
-  { n: "02", title: "We run it", body: "Clippers post across TikTok, Reels, Shorts, and X. Viewbot detection plus manual review keeps the numbers honest." },
-  { n: "03", title: "Pay per verified view", body: "Watch verified views and spend on a live dashboard. You never pay more than your hard budget cap." },
+const PROCESS_STEPS = [
+  { n: "01", title: "Join a campaign", body: "Browse live campaigns from real brands. See the rate, platforms, and bounties up front — then join in one tap." },
+  { n: "02", title: "Post your clip", body: "Post to your verified accounts and paste the link. Views are pulled straight from the platform — nothing to fake." },
+  { n: "03", title: "Get paid per view", body: "Earnings climb as verified views roll in. Payouts go to your PayPal or crypto method when the cycle closes." },
 ];
 
 const CLIPPER_WINS = ["Free to join", "Paid per verified view", "Withdraw via PayPal or crypto"];
@@ -29,139 +23,161 @@ const FAQ_ITEMS = [
 
 export default function Landing() {
   return (
-    <div className="min-h-screen bg-base-950">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-6">
-        <span className="text-xl font-black tracking-tight">CLIPFORGE</span>
-        <div className="flex gap-3">
-          <Link href="/login" className="rounded-xl px-4 py-2 text-sm font-semibold text-white/70 hover:text-white">Sign in</Link>
-          <Link href="/login" className="rounded-xl bg-accent px-4 py-2 text-sm font-semibold text-white hover:bg-accent-soft">Start clipping</Link>
+    <div className="min-h-screen bg-paper text-ink">
+      <RevealInit />
+
+      {/* ---------- Nav ---------- */}
+      <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/70 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <Link href="/" className="font-display text-xl font-bold tracking-tight">
+            CLIPFORGE
+          </Link>
+          <div className="hidden items-center gap-7 text-sm font-medium text-ink-soft md:flex">
+            <Link href="/clip" className="hover:text-ink">Clippers</Link>
+            <Link href="/brands" className="hover:text-ink">Brands</Link>
+            <Link href="/blog" className="hover:text-ink">Blog</Link>
+            <Link href="/docs" className="hover:text-ink">Docs</Link>
+          </div>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link href="/login" className="hidden text-sm font-semibold text-ink-soft hover:text-ink sm:block">
+              Sign in
+            </Link>
+            <Link href="/login" className="pill bg-ink px-5 py-2.5 text-sm text-paper hover:bg-ink-soft">
+              Start clipping
+            </Link>
+          </div>
         </div>
       </nav>
 
+      {/* ---------- Hero ---------- */}
+      <header className="relative overflow-hidden">
+        <div className="mx-auto grid max-w-6xl items-center gap-10 px-6 pb-16 pt-20 md:grid-cols-[1.2fr_1fr] md:pt-28">
+          <HeroTilt>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-line/10 bg-surface/60 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-lime-deep backdrop-blur">
+              Clip · Post · Get Paid
+            </div>
+            <h1 className="display text-6xl leading-[0.95] md:text-8xl">
+              Clip. Post.
+              <br />
+              Get Paid.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
+              Brands run pay-per-view campaigns. Clippers earn for every verified view.
+              No following required.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link href="/login" className="pill bg-lime px-8 py-4 font-bold text-ink shadow-glow-lime hover:bg-lime-soft">
+                Start clipping <ArrowRight size={18} />
+              </Link>
+              <Link href="/brands" className="pill glass px-8 py-4 font-bold text-ink hover:bg-surface">
+                I&apos;m a brand
+              </Link>
+            </div>
+          </HeroTilt>
+          <div className="flex justify-center md:justify-end">
+            <Orb />
+          </div>
+        </div>
+        {/* scroll cue */}
+        <div className="flex justify-center pb-10">
+          <div className="glass rounded-full px-5 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-ink-faint">
+            Scroll
+          </div>
+        </div>
+      </header>
+
+      {/* ---------- Pinned process ---------- */}
+      <PinnedProcess steps={PROCESS_STEPS} />
+
       <main className="mx-auto max-w-6xl px-6">
-        <section className="py-20 text-center">
-          <div className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-accent-soft">Clip · Post · Get Paid</div>
-          <h1 className="mx-auto max-w-3xl text-5xl font-black leading-tight md:text-6xl">
-            Grow, earn, and go viral with clipping
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-white/60">
-            A creative marketplace uniting brands and digital talent. Brands run campaigns;
-            clippers craft viral content and get paid per verified view.
-          </p>
-          <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link href="/login" className="inline-flex items-center gap-2 rounded-2xl bg-accent px-7 py-3.5 font-bold text-white hover:bg-accent-soft">
-              Start clipping <ArrowRight size={18} />
-            </Link>
-            <Link href="/brand/login" className="rounded-2xl border border-white/15 px-7 py-3.5 font-bold text-white/80 hover:bg-white/5">
-              Start a campaign
-            </Link>
-          </div>
-          <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-white/40">
-            <span className="flex items-center gap-2 text-sm"><TrendingUp size={16} /> Pay per verified view</span>
-            <span className="flex items-center gap-2 text-sm"><Users size={16} /> No following required</span>
-            <span className="flex items-center gap-2 text-sm"><BadgeDollarSign size={16} /> Cancel anytime</span>
-          </div>
-        </section>
-
-        <section className="py-16">
-          <h2 className="mb-10 text-center text-3xl font-black">Five steps to your first payout</h2>
-          <div className="grid gap-4 md:grid-cols-5">
-            {STEPS.map((s) => (
-              <div key={s.n} className="rounded-2xl border border-white/10 bg-base-850 p-5">
-                <div className="text-xs font-black text-accent-soft">{s.n}</div>
-                <div className="mt-2 font-bold">{s.title}</div>
-                <p className="mt-2 text-sm text-white/55">{s.body}</p>
+        {/* ---------- Dark contrast card ---------- */}
+        <section className="reveal py-16">
+          <div className="glass-dark glass-sheen glow-lime rounded-[2rem] p-10 text-white md:p-14">
+            <div className="grid items-center gap-10 md:grid-cols-2">
+              <div>
+                <div className="text-xs font-bold uppercase tracking-[0.3em] text-lime">Why ClipForge</div>
+                <h2 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
+                  Pay for views.
+                  <br />
+                  Not promises.
+                </h2>
               </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="py-16 text-center">
-          <h2 className="text-3xl font-black">Two sides. One platform.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-white/60">
-            Clippers get paid per view. Brands get reach they only pay for when it is verified.
-          </p>
-          <div className="mt-8 grid gap-4 text-left md:grid-cols-2">
-            <div className="rounded-2xl border border-white/10 bg-base-850 p-8">
-              <Scissors className="mb-4 text-accent-soft" size={28} />
-              <h3 className="text-xl font-bold">For clippers</h3>
-              <p className="mt-2 text-white/55">Free to join · No following required. Pick a campaign, post your clips, watch views turn into earnings.</p>
-              <ul className="mt-5 space-y-2.5">
-                {CLIPPER_WINS.map((w) => (
-                  <li key={w} className="flex items-center gap-2.5 text-sm text-white/75">
-                    <Check size={15} className="shrink-0 text-accent-soft" /> {w}
+              <ul className="space-y-5">
+                {[
+                  { icon: TrendingUp, t: "Pay per verified view", d: "View counts pulled from the platforms, filtered for bots, spot-checked by hand." },
+                  { icon: Users, t: "No following required", d: "A clip earns from its first hundred views. Quality beats audience size." },
+                  { icon: BadgeDollarSign, t: "Payouts after review", d: "Cycles close, views are verified, money moves to PayPal or crypto." },
+                ].map((f) => (
+                  <li key={f.t} className="flex gap-4">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-lime/15 text-lime">
+                      <f.icon size={20} />
+                    </span>
+                    <span>
+                      <span className="block font-bold">{f.t}</span>
+                      <span className="mt-1 block text-sm text-white/60">{f.d}</span>
+                    </span>
                   </li>
                 ))}
               </ul>
-              <Link href="/clip" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-accent-soft hover:text-white">
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Two sides ---------- */}
+        <section className="reveal py-16">
+          <h2 className="display text-center text-4xl md:text-5xl">Two sides. One platform.</h2>
+          <p className="mx-auto mt-4 max-w-xl text-center text-lg text-ink-soft">
+            Clippers get paid per view. Brands get reach they only pay for when it is verified.
+          </p>
+          <div className="mt-10 grid gap-5 text-left md:grid-cols-2">
+            <div className="glass glass-sheen rounded-[2rem] p-8 md:p-10">
+              <Scissors className="mb-4 text-lime-deep" size={28} />
+              <h3 className="font-display text-2xl font-bold tracking-tight">For clippers</h3>
+              <p className="mt-2 text-ink-soft">Free to join · No following required. Pick a campaign, post your clips, watch views turn into earnings.</p>
+              <ul className="mt-6 space-y-2.5">
+                {CLIPPER_WINS.map((w) => (
+                  <li key={w} className="flex items-center gap-2.5 text-sm font-medium text-ink">
+                    <Check size={15} className="shrink-0 text-lime-deep" /> {w}
+                  </li>
+                ))}
+              </ul>
+              <Link href="/clip" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-lime-deep hover:text-ink">
                 How it works for clippers <ArrowRight size={15} />
               </Link>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-base-850 p-8">
-              <TrendingUp className="mb-4 text-accent-soft" size={28} />
-              <h3 className="text-xl font-bold">For brands</h3>
-              <p className="mt-2 text-white/55">Pay per verified view, not per post. Set a budget with a hard cap — you never pay more than you planned.</p>
-              <ul className="mt-5 space-y-2.5">
+            <div className="glass glass-sheen rounded-[2rem] p-8 md:p-10">
+              <TrendingUp className="mb-4 text-lime-deep" size={28} />
+              <h3 className="font-display text-2xl font-bold tracking-tight">For brands</h3>
+              <p className="mt-2 text-ink-soft">Pay per verified view, not per post. Set a budget with a hard cap — you never pay more than you planned.</p>
+              <ul className="mt-6 space-y-2.5">
                 {BRAND_WINS.map((w) => (
-                  <li key={w} className="flex items-center gap-2.5 text-sm text-white/75">
-                    <Check size={15} className="shrink-0 text-accent-soft" /> {w}
+                  <li key={w} className="flex items-center gap-2.5 text-sm font-medium text-ink">
+                    <Check size={15} className="shrink-0 text-lime-deep" /> {w}
                   </li>
                 ))}
               </ul>
-              <Link href="/brands" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-accent-soft hover:text-white">
+              <Link href="/brands" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-lime-deep hover:text-ink">
                 How it works for brands <ArrowRight size={15} />
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="py-16">
-          <h2 className="mb-10 text-center text-3xl font-black">How it works</h2>
-          <Tabs
-            tabs={[
-              {
-                label: "For clippers",
-                content: (
-                  <div className="grid gap-4 md:grid-cols-5">
-                    {STEPS.map((s) => (
-                      <div key={s.n} className="rounded-2xl border border-white/10 bg-base-850 p-5">
-                        <div className="text-xs font-black text-accent-soft">{s.n}</div>
-                        <div className="mt-2 font-bold">{s.title}</div>
-                        <p className="mt-2 text-sm text-white/55">{s.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                ),
-              },
-              {
-                label: "For brands",
-                content: (
-                  <div className="grid gap-4 md:grid-cols-3">
-                    {BRAND_STEPS.map((s) => (
-                      <div key={s.n} className="rounded-2xl border border-white/10 bg-base-850 p-6">
-                        <div className="text-xs font-black text-accent-soft">{s.n}</div>
-                        <div className="mt-2 text-lg font-bold">{s.title}</div>
-                        <p className="mt-2 text-sm text-white/55">{s.body}</p>
-                      </div>
-                    ))}
-                  </div>
-                ),
-              },
-            ]}
-          />
-        </section>
-
-        <section className="py-16">
-          <h2 className="mb-10 text-center text-3xl font-black">Frequently asked questions</h2>
+        {/* ---------- FAQ ---------- */}
+        <section className="reveal py-16">
+          <h2 className="display mb-10 text-center text-4xl md:text-5xl">Questions, answered</h2>
           <div className="mx-auto max-w-3xl">
             <Faq items={FAQ_ITEMS} />
           </div>
         </section>
 
-        <CtaBand
-          title="Ready when you are."
-          body="Join free as a clipper and start earning per verified view — or launch a campaign and only pay for reach that actually happened."
-        />
+        <div className="reveal">
+          <CtaBand
+            title="Ready when you are."
+            body="Join free as a clipper and start earning per verified view — or launch a campaign and only pay for reach that actually happened."
+          />
+        </div>
       </main>
 
       <MarketingFooter />
