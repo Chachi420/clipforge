@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Globe } from "lucide-react";
-import { Badge, Button, EmptyState } from "@/components/ui";
+import { Badge, Button, Card, EmptyState } from "@/components/ui";
 import {
   approveBrandRequest,
   rejectBrandRequest,
@@ -43,16 +43,16 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
 
   return (
     <div className="space-y-4">
-      {error && <p className="text-sm text-red-400">{error}</p>}
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
       {items.map((r) => (
-        <div key={r.id} className="rounded-2xl border border-white/10 bg-base-850 p-6">
+        <Card key={r.id} className="p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="flex items-center gap-3">
-                <h3 className="text-lg font-bold text-white">{r.companyName}</h3>
+                <h3 className="text-lg font-bold text-ink">{r.companyName}</h3>
                 <Badge>{BUDGET_LABELS[r.budgetRange] ?? r.budgetRange}</Badge>
               </div>
-              <p className="mt-1 text-sm text-white/55">
+              <p className="mt-1 text-sm text-ink-soft">
                 {r.contactName} · {r.email}
               </p>
               {r.website && (
@@ -60,15 +60,15 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
                   href={r.website.startsWith("http") ? r.website : `https://${r.website}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-1 inline-flex items-center gap-1 text-xs text-accent-soft hover:underline"
+                  className="mt-1 inline-flex items-center gap-1 text-xs text-lime-deep hover:underline"
                 >
                   <Globe size={12} /> {r.website}
                 </a>
               )}
               {r.message && (
-                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/60">{r.message}</p>
+                <p className="mt-3 max-w-2xl text-sm leading-relaxed text-ink-soft">{r.message}</p>
               )}
-              <p className="mt-2 text-xs text-white/30">
+              <p className="mt-2 text-xs text-ink-faint">
                 Requested {new Date(r.createdAt).toLocaleDateString()}
               </p>
             </div>
@@ -92,7 +92,7 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
               </Button>
             </div>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X } from "lucide-react";
-import { Badge, Button, EmptyState, PlatformDot, inputCls } from "@/components/ui";
+import { Badge, Button, Card, EmptyState, PlatformDot, inputCls } from "@/components/ui";
 import { approveAccount, rejectAccount, type PendingVerification } from "@/lib/admin-actions";
 import { PLATFORM_LABELS } from "@/lib/types";
 
@@ -51,12 +51,12 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
   return (
     <div className="space-y-4">
       {error && (
-        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
+        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
       )}
-      <div className="overflow-hidden rounded-2xl border border-white/10">
+      <Card className="overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
+            <tr className="border-b border-line/10 bg-ink/[0.03] text-[11px] uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3">Account</th>
               <th className="px-4 py-3">User</th>
               <th className="px-4 py-3">Code</th>
@@ -65,28 +65,28 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-line/10">
             {initial.map((v) => (
-              <tr key={v.id} className="border-b border-white/5 last:border-0">
+              <tr key={v.id} className="transition hover:bg-ink/[0.03]">
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2 font-medium text-white">
+                  <div className="flex items-center gap-2 font-medium text-ink">
                     <PlatformDot platform={v.platform} />
                     {v.handle}
                   </div>
-                  <div className="mt-0.5 text-xs capitalize text-white/40">
+                  <div className="mt-0.5 text-xs capitalize text-ink-faint">
                     {PLATFORM_LABELS[v.platform as keyof typeof PLATFORM_LABELS] ?? v.platform}
                   </div>
                 </td>
                 <td className="px-4 py-3">
-                  <div className="text-white/80">{v.displayName}</div>
-                  <div className="text-xs text-white/40">{v.userEmail}</div>
+                  <div className="text-ink">{v.displayName}</div>
+                  <div className="text-xs text-ink-faint">{v.userEmail}</div>
                 </td>
                 <td className="px-4 py-3">
-                  <code className="rounded-lg bg-black/40 px-2.5 py-1 font-mono text-sm font-bold tracking-widest text-white">
+                  <code className="rounded-lg bg-surface-deep px-2.5 py-1 font-mono text-sm font-bold tracking-widest text-ink">
                     {v.verificationCode}
                   </code>
                 </td>
-                <td className="px-4 py-3 text-white/55">{v.connectedAt}</td>
+                <td className="px-4 py-3 text-ink-soft">{v.connectedAt}</td>
                 <td className="px-4 py-3">
                   <input
                     type="number"
@@ -120,8 +120,8 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
             ))}
           </tbody>
         </table>
-      </div>
-      <p className="text-xs text-white/35">
+      </Card>
+      <p className="text-xs text-ink-faint">
         Approve only after confirming the code is in the account&apos;s bio and it has at
         least 1,000 followers. Rejecting removes the account; the user can re-add it.
       </p>

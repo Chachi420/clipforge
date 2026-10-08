@@ -60,12 +60,12 @@ export default function TopupRecorder({ brands, initial }: { brands: Brands; ini
   return (
     <div className="space-y-6">
       <Card className="space-y-4 p-6">
-        <h2 className="text-base font-bold text-white">Record a top-up</h2>
+        <h2 className="text-base font-bold text-ink">Record a top-up</h2>
         {error && (
-          <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-300">{error}</p>
+          <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
         )}
         {success && (
-          <p className="rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-300">
+          <p className="rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-600 dark:text-emerald-300">
             {success}
           </p>
         )}
@@ -123,14 +123,15 @@ export default function TopupRecorder({ brands, initial }: { brands: Brands; ini
       </Card>
 
       <div>
-        <h2 className="mb-3 text-base font-bold text-white">Recent top-ups</h2>
+        <h2 className="mb-3 text-base font-bold text-ink">Recent top-ups</h2>
         {initial.length === 0 ? (
           <EmptyState title="No top-ups yet" body="Recorded top-ups will appear here." />
         ) : (
-          <div className="overflow-x-auto overflow-hidden rounded-2xl border border-white/10">
+          <Card className="overflow-hidden">
+            <div className="overflow-x-auto">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead>
-                <tr className="border-b border-white/10 bg-white/[0.02] text-[11px] uppercase tracking-wider text-white/40">
+                <tr className="border-b border-line/10 bg-ink/[0.03] text-[11px] uppercase tracking-wider text-ink-faint">
                   <th className="px-4 py-3">Date</th>
                   <th className="px-4 py-3">Brand</th>
                   <th className="px-4 py-3 text-right">Amount</th>
@@ -138,29 +139,30 @@ export default function TopupRecorder({ brands, initial }: { brands: Brands; ini
                   <th className="px-4 py-3">Reference</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-line/10">
                 {initial.map((t) => (
-                  <tr key={t.id} className="border-b border-white/5 last:border-0">
-                    <td className="px-4 py-3 text-white/55">{t.createdAt}</td>
-                    <td className="px-4 py-3 font-medium text-white">{t.brandName}</td>
-                    <td className="px-4 py-3 text-right font-bold text-emerald-400">
+                  <tr key={t.id} className="transition hover:bg-ink/[0.03]">
+                    <td className="px-4 py-3 text-ink-soft">{t.createdAt}</td>
+                    <td className="px-4 py-3 font-medium text-ink">{t.brandName}</td>
+                    <td className="px-4 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
                       {formatMoney(t.amount)}
                     </td>
-                    <td className="px-4 py-3 text-white/70">
+                    <td className="px-4 py-3 text-ink">
                       {t.method ? (
                         METHOD_LABELS[t.method] ?? t.method
                       ) : (
-                        <span className="text-xs text-white/35">—</span>
+                        <span className="text-xs text-ink-faint">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-white/55">
-                      {t.reference ?? <span className="text-xs text-white/35">—</span>}
+                    <td className="px-4 py-3 text-ink-soft">
+                      {t.reference ?? <span className="text-xs text-ink-faint">—</span>}
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-          </div>
+            </div>
+          </Card>
         )}
       </div>
     </div>
