@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { h2Cls, pCls, listCls } from "../layout";
+import { h2Cls, pCls, listCls } from "../styles";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — ClipForge",
