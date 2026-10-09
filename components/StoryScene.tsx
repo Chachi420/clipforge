@@ -233,7 +233,7 @@ function CampaignCard({
     if (bus.current.reduced) return;
 
     const ch1Grow = 1 + 0.3 * sstep(0.15, 0.3, p);
-    const exit = 1 - sstep(0.36, 0.47, p);
+    const exit = 1 - sstep(0.34, 0.4, p);
     const s = Math.max(0.0001, ch1Grow * exit);
     g.scale.setScalar(s);
     g.visible = exit > 0.01;
