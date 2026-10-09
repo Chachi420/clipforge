@@ -3,6 +3,7 @@ import { ArrowRight, Scissors, TrendingUp } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import MobileMenu from "@/components/MobileMenu";
 import StoryNarrative from "@/components/StoryNarrative";
+import Hero from "@/components/Hero";
 import { Faq, MarketingFooter } from "@/components/marketing";
 import { RevealInit } from "@/components/landing-motion";
 
@@ -21,8 +22,8 @@ export default function Landing() {
       <RevealInit />
 
       {/* ---------- Nav ---------- */}
-      <nav className="sticky top-0 z-40 border-b border-line/[0.07] bg-paper/60 backdrop-blur-2xl backdrop-saturate-150 relative">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 md:px-6 md:py-3.5">
+      <nav className="sticky top-0 z-40 border-b border-line/[0.07] bg-paper/60 backdrop-blur-2xl backdrop-saturate-150">
+        <div className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3 md:px-6 md:py-3.5">
           <Link href="/" className="font-display text-lg font-bold tracking-tight">
             CLIPFORGE
           </Link>
@@ -45,28 +46,30 @@ export default function Landing() {
         </div>
       </nav>
 
+      <Hero />
+
       {/* ---------- The story: scroll-driven typographic narrative ---------- */}
       <StoryNarrative />
 
       <main className="bg-glow mx-auto max-w-6xl px-6">
         {/* ---------- Do the math ---------- */}
-        <section className="reveal mx-auto max-w-6xl px-6 py-16 md:py-24">
+        <section className="reveal py-16 md:py-24">
           <div className="border-y border-ink/15 py-10 md:py-14">
             <div className="micro-label mb-6">How the money works</div>
-            <div className="grid gap-8 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-center">
-              <div>
-                <div className="display text-4xl md:text-5xl">100K</div>
-                <p className="mt-2 text-sm text-ink-soft">verified views on your clip</p>
+            <div className="grid gap-6 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-center md:gap-8">
+              <div className="flex items-baseline gap-3 md:block">
+                <span className="display text-4xl md:text-5xl">100K</span>
+                <span className="text-sm text-ink-soft md:mt-2 md:block">verified views on your clip</span>
               </div>
-              <div className="display text-2xl text-ink-faint">×</div>
-              <div>
-                <div className="display text-4xl md:text-5xl">$40</div>
-                <p className="mt-2 text-sm text-ink-soft">the brand&apos;s rate per 100K</p>
+              <div className="hidden display text-2xl text-ink-faint md:block">×</div>
+              <div className="flex items-baseline gap-3 border-t border-ink/10 pt-6 md:block md:border-0 md:pt-0">
+                <span className="display text-4xl md:text-5xl">$40</span>
+                <span className="text-sm text-ink-soft md:mt-2 md:block">the brand&apos;s rate per 100K</span>
               </div>
-              <div className="display text-2xl text-ink-faint">=</div>
-              <div>
-                <div className="display text-4xl text-electric-deep md:text-5xl">$40</div>
-                <p className="mt-2 text-sm text-ink-soft">in your pocket. That&apos;s it. That&apos;s the math.</p>
+              <div className="hidden display text-2xl text-ink-faint md:block">=</div>
+              <div className="flex items-baseline gap-3 border-t border-ink/10 pt-6 md:block md:border-0 md:pt-0">
+                <span className="display text-4xl text-electric-deep md:text-5xl">$40</span>
+                <span className="text-sm text-ink-soft md:mt-2 md:block">in your pocket. That&apos;s the math.</span>
               </div>
             </div>
             <p className="mt-8 text-xs text-ink-faint">Illustrative example — each campaign sets its own rate.</p>

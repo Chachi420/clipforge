@@ -48,7 +48,7 @@ function chapterOf(p: number): number {
 
 export default function StoryNarrative() {
   const trackRef = useRef<HTMLDivElement>(null);
-  const [chapter, setChapter] = useState(0);
+  const [chapter, setChapter] = useState(1);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
