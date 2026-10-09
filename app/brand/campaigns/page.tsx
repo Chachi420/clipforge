@@ -61,7 +61,7 @@ export default async function BrandCampaignsPage({
             href={t.key === "all" ? "/brand/campaigns" : `/brand/campaigns?status=${t.key}`}
             className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
               t.key === activeKey
-                ? "bg-lime text-ink shadow-card"
+                ? "bg-electric text-white shadow-card"
                 : "text-ink-soft hover:bg-ink/5 hover:text-ink"
             }`}
           >

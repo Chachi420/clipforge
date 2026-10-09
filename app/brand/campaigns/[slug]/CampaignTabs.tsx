@@ -47,7 +47,7 @@ export default function CampaignTabs({
             onClick={() => setTab(t)}
             className={`whitespace-nowrap px-4 py-2.5 text-sm font-semibold transition ${
               tab === t
-                ? "border-b-2 border-lime-deep text-ink"
+                ? "border-b-2 border-electric-deep text-ink"
                 : "border-b-2 border-transparent text-ink-faint hover:text-ink"
             }`}
           >
@@ -122,7 +122,7 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
                     href={c.postUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-sm font-medium text-lime-deep hover:text-ink"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-electric-deep hover:text-ink"
                   >
                     View <ExternalLink size={13} />
                   </a>
