@@ -244,7 +244,7 @@ function CampaignCard({
     // ch0: card sits low as ambient backdrop (clear of the centered headline);
     // rises to center as ch1 begins
     const heroDip = 1 - sstep(0.08, 0.2, p);
-    g.position.y = Math.sin(time * 0.9) * 0.16 * (1 - sstep(0.12, 0.28, p)) - heroDip * 2.2;
+    g.position.y = Math.sin(time * 0.9) * 0.16 * (1 - sstep(0.12, 0.28, p)) - heroDip * 2.6;
     g.position.z = -heroDip * 2.0;
 
     // opportunity pulse ring (ch 0 → early ch 1)
@@ -764,10 +764,10 @@ function Fountain({ bus, pal }: { bus: React.MutableRefObject<StoryBus>; pal: Pa
 const CAM_KEYS: { p: number; pos: [number, number, number]; look: [number, number, number] }[] = [
   { p: 0.0, pos: [0, 0.9, 13.5], look: [0, 0.9, 0] },
   { p: 0.15, pos: [0, 0.5, 10.5], look: [0, 0.7, 0] },
-  { p: 0.35, pos: [0.4, 0.35, 7.6], look: [-1.5, 0.1, 0] },
-  { p: 0.55, pos: [0.4, 1.7, 12.5], look: [-1.5, 0, 0] },
-  { p: 0.75, pos: [1.0, 2.7, 11.2], look: [-1.5, 0.4, 0] },
-  { p: 1.0, pos: [0.4, 0.7, 9.6], look: [-1.5, 0.25, 0] },
+  { p: 0.35, pos: [0.4, 0.35, 7.6], look: [-3.2, 0.1, 0] },
+  { p: 0.55, pos: [0.4, 1.7, 12.5], look: [-3.2, 0, 0] },
+  { p: 0.75, pos: [1.0, 2.7, 11.2], look: [-3.2, 0.4, 0] },
+  { p: 1.0, pos: [0.4, 0.7, 9.6], look: [-3.2, 0.25, 0] },
 ];
 
 function CameraRig({ bus }: { bus: React.MutableRefObject<StoryBus> }) {

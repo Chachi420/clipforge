@@ -226,8 +226,12 @@ export default function StoryOverlay({
             key={i}
             type="button"
             onClick={() => goToChapter(i)}
+            onPointerDown={(e) => {
+              // pointerdown is more reliable than click under a live canvas
+              if (e.pointerType === "mouse") goToChapter(i);
+            }}
             aria-label={`Go to chapter ${i}`}
-            className="group flex items-center justify-end gap-2.5"
+            className="group flex cursor-pointer items-center justify-end gap-2.5 px-2 py-2"
           >
             <span className={`micro-label transition-colors ${chapter === i ? "text-electric-deep" : "text-ink-faint group-hover:text-ink-soft"}`}>
               0{i}
