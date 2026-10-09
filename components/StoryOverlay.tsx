@@ -99,12 +99,12 @@ function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<num
       </p>
       <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
         <Magnetic>
-          <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-ink px-8 py-4 font-bold text-paper hover:bg-ink-soft">
+          <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-ink px-8 py-4 font-semibold text-paper shadow-[0_4px_20px_rgb(7_11_20/0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ink-soft hover:shadow-[0_10px_32px_rgb(7_11_20/0.28)]">
             Start clipping <ArrowRight size={18} />
           </Link>
         </Magnetic>
         <Magnetic>
-          <Link href="/brands" className="pill pointer-events-auto inline-flex items-center border border-line/20 px-8 py-4 font-bold text-ink hover:bg-surface">
+          <Link href="/brands" className="pill pointer-events-auto inline-flex items-center border border-line/15 px-8 py-4 font-semibold text-ink backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-line/25 hover:bg-surface">
             I&apos;m a brand
           </Link>
         </Magnetic>
