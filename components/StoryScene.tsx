@@ -337,8 +337,8 @@ export function clipOrbitPos(i: number, time: number, p: number, out: THREE.Vect
   const w = easeOut(sstep(0.36, 0.52, p));
   const orbitW = sstep(0.4, 0.56, p);
   const ang = (i / 5) * Math.PI * 2 + time * 0.13 * orbitW + p * 1.5;
-  const R = 4.35;
-  const ox = Math.cos(ang) * R;
+  const R = 2.8;
+  const ox = 1.2 + Math.cos(ang) * R;
   const oz = Math.sin(ang) * R * 0.72 - 1.1;
   const oy = 0.25 + Math.sin(time * 0.8 + i * 1.7) * 0.4;
   out.set(lerp(0, ox, w), lerp(0.1, oy, w), lerp(1.4, oz, w));
