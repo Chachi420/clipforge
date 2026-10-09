@@ -1,15 +1,9 @@
 import Link from "next/link";
 import { ArrowRight, BadgeDollarSign, Check, Scissors, TrendingUp, Users } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
-import HeroScene from "@/components/HeroScene";
+import StoryFlow from "@/components/StoryScene";
 import { Faq, MarketingFooter, CtaBand } from "@/components/marketing";
-import { HeroTilt, PinnedProcess, RevealInit } from "@/components/landing-motion";
-
-const PROCESS_STEPS = [
-  { n: "01", title: "Join a campaign", body: "Browse live campaigns from real brands. See the rate, platforms, and bounties up front — then join in one tap." },
-  { n: "02", title: "Post your clip", body: "Post to your verified accounts and paste the link. Views are pulled straight from the platform — nothing to fake." },
-  { n: "03", title: "Get paid per view", body: "Earnings climb as verified views roll in. Payouts go to your PayPal or crypto method when the cycle closes." },
-];
+import { RevealInit } from "@/components/landing-motion";
 
 const CLIPPER_WINS = ["Free to join", "Paid per verified view", "Withdraw via PayPal or crypto"];
 const BRAND_WINS = ["Hard budget caps — never overspend", "Viewbot detection + manual review", "Live dashboard for views and spend"];
@@ -51,38 +45,8 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* ---------- Hero (scroll-driven 3D scene) ---------- */}
-      <HeroScene>
-        <div className="relative mx-auto flex min-h-[100svh] max-w-6xl flex-col items-center justify-center px-6 text-center">
-          <HeroTilt>
-            <div className="micro-label mb-6 text-electric-deep">Clip · Post · Get Paid</div>
-            <h1 className="display text-[clamp(3.5rem,10vw,9rem)] leading-[0.95]">
-              Clip. Post.
-              <br />
-              <span className="text-electric-deep">Get Paid.</span>
-            </h1>
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
-              Brands run pay-per-view campaigns. Clippers earn for every verified view.
-              No following required.
-            </p>
-            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-              <Link href="/login" className="pill bg-ink px-8 py-4 font-bold text-paper hover:bg-ink-soft">
-                Start clipping <ArrowRight size={18} />
-              </Link>
-              <Link href="/brands" className="pill border border-line/20 px-8 py-4 font-bold text-ink hover:bg-surface">
-                I&apos;m a brand
-              </Link>
-            </div>
-          </HeroTilt>
-          {/* scroll cue */}
-          <div className="absolute bottom-8">
-            <div className="glass micro-label rounded-full px-5 py-2">Scroll</div>
-          </div>
-        </div>
-      </HeroScene>
-
-      {/* ---------- Pinned process ---------- */}
-      <PinnedProcess steps={PROCESS_STEPS} />
+      {/* ---------- The ClipForge Flywheel: scroll-driven 3D story ---------- */}
+      <StoryFlow />
 
       <main className="mx-auto max-w-6xl px-6">
         {/* ---------- Dark contrast card ---------- */}
