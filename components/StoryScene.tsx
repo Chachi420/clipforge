@@ -241,7 +241,11 @@ function CampaignCard({
     const spinW = 1 - sstep(0.1, 0.22, p);
     g.rotation.y = Math.sin(time * 0.28) * 0.35 * spinW;
     g.rotation.x = Math.sin(time * 0.4) * 0.06 * spinW;
-    g.position.y = Math.sin(time * 0.9) * 0.16 * (1 - sstep(0.12, 0.28, p));
+    // ch0: card sits low as ambient backdrop (clear of the centered headline);
+    // rises to center as ch1 begins
+    const heroDip = 1 - sstep(0.08, 0.2, p);
+    g.position.y = Math.sin(time * 0.9) * 0.16 * (1 - sstep(0.12, 0.28, p)) - heroDip * 2.2;
+    g.position.z = -heroDip * 2.0;
 
     // opportunity pulse ring (ch 0 → early ch 1)
     if (ringRef.current) {
@@ -393,6 +397,11 @@ function ClipField({
           visible={false}
           {...bindHover(`Clip · ${CLIP_VIEWS[i]} views`)}
           onClick={(e) => {
+            e.stopPropagation();
+            onCardClick(i);
+          }}
+          onPointerDown={(e) => {
+            if (e.nativeEvent instanceof PointerEvent && e.nativeEvent.pointerType !== "mouse") return;
             e.stopPropagation();
             onCardClick(i);
           }}
@@ -642,6 +651,11 @@ function Vault({
         e.stopPropagation();
         bus.current.fountainAt = bus.current.time;
       }}
+      onPointerDown={(e) => {
+        if (e.nativeEvent instanceof PointerEvent && e.nativeEvent.pointerType !== "mouse") return;
+        e.stopPropagation();
+        bus.current.fountainAt = bus.current.time;
+      }}
     >
       <RoundedBox args={[1.7, 1.7, 1.7]} radius={0.14} smoothness={5}>
         <meshPhysicalMaterial color={pal.card} roughness={0.08} metalness={0} transmission={0.9} thickness={1.6} ior={1.45} clearcoat={1} clearcoatRoughness={0.1} emissive={pal.electric} emissiveIntensity={0.12} />
@@ -748,12 +762,12 @@ function Fountain({ bus, pal }: { bus: React.MutableRefObject<StoryBus>; pal: Pa
 /* cinematic camera: keyframed dolly + slow orbit + damped parallax     */
 /* ------------------------------------------------------------------ */
 const CAM_KEYS: { p: number; pos: [number, number, number]; look: [number, number, number] }[] = [
-  { p: 0.0, pos: [0, 0.9, 13.5], look: [0, 0, 0] },
-  { p: 0.15, pos: [0, 0.5, 10.5], look: [0, 0, 0] },
-  { p: 0.35, pos: [0, 0.35, 7.6], look: [0, 0.1, 0] },
-  { p: 0.55, pos: [0, 1.7, 12.5], look: [0, 0, 0] },
-  { p: 0.75, pos: [0.6, 2.7, 11.2], look: [0, 0.4, 0] },
-  { p: 1.0, pos: [0, 0.7, 9.6], look: [0, 0.25, 0] },
+  { p: 0.0, pos: [0, 0.9, 13.5], look: [0, 0.9, 0] },
+  { p: 0.15, pos: [0, 0.5, 10.5], look: [0, 0.7, 0] },
+  { p: 0.35, pos: [0.4, 0.35, 7.6], look: [-1.5, 0.1, 0] },
+  { p: 0.55, pos: [0.4, 1.7, 12.5], look: [-1.5, 0, 0] },
+  { p: 0.75, pos: [1.0, 2.7, 11.2], look: [-1.5, 0.4, 0] },
+  { p: 1.0, pos: [0.4, 0.7, 9.6], look: [-1.5, 0.25, 0] },
 ];
 
 function CameraRig({ bus }: { bus: React.MutableRefObject<StoryBus> }) {
@@ -957,6 +971,7 @@ export default function StoryFlow() {
         progressRef.current = p;
         setChapter((c) => {
           const n = chapterOf(p);
+          if (n !== c) setHover(null); // stale tooltips must not survive a chapter change
           return n === c ? c : n;
         });
       });

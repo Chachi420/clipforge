@@ -217,7 +217,7 @@ export default function StoryOverlay({
 
       {/* chapter dots */}
       <div
-        className={`pointer-events-auto absolute right-5 top-1/2 hidden -translate-y-1/2 flex-col gap-4 transition-opacity duration-500 md:flex ${
+        className={`pointer-events-auto absolute right-5 top-1/2 z-20 hidden -translate-y-1/2 cursor-pointer flex-col gap-4 transition-opacity duration-500 md:flex ${
           chapter === 0 ? "opacity-0" : "opacity-100"
         }`}
       >
