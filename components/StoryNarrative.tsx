@@ -84,7 +84,7 @@ export default function StoryNarrative() {
   };
 
   return (
-    <div ref={trackRef} className="relative" style={{ height: "400vh" }}>
+    <div ref={trackRef} className="relative" style={{ height: "250vh" }}>
       <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
         {/* giant background numeral — the chapter's anchor */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
@@ -96,7 +96,7 @@ export default function StoryNarrative() {
             return (
               <div
                 key={c.n}
-                className={`display absolute select-none text-[38vw] leading-none text-ink/[0.045] transition-opacity duration-700 md:text-[28vw] dark:text-paper/[0.05] ${
+                className={`display absolute select-none text-[24vw] leading-none text-ink/[0.03] transition-opacity duration-700 md:text-[18vw] dark:text-paper/[0.035] ${
                   active ? "opacity-100" : "opacity-0"
                 }`}
                 style={{ transform: `translateY(${-drift}px)` }}
@@ -120,12 +120,12 @@ export default function StoryNarrative() {
                 }`}
                 aria-hidden={!active}
               >
-                <div className="max-w-3xl">
+                <div className={`max-w-3xl ${i % 2 === 1 ? "md:ml-auto md:text-right" : ""}`}>
                   <div className="micro-label">{c.kicker}</div>
-                  <h2 className="display mt-5 text-[clamp(2rem,8vw,5.5rem)] leading-[1.05] hyphens-none [text-wrap:balance]">
+                  <h2 className={`display mt-5 hyphens-none leading-[1.05] [text-wrap:balance] ${i === 3 ? "text-[clamp(2.2rem,9vw,6rem)]" : "text-[clamp(2rem,8vw,5.5rem)]"}`}>
                     {c.title}
                   </h2>
-                  <p className="mt-6 max-w-lg text-[17px] leading-relaxed text-ink-soft">{c.body}</p>
+                  <p className={`mt-6 max-w-lg text-[17px] leading-relaxed text-ink-soft ${i % 2 === 1 ? "md:ml-auto" : ""}`}>{c.body}</p>
                   {id === 4 && (
                     <Link
                       href="/login"
@@ -141,7 +141,7 @@ export default function StoryNarrative() {
           {/* spacer to give absolute children height */}
           <div className="invisible max-w-3xl">
             <div className="micro-label">.</div>
-            <h2 className="display mt-5 text-[clamp(2rem,8vw,5.5rem)] leading-[1.05]">.</h2>
+            <h2 className="display mt-5 text-[clamp(2.2rem,9vw,6rem)] leading-[1.05]">.</h2>
             <p className="mt-6 max-w-lg text-[17px]">.</p>
           </div>
         </div>

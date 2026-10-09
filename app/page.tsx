@@ -80,9 +80,9 @@ export default function Landing() {
         <section className="reveal py-24 md:py-36">
           <div className="micro-label mb-6">Two ways in</div>
           <h2 className="display max-w-4xl text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02]">
-            Which one
+            Start here.
             <br />
-            are you?
+            Pick your path.
           </h2>
 
           <div className="mt-14 space-y-5">
@@ -134,13 +134,27 @@ export default function Landing() {
         <section className="reveal py-24 md:py-32">
           <h2 className="display mb-12 text-center text-[clamp(2rem,5vw,3.5rem)]">Questions, answered</h2>
           <div className="mx-auto max-w-2xl">
-            <Faq items={FAQ_ITEMS.slice(0, 3)} />
+            <Faq items={FAQ_ITEMS} />
           </div>
-          <p className="mt-8 text-center">
-            <Link href="/docs" className="link-under text-sm font-semibold text-ink-soft hover:text-ink">
-              More in the docs →
+
+        </section>
+
+        {/* ---------- Final CTA ---------- */}
+        <section className="reveal py-24 text-center md:py-36">
+          <div className="micro-label mb-6">No followers needed. No fees. No catch.</div>
+          <h2 className="display mx-auto max-w-4xl text-[clamp(2.75rem,8vw,6rem)] leading-[1.0]">
+            Your first payout
+            <br />
+            is one clip away.
+          </h2>
+          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+            <Link href="/login" className="pill inline-flex w-full items-center justify-center gap-2 bg-electric px-10 py-5 text-lg font-semibold text-white shadow-[0_4px_24px_rgb(32_71_255/0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB] sm:w-auto">
+              Start clipping <ArrowRight size={20} />
             </Link>
-          </p>
+            <Link href="/brands" className="link-under inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-electric-deep">
+              I&apos;m a brand <ArrowRight size={16} />
+            </Link>
+          </div>
         </section>
       </main>
 

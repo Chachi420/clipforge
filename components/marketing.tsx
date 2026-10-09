@@ -75,7 +75,7 @@ export function MarketingFooter() {
             </Link>
           ))}
         </div>
-        <div className="mt-4 text-center text-xs text-ice/40">ClipForge — a demo rebuild for product research.</div>
+        <div className="mt-4 text-center text-xs text-ice/40">© 2026 ClipForge. Pay per verified view.</div>
       </div>
       <div className="mt-12 overflow-hidden border-t border-ice/10 px-4 pt-8">
         <div className="select-none whitespace-nowrap text-center font-display text-[13.5vw] font-bold leading-none tracking-tight text-ice/95 md:text-[clamp(4rem,14vw,14rem)]">

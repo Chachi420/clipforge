@@ -13,7 +13,7 @@ export default function Hero() {
   }, []);
 
   return (
-    <header className="relative flex min-h-[92svh] items-center justify-center overflow-hidden">
+    <header className="relative flex min-h-[88svh] items-center justify-center overflow-hidden">
       <div className="relative w-full px-5 text-center md:px-6">
         <div
           className={`micro-label mb-8 transition-all duration-700 ease-out ${
@@ -61,6 +61,21 @@ export default function Hero() {
             I&apos;m a brand <ArrowRight size={16} />
           </Link>
         </div>
+        {/* compact money math — the concrete payoff, above the fold */}
+        <div
+          className={`mt-10 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-full border border-ink/12 bg-ink/[0.03] px-6 py-3 text-[15px] transition-all delay-500 duration-700 ease-out ${
+            entered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+          }`}
+        >
+          <span className="text-ink-soft">100K views</span>
+          <span className="text-ink-faint">×</span>
+          <span className="text-ink-soft">$40 per 100K</span>
+          <span className="text-ink-faint">=</span>
+          <span className="display text-lg text-electric-deep">$40 in your pocket</span>
+        </div>
+        <p className={`mt-3 text-xs text-ink-faint transition-opacity delay-700 duration-700 ${entered ? "opacity-100" : "opacity-0"}`}>
+          Illustrative — each campaign sets its own rate.
+        </p>
       </div>
 
       {/* scroll cue */}
