@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Menu, X } from "lucide-react";
 
@@ -13,14 +13,29 @@ const LINKS = [
 
 export default function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setOpen(false);
+        buttonRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open ]);
 
   return (
     <div className="md:hidden">
       <button
+        ref={buttonRef}
         type="button"
         onClick={() => setOpen(!open)}
         aria-label={open ? "Close menu" : "Open menu"}
         aria-expanded={open}
+        aria-controls="mobile-menu-panel"
         className="flex h-11 w-11 items-center justify-center rounded-full text-ink transition-colors hover:bg-ink/5"
       >
         {open ? <X size={22} /> : <Menu size={22} />}
@@ -28,6 +43,7 @@ export default function MobileMenu() {
 
       {/* dropdown panel */}
       <div
+        id="mobile-menu-panel"
         className={`absolute inset-x-0 top-full z-50 origin-top border-b border-line/10 bg-paper/95 backdrop-blur-2xl transition-all duration-200 ease-out ${
           open ? "visible scale-y-100 opacity-100" : "invisible scale-y-95 opacity-0"
         }`}
@@ -60,7 +76,7 @@ export default function MobileMenu() {
       {/* scrim */}
       {open && (
         <div
-          className="fixed inset-0 -z-10 bg-ink/20 backdrop-blur-[2px]"
+          className="fixed inset-0 z-30 bg-ink/20 backdrop-blur-[2px]"
           onClick={() => setOpen(false)}
           aria-hidden
         />

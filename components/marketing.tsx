@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { Plus } from "lucide-react";
 
@@ -69,9 +70,9 @@ export function MarketingFooter() {
       <div className="mx-auto max-w-6xl px-6 pt-14">
         <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="hover:text-ice">
+            <Link key={l.href} href={l.href} className="hover:text-ice">
               {l.label}
-            </a>
+            </Link>
           ))}
         </div>
         <div className="mt-4 text-center text-xs text-ice/40">ClipForge — a demo rebuild for product research.</div>
