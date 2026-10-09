@@ -7,8 +7,6 @@ const display = Fraunces({
   weight: ["400", "500", "600"],
   style: ["normal", "italic"],
   variable: "--font-display",
-  // optical sizing + soft/wonk axes for character
-  axes: ["opsz", "SOFT", "WONK"],
 });
 
 export const metadata: Metadata = {
