@@ -88,26 +88,24 @@ function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<num
 
   return (
     <div ref={ref} className="will-change-transform" style={{ transformOrigin: "50% 0%" }}>
-      <div className="micro-label mb-6 text-electric-deep">Clip · Post · Get Paid</div>
-      <h1 className="display text-[clamp(3.5rem,10vw,9rem)] leading-[0.95]">
+      <div className="micro-label mb-6">Clip · Post · Get Paid</div>
+      <h1 className="display text-[clamp(3rem,7vw,5.5rem)] leading-[1.02]">
         Clip. Post.
         <br />
-        <span className="text-electric-deep">Get Paid.</span>
+        Get Paid.
       </h1>
-      <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-ink-soft md:text-xl">
+      <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-ink-soft">
         Brands run pay-per-view campaigns. Clippers earn for every verified view. No following required.
       </p>
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+      <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
         <Magnetic>
-          <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-ink px-8 py-4 font-semibold text-paper shadow-[0_4px_20px_rgb(7_11_20/0.2)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-ink-soft hover:shadow-[0_10px_32px_rgb(7_11_20/0.28)]">
+          <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-electric px-8 py-4 font-semibold text-white shadow-[0_4px_20px_rgb(32_71_255/0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB] hover:shadow-[0_10px_32px_rgb(32_71_255/0.45)]">
             Start clipping <ArrowRight size={18} />
           </Link>
         </Magnetic>
-        <Magnetic>
-          <Link href="/brands" className="pill pointer-events-auto inline-flex items-center border border-line/15 px-8 py-4 font-semibold text-ink backdrop-blur-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-line/25 hover:bg-surface">
-            I&apos;m a brand
-          </Link>
-        </Magnetic>
+        <Link href="/brands" className="link-under pointer-events-auto inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-electric-deep">
+          I&apos;m a brand <ArrowRight size={16} />
+        </Link>
       </div>
     </div>
   );
@@ -159,6 +157,36 @@ function ChapterBlock({ active, children }: { active: boolean; children: React.R
 }
 
 /* ------------------------------------------------------------------ */
+/* chapter progress bar — thin fill driven by story progress           */
+/* ------------------------------------------------------------------ */
+function ChapterProgress({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let raf = 0;
+    const apply = () => {
+      const el = ref.current;
+      if (!el) return;
+      // progress across chapters 1–4 (0.15 → 1.0 of story)
+      const p = Math.min(1, Math.max(0, (progressRef.current - 0.15) / 0.85));
+      el.style.transform = `scaleX(${p})`;
+    };
+    const onScroll = () => {
+      cancelAnimationFrame(raf);
+      raf = requestAnimationFrame(apply);
+    };
+    apply();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(raf);
+    };
+  }, [progressRef]);
+
+  return <div ref={ref} className="h-full w-full origin-left bg-electric" style={{ transform: "scaleX(0)" }} />;
+}
+
+/* ------------------------------------------------------------------ */
 /* overlay                                                             */
 /* ------------------------------------------------------------------ */
 export default function StoryOverlay({
@@ -205,13 +233,13 @@ export default function StoryOverlay({
         const active = chapter === id;
         return (
           <ChapterBlock key={c.n} active={active}>
-            <div className="micro-label text-electric-deep">{c.kicker}</div>
-            <h2 className="display mt-4 text-4xl md:text-6xl">{c.title}</h2>
-            <p className="mt-5 max-w-lg text-lg leading-relaxed text-ink-soft">{c.body}</p>
+            <div className="micro-label">{c.kicker}</div>
+            <h2 className="display mt-4 text-4xl md:text-[3.5rem] md:leading-[1.05]">{c.title}</h2>
+            <p className="mt-5 max-w-lg text-base leading-relaxed text-ink-soft">{c.body}</p>
             {id === 4 && (
               <div className="mt-8">
                 <Magnetic>
-                  <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-ink px-8 py-4 font-bold text-paper hover:bg-ink-soft">
+                  <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-electric px-8 py-4 font-semibold text-white shadow-[0_4px_20px_rgb(32_71_255/0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB]">
                     Start clipping <ArrowRight size={18} />
                   </Link>
                 </Magnetic>
@@ -221,7 +249,19 @@ export default function StoryOverlay({
         );
       })}
 
-      {/* chapter dots */}
+      {/* chapter progress — counter + thin bar (mobile-visible, Apple-style wayfinding) */}
+      <div
+        className={`absolute bottom-8 right-5 flex items-center gap-3 transition-opacity duration-500 md:right-8 ${
+          chapter === 0 ? "pointer-events-none opacity-0" : "opacity-100"
+        }`}
+      >
+        <span className="micro-label tabular-nums">
+          {String(chapter).padStart(2, "0")} / 04
+        </span>
+        <div className="h-px w-16 overflow-hidden rounded-full bg-ink/15 md:w-24">
+          <ChapterProgress progressRef={progressRef} />
+        </div>
+      </div>
       <div
         className={`pointer-events-auto absolute right-5 top-1/2 z-20 hidden -translate-y-1/2 cursor-pointer flex-col gap-4 transition-opacity duration-500 md:flex ${
           chapter === 0 ? "opacity-0" : "opacity-100"

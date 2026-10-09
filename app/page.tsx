@@ -50,7 +50,7 @@ export default function Landing() {
 
       <main className="bg-glow mx-auto max-w-6xl px-6">
         {/* ---------- Dark contrast card ---------- */}
-        <section className="reveal py-16">
+        <section className="reveal py-24 md:py-32">
           <div className="glass-dark glass-sheen glow-electric rounded-[2rem] p-10 text-white md:p-14">
             <div className="grid items-center gap-10 md:grid-cols-2">
               <div>
@@ -83,7 +83,7 @@ export default function Landing() {
         </section>
 
         {/* ---------- Two sides ---------- */}
-        <section className="reveal py-16">
+        <section className="reveal py-24 md:py-32">
           <h2 className="display text-center text-4xl md:text-5xl">Two sides. One platform.</h2>
           <p className="mx-auto mt-4 max-w-xl text-center text-lg text-ink-soft">
             Clippers get paid per view. Brands get reach they only pay for when it is verified.
@@ -123,7 +123,7 @@ export default function Landing() {
         </section>
 
         {/* ---------- FAQ ---------- */}
-        <section className="reveal py-16">
+        <section className="reveal py-24 md:py-32">
           <h2 className="display mb-10 text-center text-4xl md:text-5xl">Questions, answered</h2>
           <div className="mx-auto max-w-3xl">
             <Faq items={FAQ_ITEMS} />

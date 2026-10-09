@@ -50,7 +50,7 @@ const config: Config = {
         sans: ["var(--font-body)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        "glow-electric": "0 0 44px rgba(32,71,255,0.35), 0 10px 36px rgba(7,11,20,0.16)",
+        "glow-electric": "0 0 24px rgba(32,71,255,0.18), 0 8px 24px rgba(7,11,20,0.12)",
         card: "0 8px 32px rgba(7,11,20,0.08)",
         "card-lg": "0 18px 60px rgba(7,11,20,0.12)",
       },

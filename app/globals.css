@@ -82,8 +82,9 @@ body {
   }
   /* Massive Vectr-style display headline */
   .display {
-    @apply font-display font-bold tracking-tight text-ink;
-    letter-spacing: -0.045em;
+    @apply font-display font-semibold tracking-tight text-ink;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
   }
   /* Small uppercase micro-label with wide tracking (Vectr nav/section labels) */
   .micro-label {
