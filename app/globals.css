@@ -1,3 +1,6 @@
+/* Satoshi — the startup upgrade from Inter (Fontshare) */
+@import url("https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -82,9 +85,11 @@ body {
   }
   /* Massive Vectr-style display headline */
   .display {
-    @apply font-display font-semibold tracking-tight text-ink;
-    letter-spacing: -0.03em;
+    @apply font-display font-medium tracking-tight text-ink;
+    letter-spacing: -0.02em;
     text-wrap: balance;
+    /* Fraunces optical character */
+    font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
   }
   /* Small uppercase micro-label with wide tracking (Vectr nav/section labels) */
   .micro-label {

@@ -47,7 +47,7 @@ const config: Config = {
       },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
-        sans: ["var(--font-body)", "system-ui", "sans-serif"],
+        sans: ["Satoshi", "system-ui", "sans-serif"],
       },
       boxShadow: {
         "glow-electric": "0 0 24px rgba(32,71,255,0.18), 0 8px 24px rgba(7,11,20,0.12)",
