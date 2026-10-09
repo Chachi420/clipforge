@@ -792,9 +792,11 @@ function CameraRig({ bus }: { bus: React.MutableRefObject<StoryBus> }) {
     des.set(lerp(A.pos[0], B.pos[0], t), lerp(A.pos[1], B.pos[1], t), lerp(A.pos[2], B.pos[2], t));
     lookT.set(lerp(A.look[0], B.look[0], t), lerp(A.look[1], B.look[1], t), lerp(A.look[2], B.look[2], t));
 
-    // slow orbit drift during the clips/views chapters
-    const orbitW = sstep(0.4, 0.55, p) * (1 - sstep(0.72, 0.8, p));
-    const az = orbitW * clock.elapsedTime * 0.1;
+    // gentle sway during the clips/views chapters (bounded oscillation, NOT a
+    // continuous orbit — the camera must not rotate around the scene, or the
+    // text-safe-zone mapping between world-x and screen-x breaks)
+    const swayW = sstep(0.4, 0.55, p) * (1 - sstep(0.72, 0.8, p));
+    const az = swayW * Math.sin(clock.elapsedTime * 0.1) * 0.12;
     if (az !== 0) {
       const dx = des.x - lookT.x, dz = des.z - lookT.z;
       const c = Math.cos(az), s = Math.sin(az);
