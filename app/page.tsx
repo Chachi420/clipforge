@@ -1,12 +1,10 @@
 import Link from "next/link";
-import { ArrowRight, BadgeDollarSign, Check, Scissors, TrendingUp, Users } from "lucide-react";
+import { ArrowRight, Scissors, TrendingUp } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import StoryFlow from "@/components/StoryScene";
-import { Faq, MarketingFooter, CtaBand } from "@/components/marketing";
+import { Faq, MarketingFooter } from "@/components/marketing";
 import { RevealInit } from "@/components/landing-motion";
 
-const CLIPPER_WINS = ["Free to join", "Paid per verified view", "Withdraw via PayPal or crypto"];
-const BRAND_WINS = ["Hard budget caps — never overspend", "Viewbot detection + manual review", "Live dashboard for views and spend"];
 
 const FAQ_ITEMS = [
   { q: "Is it free?", a: "Yes. Joining as a clipper is free — there are no sign-up fees and no subscription. Brands set their own campaign budgets and only pay for verified views." },
@@ -49,93 +47,46 @@ export default function Landing() {
       <StoryFlow />
 
       <main className="bg-glow mx-auto max-w-6xl px-6">
-        {/* ---------- Dark contrast card ---------- */}
-        <section className="reveal py-24 md:py-32">
-          <div className="glass-dark glass-sheen glow-electric rounded-[2rem] p-10 text-white md:p-14">
-            <div className="grid items-center gap-10 md:grid-cols-2">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-[0.3em] text-electric-soft">Why ClipForge</div>
-                <h2 className="mt-3 font-display text-4xl font-bold tracking-tight md:text-5xl">
-                  Pay for views.
-                  <br />
-                  Not promises.
-                </h2>
-              </div>
-              <ul className="space-y-5">
-                {[
-                  { icon: TrendingUp, t: "Pay per verified view", d: "View counts pulled from the platforms, filtered for bots, spot-checked by hand." },
-                  { icon: Users, t: "No following required", d: "A clip earns from its first hundred views. Quality beats audience size." },
-                  { icon: BadgeDollarSign, t: "Payouts after review", d: "Cycles close, views are verified, money moves to PayPal or crypto." },
-                ].map((f) => (
-                  <li key={f.t} className="flex gap-4">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-electric/20 text-electric-soft">
-                      <f.icon size={20} />
-                    </span>
-                    <span>
-                      <span className="block font-bold">{f.t}</span>
-                      <span className="mt-1 block text-sm text-white/60">{f.d}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* ---------- Two sides: the conversion moment ---------- */}
+        <section className="reveal py-24 md:py-36">
+          <div className="micro-label mb-6 text-center">Pick your side</div>
+          <h2 className="display mx-auto max-w-4xl text-center text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02]">
+            Two sides.
+            <br />
+            One platform.
+          </h2>
+          <div className="mt-14 grid gap-5 text-left md:grid-cols-2">
+            <Link href="/clip" className="glass glass-sheen group block rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-lg md:p-12">
+              <Scissors className="mb-6 text-electric-deep transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" size={32} />
+              <h3 className="display text-3xl md:text-4xl">For clippers</h3>
+              <p className="mt-3 max-w-sm text-[17px] leading-relaxed text-ink-soft">Free to join. No following required. Pick a campaign, post your clips, watch views turn into earnings.</p>
+              <span className="mt-8 inline-flex items-center gap-2 font-semibold text-electric-deep">
+                Start clipping <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
+              </span>
+            </Link>
+            <Link href="/brands" className="glass glass-sheen group block rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-card-lg md:p-12">
+              <TrendingUp className="mb-6 text-electric-deep transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6" size={32} />
+              <h3 className="display text-3xl md:text-4xl">For brands</h3>
+              <p className="mt-3 max-w-sm text-[17px] leading-relaxed text-ink-soft">Pay per verified view, not per post. Set a budget with a hard cap — never pay more than you planned.</p>
+              <span className="mt-8 inline-flex items-center gap-2 font-semibold text-electric-deep">
+                Launch a campaign <ArrowRight size={18} className="transition-transform duration-200 group-hover:translate-x-1" />
+              </span>
+            </Link>
           </div>
         </section>
 
-        {/* ---------- Two sides ---------- */}
+        {/* ---------- FAQ: objection handling, trimmed ---------- */}
         <section className="reveal py-24 md:py-32">
-          <h2 className="display text-center text-4xl md:text-5xl">Two sides. One platform.</h2>
-          <p className="mx-auto mt-4 max-w-xl text-center text-lg text-ink-soft">
-            Clippers get paid per view. Brands get reach they only pay for when it is verified.
+          <h2 className="display mb-12 text-center text-[clamp(2rem,5vw,3.5rem)]">Questions, answered</h2>
+          <div className="mx-auto max-w-2xl">
+            <Faq items={FAQ_ITEMS.slice(0, 3)} />
+          </div>
+          <p className="mt-8 text-center">
+            <Link href="/docs" className="link-under text-sm font-semibold text-ink-soft hover:text-ink">
+              More in the docs →
+            </Link>
           </p>
-          <div className="mt-10 grid gap-5 text-left md:grid-cols-2">
-            <div className="glass glass-sheen group rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-card-lg md:p-10">
-              <Scissors className="mb-4 text-electric-deep transition-transform duration-300 group-hover:scale-110" size={28} />
-              <h3 className="font-display text-2xl font-bold tracking-tight">For clippers</h3>
-              <p className="mt-2 text-ink-soft">Free to join · No following required. Pick a campaign, post your clips, watch views turn into earnings.</p>
-              <ul className="mt-6 space-y-2.5">
-                {CLIPPER_WINS.map((w) => (
-                  <li key={w} className="flex items-center gap-2.5 text-sm font-medium text-ink">
-                    <Check size={15} className="shrink-0 text-electric-deep" /> {w}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/clip" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-electric-deep hover:text-ink">
-                How it works for clippers <ArrowRight size={15} />
-              </Link>
-            </div>
-            <div className="glass glass-sheen group rounded-[2rem] p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-card-lg md:p-10">
-              <TrendingUp className="mb-4 text-electric-deep transition-transform duration-300 group-hover:scale-110" size={28} />
-              <h3 className="font-display text-2xl font-bold tracking-tight">For brands</h3>
-              <p className="mt-2 text-ink-soft">Pay per verified view, not per post. Set a budget with a hard cap — you never pay more than you planned.</p>
-              <ul className="mt-6 space-y-2.5">
-                {BRAND_WINS.map((w) => (
-                  <li key={w} className="flex items-center gap-2.5 text-sm font-medium text-ink">
-                    <Check size={15} className="shrink-0 text-electric-deep" /> {w}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/brands" className="mt-6 inline-flex items-center gap-1.5 text-sm font-bold text-electric-deep hover:text-ink">
-                How it works for brands <ArrowRight size={15} />
-              </Link>
-            </div>
-          </div>
         </section>
-
-        {/* ---------- FAQ ---------- */}
-        <section className="reveal py-24 md:py-32">
-          <h2 className="display mb-10 text-center text-4xl md:text-5xl">Questions, answered</h2>
-          <div className="mx-auto max-w-3xl">
-            <Faq items={FAQ_ITEMS} />
-          </div>
-        </section>
-
-        <div className="reveal">
-          <CtaBand
-            title="Ready when you are."
-            body="Join free as a clipper and start earning per verified view — or launch a campaign and only pay for reach that actually happened."
-          />
-        </div>
       </main>
 
       <MarketingFooter />
