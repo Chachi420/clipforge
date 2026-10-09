@@ -40,10 +40,9 @@ const CHAPTERS = [
 ];
 
 function chapterOf(p: number): number {
-  if (p < 0.2) return 0;
-  if (p < 0.4) return 1;
-  if (p < 0.6) return 2;
-  if (p < 0.8) return 3;
+  if (p < 0.25) return 1;
+  if (p < 0.5) return 2;
+  if (p < 0.75) return 3;
   return 4;
 }
 
@@ -77,8 +76,8 @@ export default function StoryNarrative() {
   const goToChapter = (i: number) => {
     const el = trackRef.current;
     if (!el) return;
-    // chapter i (1-4) sits at roughly (i * 0.2 + 0.1) of the track
-    const frac = Math.min(0.95, 0.1 + i * 0.2);
+    // chapter i (1-4) sits at roughly ((i - 0.5) * 0.25) of the track
+    const frac = Math.min(0.95, (i - 0.5) * 0.25);
     const top = el.getBoundingClientRect().top + window.scrollY;
     const total = el.offsetHeight - window.innerHeight;
     window.scrollTo({ top: top + frac * total, behavior: "smooth" });
@@ -93,7 +92,7 @@ export default function StoryNarrative() {
             const id = i + 1;
             const active = chapter === id;
             // parallax drift driven by overall progress
-            const drift = (progress - 0.1 - i * 0.2) * 120;
+            const drift = (progress - (i + 0.5) * 0.25) * 120;
             return (
               <div
                 key={c.n}
@@ -150,12 +149,12 @@ export default function StoryNarrative() {
         {/* progress: counter + bar + dots */}
         <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-4">
           <span className="micro-label tabular-nums">
-            {String(Math.max(1, chapter)).padStart(2, "0")} / 04
+            {String(chapter).padStart(2, "0")} / 04
           </span>
           <div className="h-px w-24 overflow-hidden rounded-full bg-ink/15 md:w-32">
             <div
               className="h-full w-full origin-left bg-electric transition-transform duration-150"
-              style={{ transform: `scaleX(${Math.min(1, Math.max(0, (progress - 0.1) / 0.8))})` }}
+              style={{ transform: `scaleX(${Math.min(1, Math.max(0, progress))})` }}
             />
           </div>
         </div>

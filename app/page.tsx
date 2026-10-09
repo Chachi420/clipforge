@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Scissors, TrendingUp } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import MobileMenu from "@/components/MobileMenu";
 import StoryNarrative from "@/components/StoryNarrative";
 import { Faq, MarketingFooter } from "@/components/marketing";
 import { RevealInit } from "@/components/landing-motion";
@@ -20,7 +21,7 @@ export default function Landing() {
       <RevealInit />
 
       {/* ---------- Nav ---------- */}
-      <nav className="sticky top-0 z-40 border-b border-line/[0.07] bg-paper/60 backdrop-blur-2xl backdrop-saturate-150">
+      <nav className="sticky top-0 z-40 border-b border-line/[0.07] bg-paper/60 backdrop-blur-2xl backdrop-saturate-150 relative">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
           <Link href="/" className="font-display text-lg font-bold tracking-tight">
             CLIPFORGE
@@ -31,7 +32,8 @@ export default function Landing() {
             <Link href="/blog" className="micro-label link-under hover:text-ink">Blog</Link>
             <Link href="/docs" className="micro-label link-under hover:text-ink">Docs</Link>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
+            <MobileMenu />
             <ThemeToggle />
             <Link href="/login" className="hidden text-sm font-semibold text-ink-soft transition-colors hover:text-ink sm:block">
               Sign in

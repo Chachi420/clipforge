@@ -102,7 +102,7 @@ function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<num
       >
         The pay-per-view clipping network
       </div>
-      <h1 className="display text-[clamp(4rem,13vw,12rem)] leading-[0.92]">
+      <h1 className="display text-[clamp(2.75rem,14vw,12rem)] leading-[0.92]">
         <span className="block overflow-hidden">
           <span
             className={`block transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
