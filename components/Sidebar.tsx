@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "./ThemeToggle";
 import {
   Bug, Clapperboard, CreditCard, Home, Lightbulb, Settings, Users, Wallet,
 } from "lucide-react";
@@ -23,7 +24,7 @@ export default function Sidebar({
   return (
     <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-line/10 bg-surface/70 px-4 py-6 backdrop-blur-xl">
       <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime text-lg font-black text-ink">C</span>
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-electric text-lg font-black text-white">C</span>
         <span className="text-lg font-black tracking-tight text-ink">
           CLIPFORGE <span className="ml-1 rounded bg-ink/10 px-1.5 py-0.5 text-[10px] font-bold text-ink-faint">BETA</span>
         </span>
@@ -37,7 +38,7 @@ export default function Sidebar({
               key={href}
               href={href}
               className={`pill justify-start px-4 py-2.5 text-sm transition ${
-                active ? "bg-lime text-ink shadow-card" : "text-ink-soft hover:bg-ink/5 hover:text-ink"
+                active ? "bg-electric text-white shadow-card" : "text-ink-soft hover:bg-ink/5 hover:text-ink"
               }`}
             >
               <Icon size={18} />
@@ -60,7 +61,7 @@ export default function Sidebar({
       </div>
 
       <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-surface/80 p-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-lime/25 text-sm font-bold text-lime-deep">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-electric/25 text-sm font-bold text-electric-deep">
           {profile.displayName.slice(0, 1)}
         </span>
         <div className="min-w-0 flex-1">
@@ -70,6 +71,7 @@ export default function Sidebar({
         <Link href="/dashboard/settings" className="text-ink-faint hover:text-ink" aria-label="Settings">
           <Settings size={16} />
         </Link>
+        <ThemeToggle />
       </div>
     </aside>
   );

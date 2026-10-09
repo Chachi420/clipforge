@@ -58,46 +58,15 @@ export function HeroTilt({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * K95-inspired lime glass orb — CSS only (layered radial gradients + blur),
- * slow float/rotate, subtle mouse parallax. Echoes the Bostie AI orb.
- */
-export function Orb({ className = "" }: { className?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const el = ref.current;
-    if (!el) return;
-    let raf = 0;
-    const onMove = (e: MouseEvent) => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(() => {
-        const x = (e.clientX / window.innerWidth - 0.5) * 24;
-        const y = (e.clientY / window.innerHeight - 0.5) * 24;
-        el.style.setProperty("--px", `${x}px`);
-        el.style.setProperty("--py", `${y}px`);
-      });
-    };
-    window.addEventListener("mousemove", onMove, { passive: true });
-    return () => {
-      window.removeEventListener("mousemove", onMove);
-      cancelAnimationFrame(raf);
-    };
-  }, []);
-
-  return (
-    <div ref={ref} className={`orb-wrap ${className}`} aria-hidden>
-      <div className="orb-core" />
-      <div className="orb-glow" />
-    </div>
-  );
-}
-
-/**
- * Pinned scroll-driven process: steps advance purely by scrolling.
+ * Pinned scroll-driven process (Vectr-style): steps advance purely by scrolling.
  * A tall track pins the card; scroll progress drives the active step + bar.
+ * Numbered steps with thin dividers, electric blue accents.
  */
-export function PinnedProcess({ steps }: { steps: { n: string; title: string; body: string }[] }) {
+export function PinnedProcess({ steps, kicker = "How it works", title = "Three steps to your first payout" }: {
+  steps: { n: string; title: string; body: string }[];
+  kicker?: string;
+  title?: string;
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
@@ -126,38 +95,34 @@ export function PinnedProcess({ steps }: { steps: { n: string; title: string; bo
   return (
     <div ref={trackRef} className="relative" style={{ height: `${120 + steps.length * 60}vh` }}>
       <div className="sticky top-0 flex min-h-screen items-center py-20">
-        <div className="glass glass-sheen mx-auto w-full max-w-4xl rounded-[2rem] p-8 md:p-14">
-          <div className="text-xs font-bold uppercase tracking-[0.3em] text-lime-deep">How it works</div>
-          <h2 className="display mt-3 text-4xl md:text-5xl">Three steps to your first payout</h2>
+        <div className="mx-auto w-full max-w-5xl px-6">
+          <div className="micro-label">{kicker}</div>
+          <h2 className="display mt-4 text-4xl md:text-6xl">{title}</h2>
           {/* progress bar */}
-          <div className="mt-8 h-1 w-full overflow-hidden rounded-full bg-ink/10">
+          <div className="mt-10 h-px w-full bg-ink/15">
             <div
-              className="h-full rounded-full bg-lime-deep transition-[width] duration-150"
+              className="h-px bg-electric transition-[width] duration-150"
               style={{ width: `${((active + 1) / steps.length) * 100}%` }}
             />
           </div>
-          <div className="mt-8 grid gap-6 md:grid-cols-3">
+          <div className="mt-2">
             {steps.map((s, i) => (
               <div
                 key={s.n}
-                className={`rounded-3xl border p-6 transition-all duration-500 ${
-                  i === active
-                    ? "border-lime-deep/40 bg-lime-pale/60 shadow-glow-lime dark:bg-lime/10"
-                    : i < active
-                      ? "border-line/10 bg-surface/50 opacity-70"
-                      : "border-line/10 bg-surface/50 opacity-40"
+                className={`grid grid-cols-[auto_1fr] gap-6 border-b border-line/10 py-8 transition-all duration-500 md:grid-cols-[120px_1fr_1fr] md:gap-10 ${
+                  i === active ? "opacity-100" : i < active ? "opacity-60" : "opacity-30"
                 }`}
               >
-                <div className={`text-xs font-black tracking-widest ${i <= active ? "text-lime-deep" : "text-ink-faint"}`}>
+                <div className={`font-display text-lg font-bold tracking-tight ${i <= active ? "text-electric" : "text-ink-faint"}`}>
                   {s.n}
                 </div>
-                <div className="mt-2 text-lg font-bold text-ink">{s.title}</div>
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">{s.body}</p>
+                <div className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl">{s.title}</div>
+                <p className="col-span-2 max-w-md text-sm leading-relaxed text-ink-soft md:col-span-1">{s.body}</p>
               </div>
             ))}
           </div>
-          <div className="mt-6 text-center text-xs font-semibold uppercase tracking-widest text-ink-faint">
-            Keep scrolling — {active + 1} of {steps.length}
+          <div className="micro-label mt-8">
+            {String(active + 1).padStart(2, "0")} / {String(steps.length).padStart(2, "0")}
           </div>
         </div>
       </div>

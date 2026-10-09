@@ -1,7 +1,9 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Theme-aware palette via CSS variables (see globals.css :root / .dark).
+ * Vectr-inspired theme-aware palette via CSS variables (see globals.css :root / .dark).
+ * Light: pale ice-blue paper, near-black ink, electric blue accent.
+ * Dark: deep navy-black paper, ice-blue ink, electric blue accent.
  * Semantic tokens — components use paper/surface/ink/line and automatically
  * adapt to light + dark themes. Never hardcode theme-specific colors.
  */
@@ -22,13 +24,14 @@ const config: Config = {
           faint: withAlpha("--ink-faint"),
         },
         line: withAlpha("--line"),
-        lime: {
-          DEFAULT: "#BFFF3C",
-          soft: "#D9FF70",
-          pale: "#EFFFD2",
-          deep: withAlpha("--lime-deep"),
+        electric: {
+          DEFAULT: "#2047FF",
+          soft: "#5B7CFF",
+          pale: "#E3E9FF",
+          deep: withAlpha("--electric-deep"),
         },
-        night: "#0B0F0C",
+        night: "#070B14",
+        ice: "#D8E5ED",
         // Legacy tokens — remapped to theme-aware equivalents. Do not use in new code.
         base: {
           950: withAlpha("--paper"),
@@ -38,8 +41,8 @@ const config: Config = {
           700: withAlpha("--line"),
         },
         accent: {
-          DEFAULT: "#4D7C0F",
-          soft: "#BFFF3C",
+          DEFAULT: "#2047FF",
+          soft: "#5B7CFF",
         },
       },
       fontFamily: {
@@ -47,9 +50,9 @@ const config: Config = {
         sans: ["var(--font-body)", "system-ui", "sans-serif"],
       },
       boxShadow: {
-        "glow-lime": "0 0 44px rgba(191,255,60,0.45), 0 10px 36px rgba(16,21,16,0.16)",
-        card: "0 8px 32px rgba(16,21,16,0.08)",
-        "card-lg": "0 18px 60px rgba(16,21,16,0.12)",
+        "glow-electric": "0 0 44px rgba(32,71,255,0.35), 0 10px 36px rgba(7,11,20,0.16)",
+        card: "0 8px 32px rgba(7,11,20,0.08)",
+        "card-lg": "0 18px 60px rgba(7,11,20,0.12)",
       },
     },
   },

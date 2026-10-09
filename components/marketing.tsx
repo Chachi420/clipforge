@@ -17,7 +17,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
             <span className="font-bold text-ink">{it.q}</span>
             <ChevronDown
               size={18}
-              className={`shrink-0 text-lime-deep transition-transform ${open === i ? "rotate-180" : ""}`}
+              className={`shrink-0 text-electric-deep transition-transform ${open === i ? "rotate-180" : ""}`}
             />
           </button>
           {open === i && <p className="px-5 pb-5 text-sm leading-relaxed text-ink-soft">{it.a}</p>}
@@ -50,7 +50,7 @@ export function Tabs({ tabs }: { tabs: { label: string; content: React.ReactNode
   );
 }
 
-/* ---------- Shared footer ---------- */
+/* ---------- Shared footer (Vectr finale) ---------- */
 export function MarketingFooter() {
   const links = [
     { href: "/", label: "Home" },
@@ -61,15 +61,22 @@ export function MarketingFooter() {
     { href: "/contact", label: "Contact" },
   ];
   return (
-    <footer className="border-t border-line/10 py-8 text-center text-sm text-ink-faint">
-      <div className="mx-auto mb-4 flex max-w-6xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-6">
-        {links.map((l) => (
-          <a key={l.href} href={l.href} className="hover:text-ink">
-            {l.label}
-          </a>
-        ))}
+    <footer className="bg-night text-ice/70">
+      <div className="mx-auto max-w-6xl px-6 pt-14">
+        <div className="flex flex-wrap items-center justify-center gap-x-7 gap-y-2 text-sm">
+          {links.map((l) => (
+            <a key={l.href} href={l.href} className="hover:text-ice">
+              {l.label}
+            </a>
+          ))}
+        </div>
+        <div className="mt-4 text-center text-xs text-ice/40">ClipForge — a demo rebuild for product research.</div>
       </div>
-      <div>ClipForge — a demo rebuild for product research.</div>
+      <div className="mt-12 overflow-hidden border-t border-ice/10 px-4 pt-8">
+        <div className="select-none text-center font-display text-[clamp(4rem,14vw,14rem)] font-bold leading-none tracking-tight text-ice/95">
+          CLIPFORGE
+        </div>
+      </div>
     </footer>
   );
 }
@@ -88,19 +95,19 @@ export function CtaBand({
 }) {
   return (
     <section className="py-16">
-      <div className="glass-dark glass-sheen glow-lime rounded-[2rem] p-10 text-center text-white md:p-14">
+      <div className="glass-dark glass-sheen glow-electric rounded-[2rem] p-10 text-center text-white md:p-14">
         <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">{title}</h2>
-        <p className="mx-auto mt-4 max-w-xl text-white/60">{body}</p>
+        <p className="mx-auto mt-4 max-w-xl text-ice/60">{body}</p>
         <div className="mt-8 flex flex-wrap justify-center gap-4">
           <a
             href={clipperHref}
-            className="pill bg-lime px-7 py-3.5 font-bold text-ink shadow-glow-lime hover:bg-lime-soft"
+            className="pill bg-electric px-7 py-3.5 font-bold text-white shadow-glow-electric hover:bg-electric-soft"
           >
             Start clipping
           </a>
           <a
             href={brandHref}
-            className="pill border border-white/20 px-7 py-3.5 font-bold text-white/85 hover:bg-white/10"
+            className="pill border border-ice/25 px-7 py-3.5 font-bold text-ice/85 hover:bg-ice/10"
           >
             Start a campaign
           </a>
