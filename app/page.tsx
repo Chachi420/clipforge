@@ -22,7 +22,7 @@ export default function Landing() {
 
       {/* ---------- Nav ---------- */}
       <nav className="sticky top-0 z-40 border-b border-line/[0.07] bg-paper/60 backdrop-blur-2xl backdrop-saturate-150 relative">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 md:px-6 md:py-3.5">
           <Link href="/" className="font-display text-lg font-bold tracking-tight">
             CLIPFORGE
           </Link>
@@ -33,7 +33,6 @@ export default function Landing() {
             <Link href="/docs" className="micro-label link-under hover:text-ink">Docs</Link>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
-            <MobileMenu />
             <ThemeToggle />
             <Link href="/login" className="hidden text-sm font-semibold text-ink-soft transition-colors hover:text-ink sm:block">
               Sign in
@@ -41,6 +40,7 @@ export default function Landing() {
             <Link href="/login" className="pill bg-ink px-5 py-2.5 text-sm font-semibold text-paper shadow-[0_2px_12px_rgb(7_11_20/0.18)] transition-all duration-200 hover:-translate-y-px hover:bg-ink-soft hover:shadow-[0_6px_20px_rgb(7_11_20/0.22)]">
               Start clipping
             </Link>
+            <MobileMenu />
           </div>
         </div>
       </nav>
