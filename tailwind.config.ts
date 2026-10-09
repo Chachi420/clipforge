@@ -30,7 +30,7 @@ const config: Config = {
           pale: "#E3E9FF",
           deep: withAlpha("--electric-deep"),
         },
-        night: "#070B14",
+        night: "#0A1022",
         ice: "#D8E5ED",
         // Legacy tokens — remapped to theme-aware equivalents. Do not use in new code.
         base: {

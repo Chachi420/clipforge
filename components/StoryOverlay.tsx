@@ -180,7 +180,13 @@ export default function StoryOverlay({
           chapter === 0 ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
-        <div className="w-full px-6 text-center">
+        {/* ambient glow — dark mode depth without 3D clutter */}
+        <div
+          aria-hidden
+          className="absolute left-1/2 top-1/2 hidden h-[60vmin] w-[90vmin] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl dark:block"
+          style={{ background: "radial-gradient(closest-side, rgba(32,71,255,0.16), transparent)" }}
+        />
+        <div className="relative w-full px-6 text-center">
           <HeroHeadline progressRef={progressRef} />
         </div>
       </div>

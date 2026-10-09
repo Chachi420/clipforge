@@ -20,16 +20,16 @@
 
 .dark {
   color-scheme: dark;
-  --paper: 7 11 20;            /* deep navy-black #070B14 */
-  --surface: 13 20 35;         /* navy cards */
-  --surface-deep: 10 15 28;    /* sunken wells */
-  --ink: 216 229 237;          /* ice-blue text */
-  --ink-soft: 168 186 204;     /* secondary text */
-  --ink-faint: 118 136 157;    /* tertiary text */
-  --line: 216 229 237;         /* borders flip to ice at low alpha */
-  --electric-deep: 107 138 255; /* brightened electric for dark */
+  --paper: 10 16 34;            /* rich navy #0A1022 */
+  --surface: 15 23 42;         /* navy cards */
+  --surface-deep: 12 19 36;    /* sunken wells */
+  --ink: 222 232 242;          /* ice-blue text */
+  --ink-soft: 172 190 208;     /* secondary text */
+  --ink-faint: 122 140 162;     /* tertiary text */
+  --line: 222 232 242;         /* borders flip to ice at low alpha */
+  --electric-deep: 124 154 255; /* brightened electric for dark */
   --glass-hi: 255 255 255;
-  --scrollbar: 216 229 237;
+  --scrollbar: 222 232 242;
 }
 
 body {
@@ -54,7 +54,7 @@ body {
   }
   /* Dark navy glass — contrast cards, dark in both themes (Vectr footer finale) */
   .glass-dark {
-    background: rgb(7 11 20 / 0.9);
+    background: rgb(10 16 34 / 0.9);
     backdrop-filter: blur(22px) saturate(1.2);
     -webkit-backdrop-filter: blur(22px) saturate(1.2);
     border: 1px solid rgb(216 229 237 / 0.12);
@@ -87,8 +87,8 @@ body {
   }
   /* Small uppercase micro-label with wide tracking (Vectr nav/section labels) */
   .micro-label {
-    @apply text-[11px] font-bold uppercase text-ink-faint;
-    letter-spacing: 0.28em;
+    @apply font-sans text-[11px] font-semibold uppercase text-ink-faint;
+    letter-spacing: 0.24em;
   }
   /* Thin divider */
   .rule {

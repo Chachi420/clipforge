@@ -169,14 +169,19 @@ function OrbitDots({ bus }: { bus: React.MutableRefObject<StoryBus> }) {
   );
   useFrame((_, dt) => {
     if (bus.current.reduced || !group.current) return;
-    group.current.rotation.y += dt * 0.03;
+    // barely-there drift — background texture, not a focal motion
+    group.current.rotation.y += dt * 0.012;
   });
   const pal = palette(bus.current.dark);
+  // opacity breathes with chapters: faintest in the clean hero, slightly more
+  // present once the story is underway — never competing with the focal object
+  const p = bus.current.progress;
+  const op = 0.14 + 0.1 * sstep(0.15, 0.4, p);
   return (
     <group ref={group}>
       {rings.map((r, i) => (
         <points key={i} geometry={r.geo} position={[r.pos[0], r.pos[1], r.pos[2]]} rotation={[r.rot[0], r.rot[1], r.rot[2]]}>
-          <pointsMaterial size={r.size} map={tex} color={pal.electric} transparent opacity={0.5} depthWrite={false} sizeAttenuation />
+          <pointsMaterial size={r.size} map={tex} color={pal.electric} transparent opacity={op} depthWrite={false} sizeAttenuation />
         </points>
       ))}
     </group>
@@ -232,26 +237,25 @@ function CampaignCard({
     const { progress: p, time } = bus.current;
     if (bus.current.reduced) return;
 
-    const ch1Grow = 1 + 0.3 * sstep(0.15, 0.3, p);
+    const enter = sstep(0.1, 0.24, p);
+    const ch1Grow = 1 + 0.25 * sstep(0.15, 0.3, p);
     const exit = 1 - sstep(0.34, 0.4, p);
-    const s = Math.max(0.0001, ch1Grow * exit);
+    const s = Math.max(0.0001, enter * ch1Grow * exit);
     g.scale.setScalar(s);
-    g.visible = exit > 0.01;
+    g.visible = enter > 0.01 && exit > 0.01;
 
     const spinW = 1 - sstep(0.1, 0.22, p);
     g.rotation.y = Math.sin(time * 0.28) * 0.35 * spinW;
     g.rotation.x = Math.sin(time * 0.4) * 0.06 * spinW;
-    // ch0: card sits low as ambient backdrop (clear of the centered headline);
-    // rises to center as ch1 begins
-    const heroDip = 1 - sstep(0.08, 0.2, p);
-    g.position.y = Math.sin(time * 0.9) * 0.16 * (1 - sstep(0.12, 0.28, p)) - heroDip * 2.6;
-    g.position.z = -heroDip * 2.0;
+    // rises gently as it materializes in ch1
+    g.position.y = Math.sin(time * 0.9) * 0.16 * (1 - sstep(0.12, 0.28, p)) + (1 - enter) * -1.5;
+    g.position.z = 0;
 
-    // opportunity pulse ring (ch 0 → early ch 1)
+    // materialization pulse (ch1 entrance)
     if (ringRef.current) {
-      const pulseW = 1 - sstep(0.28, 0.4, p);
+      const pulseW = enter * (1 - sstep(0.28, 0.4, p));
       const frac = (time * 0.42) % 1;
-      ringRef.current.scale.setScalar((1 + frac * 2.4) * s);
+      ringRef.current.scale.setScalar(Math.max(0.0001, (1 + frac * 2.4) * s));
       const m = ringRef.current.material as THREE.MeshBasicMaterial;
       m.opacity = (1 - frac) * 0.45 * pulseW;
       ringRef.current.visible = pulseW > 0.01;
