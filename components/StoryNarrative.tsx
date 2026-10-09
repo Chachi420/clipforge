@@ -16,26 +16,26 @@ const CHAPTERS = [
   {
     n: "01",
     kicker: "The Brief",
-    title: "Brands post pay-per-view campaigns",
-    body: "Set a rate per 100K views, pick the platforms, cap the budget. The brief goes live to the clipper network — no media buying, no guesswork.",
+    title: "A brand posts what it'll pay per view",
+    body: "No pitch decks, no DMs, no \u2018let\u2019s hop on a call.\u2019 A brand sets a rate, caps the budget, and the brief goes live. You decide if the math works for you.",
   },
   {
     n: "02",
     kicker: "The Clips",
-    title: "Clippers grab the brief and post",
-    body: "Thousands of clippers cut the best moments and post to their own channels. No following required — the clip does the work.",
+    title: "You post. Your account, your style",
+    body: "Grab the brief, cut the best 30 seconds, post it where your audience already is. Zero followers? Doesn't matter — a good clip earns from view one.",
   },
   {
     n: "03",
     kicker: "The Views",
-    title: "Every verified view is tracked live",
-    body: "View counts are pulled straight from the platforms, filtered for bots, spot-checked by hand. Nothing faked, ever.",
+    title: "Every view gets counted — for real",
+    body: "We pull numbers straight from the platform, strip out the bots, and humans spot-check the rest. If a view didn't happen, nobody pays for it.",
   },
   {
     n: "04",
     kicker: "The Payout",
-    title: "Views convert to earnings",
-    body: "When the cycle closes, verified views become payouts — sent weekly. Then the flywheel spins again.",
+    title: "Views turn into money. Weekly",
+    body: "When the cycle closes, your verified views become a payout. Then you pick the next brief and do it again. That's the whole flywheel.",
   },
 ];
 

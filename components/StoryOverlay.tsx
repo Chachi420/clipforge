@@ -127,7 +127,7 @@ function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<num
           entered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
         }`}
       >
-        Brands run pay-per-view campaigns. Clippers earn for every verified view.
+        You already watch the clips. Now get paid for posting them — brands pay per verified view.
       </p>
       <div
         className={`mt-10 flex flex-wrap items-center justify-center gap-6 transition-all delay-300 duration-700 ease-out ${
