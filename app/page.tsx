@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowRight, Scissors, TrendingUp } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
-import StoryFlow from "@/components/StoryScene";
+import StoryNarrative from "@/components/StoryNarrative";
 import { Faq, MarketingFooter } from "@/components/marketing";
 import { RevealInit } from "@/components/landing-motion";
 
@@ -43,8 +43,8 @@ export default function Landing() {
         </div>
       </nav>
 
-      {/* ---------- The ClipForge Flywheel: scroll-driven 3D story ---------- */}
-      <StoryFlow />
+      {/* ---------- The story: scroll-driven typographic narrative ---------- */}
+      <StoryNarrative />
 
       <main className="bg-glow mx-auto max-w-6xl px-6">
         {/* ---------- Two sides: the conversion moment ---------- */}
