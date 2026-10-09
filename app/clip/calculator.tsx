@@ -32,7 +32,7 @@ export function EarningsCalculator() {
                 key={p}
                 onClick={() => setPlatform(p)}
                 className={`rounded-full px-3.5 py-2 text-sm font-semibold transition-colors ${
-                  platform === p ? "bg-lime text-ink" : "border border-line/15 text-ink-soft hover:bg-ink/5 hover:text-ink"
+                  platform === p ? "bg-electric text-white" : "border border-line/15 text-ink-soft hover:bg-ink/5 hover:text-ink"
                 }`}
               >
                 {p}
@@ -42,7 +42,7 @@ export function EarningsCalculator() {
         </div>
         <div>
           <label className="flex items-center justify-between text-sm font-bold text-ink">
-            Campaign rate <span className="text-lime-deep">${ratePer100k} / 100K views</span>
+            Campaign rate <span className="text-electric-deep">${ratePer100k} / 100K views</span>
           </label>
           <input
             type="range"
@@ -51,7 +51,7 @@ export function EarningsCalculator() {
             step={5}
             value={ratePer100k}
             onChange={(e) => setRatePer100k(Number(e.target.value))}
-            className="mt-3 w-full accent-lime-deep"
+            className="mt-3 w-full accent-electric-deep"
           />
           <div className="mt-1 flex justify-between text-xs text-ink-faint">
             <span>$10</span>
@@ -60,7 +60,7 @@ export function EarningsCalculator() {
         </div>
         <div>
           <label className="flex items-center justify-between text-sm font-bold text-ink">
-            Avg. views per clip <span className="text-lime-deep">{fmt(viewsPerClip)}</span>
+            Avg. views per clip <span className="text-electric-deep">{fmt(viewsPerClip)}</span>
           </label>
           <input
             type="range"
@@ -69,7 +69,7 @@ export function EarningsCalculator() {
             step={1_000}
             value={viewsPerClip}
             onChange={(e) => setViewsPerClip(Number(e.target.value))}
-            className="mt-3 w-full accent-lime-deep"
+            className="mt-3 w-full accent-electric-deep"
           />
           <div className="mt-1 flex justify-between text-xs text-ink-faint">
             <span>1K</span>
@@ -78,7 +78,7 @@ export function EarningsCalculator() {
         </div>
         <div>
           <label className="flex items-center justify-between text-sm font-bold text-ink">
-            Clips per month <span className="text-lime-deep">{clipsPerMonth}</span>
+            Clips per month <span className="text-electric-deep">{clipsPerMonth}</span>
           </label>
           <input
             type="range"
@@ -87,7 +87,7 @@ export function EarningsCalculator() {
             step={1}
             value={clipsPerMonth}
             onChange={(e) => setClipsPerMonth(Number(e.target.value))}
-            className="mt-3 w-full accent-lime-deep"
+            className="mt-3 w-full accent-electric-deep"
           />
           <div className="mt-1 flex justify-between text-xs text-ink-faint">
             <span>1</span>
@@ -96,9 +96,9 @@ export function EarningsCalculator() {
         </div>
       </div>
 
-      <div className="glass-dark glow-lime mt-8 rounded-3xl p-6 text-center text-white">
+      <div className="glass-dark glow-electric mt-8 rounded-3xl p-6 text-center text-white">
         <div className="text-sm font-semibold uppercase tracking-widest text-white/50">Estimated monthly earnings</div>
-        <div className="mt-2 font-display text-5xl font-bold tracking-tight text-lime">
+        <div className="mt-2 font-display text-5xl font-bold tracking-tight text-electric-soft">
           ${earnings.toLocaleString("en-US", { maximumFractionDigits: 0 })}
         </div>
         <div className="mt-2 text-sm text-white/55">

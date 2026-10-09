@@ -37,14 +37,14 @@ export default function ClipLanding() {
           <div className="flex items-center gap-3">
             <ThemeToggle />
             <Link href="/login" className="text-sm font-semibold text-ink-soft hover:text-ink">Sign in</Link>
-            <Link href="/login" className="pill bg-lime px-5 py-2.5 text-sm font-bold text-ink hover:bg-lime-soft">Start clipping</Link>
+            <Link href="/login" className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft">Start clipping</Link>
           </div>
         </div>
       </nav>
 
       <main className="mx-auto max-w-6xl px-6">
         <section className="py-20 text-center">
-          <div className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-lime-deep">For clippers</div>
+          <div className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-electric-deep">For clippers</div>
           <h1 className="display mx-auto max-w-3xl text-5xl leading-[0.95] md:text-6xl">
             Get paid to clip. Per view.
           </h1>
@@ -52,14 +52,14 @@ export default function ClipLanding() {
             No following required. Real brand campaigns, automatic view tracking, fast payouts.
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
-            <Link href="/login" className="pill inline-flex items-center gap-2 bg-lime px-7 py-3.5 font-bold text-ink shadow-glow-lime hover:bg-lime-soft">
+            <Link href="/login" className="pill inline-flex items-center gap-2 bg-electric px-7 py-3.5 font-bold text-white shadow-glow-electric hover:bg-electric-soft">
               Start clipping <ArrowRight size={18} />
             </Link>
           </div>
           <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-ink-faint">
-            <span className="flex items-center gap-2 text-sm"><Check size={16} className="text-lime-deep" /> Free to join</span>
-            <span className="flex items-center gap-2 text-sm"><Check size={16} className="text-lime-deep" /> Paid per verified view</span>
-            <span className="flex items-center gap-2 text-sm"><Check size={16} className="text-lime-deep" /> Cancel anytime</span>
+            <span className="flex items-center gap-2 text-sm"><Check size={16} className="text-electric-deep" /> Free to join</span>
+            <span className="flex items-center gap-2 text-sm"><Check size={16} className="text-electric-deep" /> Paid per verified view</span>
+            <span className="flex items-center gap-2 text-sm"><Check size={16} className="text-electric-deep" /> Cancel anytime</span>
           </div>
         </section>
 
@@ -68,7 +68,7 @@ export default function ClipLanding() {
           <div className="grid gap-4 md:grid-cols-5">
             {STEPS.map((s) => (
               <div key={s.n} className="glass glass-sheen rounded-3xl p-5">
-                <div className="text-xs font-black text-lime-deep">{s.n}</div>
+                <div className="text-xs font-black text-electric-deep">{s.n}</div>
                 <div className="mt-2 font-bold text-ink">{s.title}</div>
                 <p className="mt-2 text-sm text-ink-soft">{s.body}</p>
               </div>
@@ -89,7 +89,7 @@ export default function ClipLanding() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {WHY.map((w) => (
               <div key={w.title} className="glass glass-sheen rounded-3xl p-8">
-                <w.icon className="mb-4 text-lime-deep" size={28} />
+                <w.icon className="mb-4 text-electric-deep" size={28} />
                 <h3 className="font-display text-lg font-bold tracking-tight">{w.title}</h3>
                 <p className="mt-2 text-sm text-ink-soft">{w.body}</p>
               </div>
@@ -105,13 +105,13 @@ export default function ClipLanding() {
         </section>
 
         <section className="py-16">
-          <div className="glass-dark glass-sheen glow-lime rounded-[2rem] p-10 text-center text-white md:p-14">
+          <div className="glass-dark glass-sheen glow-electric rounded-[2rem] p-10 text-center text-white md:p-14">
             <h2 className="font-display text-3xl font-bold tracking-tight md:text-4xl">Your clips. Your views. Your money.</h2>
             <p className="mx-auto mt-4 max-w-xl text-white/60">
               Join free, pick a campaign, and start turning views into payouts.
             </p>
             <div className="mt-8">
-              <Link href="/login" className="pill inline-flex items-center gap-2 bg-lime px-7 py-3.5 font-bold text-ink shadow-glow-lime hover:bg-lime-soft">
+              <Link href="/login" className="pill inline-flex items-center gap-2 bg-electric px-7 py-3.5 font-bold text-white shadow-glow-electric hover:bg-electric-soft">
                 Start clipping <ArrowRight size={18} />
               </Link>
             </div>

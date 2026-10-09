@@ -60,7 +60,7 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
                   href={r.website.startsWith("http") ? r.website : `https://${r.website}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="mt-1 inline-flex items-center gap-1 text-xs text-lime-deep hover:underline"
+                  className="mt-1 inline-flex items-center gap-1 text-xs text-electric-deep hover:underline"
                 >
                   <Globe size={12} /> {r.website}
                 </a>
