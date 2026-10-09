@@ -88,7 +88,7 @@ function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<num
 
   return (
     <div ref={ref} className="will-change-transform" style={{ transformOrigin: "50% 0%" }}>
-      <div className="micro-label mb-6">Clip · Post · Get Paid</div>
+      <div className="micro-label mb-6">The pay-per-view clipping network</div>
       <h1 className="display text-[clamp(3rem,7vw,5.5rem)] leading-[1.02]">
         Clip. Post.
         <br />
