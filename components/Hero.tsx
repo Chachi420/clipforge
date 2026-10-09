@@ -14,7 +14,7 @@ export default function Hero() {
 
   return (
     <header className="relative flex min-h-[88svh] items-center justify-center overflow-hidden">
-      <div className="relative w-full px-5 text-center md:px-6">
+      <div className="relative w-full px-5 pb-20 text-center md:px-6">
         <div
           className={`micro-label mb-8 transition-all duration-700 ease-out ${
             entered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
