@@ -8,21 +8,21 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
   );
 }
 
-/** Dark contrast card with lime glow (use sparingly — hero metrics, feature panels). */
+/** Dark contrast card with electric glow (use sparingly — hero metrics, feature panels). */
 export function NightCard({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`glass-dark glass-sheen glow-lime rounded-3xl text-white ${className}`}>{children}</div>
+    <div className={`glass-dark glass-sheen glow-electric rounded-3xl text-white ${className}`}>{children}</div>
   );
 }
 
-export function Badge({ children, tone = "default" }: { children: ReactNode; tone?: "default" | "green" | "amber" | "red" | "blue" | "lime" }) {
+export function Badge({ children, tone = "default" }: { children: ReactNode; tone?: "default" | "green" | "amber" | "red" | "blue" | "electric" }) {
   const tones: Record<string, string> = {
     default: "bg-ink/8 text-ink-soft",
     green: "bg-emerald-500/15 text-emerald-700",
     amber: "bg-amber-500/15 text-amber-700",
     red: "bg-red-500/12 text-red-600",
     blue: "bg-sky-500/12 text-sky-700",
-    lime: "bg-lime text-ink",
+    electric: "bg-electric text-white",
   };
   return (
     <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${tones[tone]}`}>
@@ -34,12 +34,12 @@ export function Badge({ children, tone = "default" }: { children: ReactNode; ton
 export function Button({
   children, onClick, variant = "primary", className = "", disabled, type,
 }: {
-  children: ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "outline" | "lime" | "dark";
+  children: ReactNode; onClick?: () => void; variant?: "primary" | "ghost" | "outline" | "electric" | "dark";
   className?: string; disabled?: boolean; type?: "button" | "submit";
 }) {
   const variants: Record<string, string> = {
     primary: "bg-ink text-white hover:bg-ink-soft disabled:opacity-40 shadow-card",
-    lime: "bg-lime text-ink hover:bg-lime-soft disabled:opacity-40 shadow-card",
+    electric: "bg-electric text-white hover:bg-electric-soft disabled:opacity-40 shadow-card",
     dark: "bg-night text-white hover:bg-ink-soft disabled:opacity-40",
     ghost: "text-ink-soft hover:bg-ink/5",
     outline: "border border-ink/15 text-ink hover:bg-ink/5 disabled:opacity-40 bg-white/50 backdrop-blur",
@@ -69,7 +69,7 @@ export function Stat({ label, value, sub, dark = false }: { label: string; value
 export function ProgressBar({ pct }: { pct: number }) {
   return (
     <div className="h-1.5 w-full overflow-hidden rounded-full bg-ink/10">
-      <div className="h-full rounded-full bg-lime-deep" style={{ width: `${Math.min(100, pct)}%` }} />
+      <div className="h-full rounded-full bg-electric-deep" style={{ width: `${Math.min(100, pct)}%` }} />
     </div>
   );
 }
@@ -123,7 +123,7 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 }
 
 export const inputCls =
-  "w-full rounded-2xl border border-line/15 bg-surface/70 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint/70 outline-none backdrop-blur focus:border-lime-deep/50 focus:ring-2 focus:ring-lime/40";
+  "w-full rounded-2xl border border-line/15 bg-surface/70 px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint/70 outline-none backdrop-blur focus:border-electric-deep/50 focus:ring-2 focus:ring-electric/40";
 
 export function PlatformDot({ platform }: { platform: string }) {
   const colors: Record<string, string> = {

@@ -18,7 +18,7 @@ export default function Header({ title, subtitle }: { title: string; subtitle?: 
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-faint" />
             <input
               placeholder="Search…"
-              className="w-56 rounded-full border border-line/15 bg-surface/70 py-2 pl-9 pr-3 text-sm text-ink outline-none backdrop-blur placeholder:text-ink-faint focus:border-lime-deep/50"
+              className="w-56 rounded-full border border-line/15 bg-surface/70 py-2 pl-9 pr-3 text-sm text-ink outline-none backdrop-blur placeholder:text-ink-faint focus:border-electric-deep/50"
             />
           </div>
           <ThemeToggle />

@@ -22,7 +22,7 @@ export default function MobileNav() {
     <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/90 backdrop-blur-xl lg:hidden">
       <div className="flex items-center gap-1 overflow-x-auto px-3 py-2">
         <Link href="/dashboard" className="mr-2 flex shrink-0 items-center gap-2">
-          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-lime text-base font-black text-ink">C</span>
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-electric text-base font-black text-white">C</span>
         </Link>
         {NAV.map(({ href, label, icon: Icon }) => {
           const active = href === "/dashboard" ? pathname === href : pathname.startsWith(href);
@@ -31,7 +31,7 @@ export default function MobileNav() {
               key={href}
               href={href}
               className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-2 text-sm font-medium transition ${
-                active ? "bg-lime text-ink shadow-card" : "text-ink-soft hover:text-ink"
+                active ? "bg-electric text-white shadow-card" : "text-ink-soft hover:text-ink"
               }`}
             >
               <Icon size={15} />
