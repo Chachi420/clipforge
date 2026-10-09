@@ -13,7 +13,7 @@ function Heatmap() {
       return seed > 8 ? 4 : seed > 6 ? 3 : seed > 4 ? 2 : seed > 2 ? 1 : 0;
     })
   );
-  const shades = ["bg-ink/5", "bg-lime/25", "bg-lime/50", "bg-lime/70", "bg-lime"];
+  const shades = ["bg-ink/5", "bg-electric/25", "bg-electric/50", "bg-electric/70", "bg-electric"];
   return (
     <div>
       <div className="flex gap-[3px]">
@@ -75,7 +75,7 @@ export default function SettingsView({ profile }: { profile: ClipperProfile }) {
               // eslint-disable-next-line @next/next/no-img-element
               <img src={profile.avatarUrl} alt="" className="h-16 w-16 rounded-full object-cover" />
             ) : (
-              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-lime/25 text-2xl font-bold text-lime-deep">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-electric/25 text-2xl font-bold text-electric-deep">
                 {displayName.slice(0, 1)}
               </span>
             )}
@@ -150,7 +150,7 @@ export default function SettingsView({ profile }: { profile: ClipperProfile }) {
               role="switch"
               aria-checked={publicProfile}
               onClick={togglePublic}
-              className={`relative h-7 w-12 rounded-full transition ${publicProfile ? "bg-lime" : "bg-ink/15"}`}
+              className={`relative h-7 w-12 rounded-full transition ${publicProfile ? "bg-electric" : "bg-ink/15"}`}
             >
               <span className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${publicProfile ? "left-6" : "left-1"}`} />
             </button>

@@ -60,12 +60,12 @@ export default function CampaignDetail({
               {joining ? "Joining…" : "Join campaign"}
             </Button>
           )}
-          <Button variant="lime" onClick={() => setShowUpload(true)} disabled={!joined}>
+          <Button variant="electric" onClick={() => setShowUpload(true)} disabled={!joined}>
             <Upload size={15} /> Upload clip
           </Button>
         </div>
         {!joined && campaign.status === "active" && (
-          <div className="rounded-3xl border border-lime/30 bg-lime/10 p-4 text-sm text-ink-soft">
+          <div className="rounded-3xl border border-electric/30 bg-electric/10 p-4 text-sm text-ink-soft">
             Join this campaign to start submitting clips and earning.
           </div>
         )}
@@ -120,7 +120,7 @@ export default function CampaignDetail({
                   <span className="font-bold text-ink">{b.name}</span>
                   <Badge tone={b.isActive ? "green" : "default"}>{b.isActive ? "Active" : "Ended"}</Badge>
                 </div>
-                <div className="mt-1 text-sm font-semibold text-lime-deep">${b.ratePer100k}/100K</div>
+                <div className="mt-1 text-sm font-semibold text-electric-deep">${b.ratePer100k}/100K</div>
                 {b.requirements && <div className="mt-2 text-xs text-ink-faint">Requires: {b.requirements}</div>}
                 <div className="mt-3 text-xs text-ink-faint">
                   {formatCompact(b.clipCount)} clips · {formatCompact(b.totalViews)} views
@@ -146,7 +146,7 @@ export default function CampaignDetail({
             <div className="flex gap-2">
               {(["pending", "paid"] as const).map((t) => (
                 <button key={t} onClick={() => setCycleTab(t)}
-                  className={`rounded-full px-3 py-1.5 text-sm font-medium capitalize ${cycleTab === t ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
+                  className={`rounded-full px-3 py-1.5 text-sm font-medium capitalize ${cycleTab === t ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
                   {t} {t === "pending" ? pendingCycles.length : paidCycles.length}
                 </button>
               ))}
@@ -155,7 +155,7 @@ export default function CampaignDetail({
 
           {liveCycle && (
             <NightCard className="mb-4 p-5">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-lime">Current cycle (live)</div>
+              <div className="text-[11px] font-bold uppercase tracking-wider text-electric-soft">Current cycle (live)</div>
               <div className="mt-1 flex items-baseline gap-3">
                 <span className="display text-3xl text-white">{formatMoney(liveCycle.estimatedAmount)}</span>
                 <span className="text-xs text-white/60">estimated — updates as your clips accrue views</span>
@@ -177,7 +177,7 @@ export default function CampaignDetail({
                   <Badge tone={c.status === "paid" ? "green" : "amber"}>
                     {c.status === "paid" ? "Paid" : "Awaiting admin review"}
                   </Badge>
-                  <span className="font-bold text-lime-deep">{formatMoney(c.estimatedAmount)}</span>
+                  <span className="font-bold text-electric-deep">{formatMoney(c.estimatedAmount)}</span>
                 </div>
               </div>
             ))}

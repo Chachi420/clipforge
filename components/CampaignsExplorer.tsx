@@ -79,7 +79,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
               </select>
             </Field>
             <Field label={`Minimum payout — $${filters.minPayout} per 100k`}>
-              <input type="range" min={0} max={300} step={15} className="w-full accent-lime-deep"
+              <input type="range" min={0} max={300} step={15} className="w-full accent-electric"
                 value={filters.minPayout}
                 onChange={(e) => setFilters({ ...filters, minPayout: Number(e.target.value) })} />
             </Field>
@@ -87,7 +87,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
               <div className="flex gap-2">
                 {STATUSES.map((s) => (
                   <button key={s} onClick={() => setFilters({ ...filters, status: s })}
-                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.status === s ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.status === s ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
                     {s}
                   </button>
                 ))}
@@ -97,7 +97,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
               <div className="flex flex-wrap gap-2">
                 {TYPES.map((t) => (
                   <button key={t.v} onClick={() => setFilters({ ...filters, type: t.v })}
-                    className={`rounded-full px-3 py-1.5 text-sm ${filters.type === t.v ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm ${filters.type === t.v ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
                     {t.l}
                   </button>
                 ))}
@@ -119,7 +119,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
                         ? filters.platforms.filter((x) => x !== p)
                         : [...filters.platforms, p],
                     })}
-                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.platforms.includes(p) ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.platforms.includes(p) ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
                     {p}
                   </button>
                 ))}

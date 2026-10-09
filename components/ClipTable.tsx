@@ -41,7 +41,7 @@ export function ClipTable({ clips }: { clips: Clip[] }) {
                 <td className="px-4 py-3 text-ink-soft">{c.accountHandle}</td>
                 <td className="px-4 py-3 font-semibold text-ink">{formatCompact(c.views)}</td>
                 <td className="px-4 py-3 text-ink-soft">{formatCompact(c.likes)}</td>
-                <td className="px-4 py-3 font-semibold text-lime-deep">{formatMoney(c.payout)}</td>
+                <td className="px-4 py-3 font-semibold text-electric-deep">{formatMoney(c.payout)}</td>
               </tr>
             ))}
           </tbody>
@@ -77,7 +77,7 @@ function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }
       <div className="mb-4 flex gap-2">
         {(["overview", "analytics"] as const).map((t) => (
           <button key={t} onClick={() => setTab(t)}
-            className={`rounded-full px-3 py-1.5 text-sm font-medium capitalize ${tab === t ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
+            className={`rounded-full px-3 py-1.5 text-sm font-medium capitalize ${tab === t ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
             {t}
           </button>
         ))}
@@ -112,7 +112,7 @@ function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }
           <p className="text-sm text-ink-soft">Views · Likes · Comments over 7D / 30D / 90D / All</p>
           <div className="mx-auto mt-4 flex h-40 max-w-md items-end justify-center gap-1.5">
             {[35, 55, 40, 70, 62, 88, 75, 95, 68, 82, 58, 76].map((h, i) => (
-              <div key={i} className="w-8 rounded-t bg-lime-deep/50" style={{ height: `${h}%` }} />
+              <div key={i} className="w-8 rounded-t bg-electric-deep/50" style={{ height: `${h}%` }} />
             ))}
           </div>
           <p className="mt-4 text-xs text-ink-faint">Chart stats are scanned daily. Sudden drops may occur due to bot protection cleanups.</p>

@@ -158,7 +158,7 @@ export default function PaymentsView({
                       <td className="px-4 py-3 text-ink-soft">
                         {c.snapshotAt ? `Snapshotted ${c.snapshotAt}` : `${c.periodStart} → ${c.periodEnd}`}
                       </td>
-                      <td className="px-4 py-3 text-right font-semibold text-lime-deep">{formatMoney(c.estimatedAmount)}</td>
+                      <td className="px-4 py-3 text-right font-semibold text-electric-deep">{formatMoney(c.estimatedAmount)}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -210,7 +210,7 @@ export default function PaymentsView({
             </div>
             <div className="flex justify-between border-t border-line/10 pt-4">
               <dt className="font-bold text-ink">Estimated amount</dt>
-              <dd className="font-black text-lime-deep">{formatMoney(receipt.estimatedAmount)}</dd>
+              <dd className="font-black text-electric-deep">{formatMoney(receipt.estimatedAmount)}</dd>
             </div>
           </dl>
           <div className="mt-6 flex justify-end">
