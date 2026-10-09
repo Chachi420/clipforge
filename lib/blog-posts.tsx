@@ -20,7 +20,7 @@ export const BLOG_CATEGORIES: BlogCategory[] = [
 
 const h2 = "mt-10 text-2xl font-bold text-ink";
 const p = "mt-4 leading-relaxed text-ink-soft";
-const ul = "mt-4 list-disc space-y-2 pl-6 text-ink-soft marker:text-lime-deep";
+const ul = "mt-4 list-disc space-y-2 pl-6 text-ink-soft marker:text-electric-deep";
 
 export const BLOG_POSTS: BlogPost[] = [
   {
@@ -43,7 +43,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <p className={p}>
           On ClipForge the whole loop looks like this:
         </p>
-        <ol className="mt-4 list-decimal space-y-3 pl-6 text-ink-soft marker:font-bold marker:text-lime-deep">
+        <ol className="mt-4 list-decimal space-y-3 pl-6 text-ink-soft marker:font-bold marker:text-electric-deep">
           <li>
             <strong className="text-ink">Sign up.</strong> Create your account with
             Google — it takes under a minute and there is no fee to join.

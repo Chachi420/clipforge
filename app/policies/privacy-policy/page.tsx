@@ -57,7 +57,7 @@ export default function PrivacyPolicyPage() {
       <p className={pCls}>
         You can update your profile at any time from your dashboard. To request a copy or
         deletion of your data, email{" "}
-        <a href="mailto:support@clipforge.example" className="font-semibold text-lime-deep hover:underline">
+        <a href="mailto:support@clipforge.example" className="font-semibold text-electric-deep hover:underline">
           support@clipforge.example
         </a>{" "}
         from your account email. We&apos;ll respond within 2 business days. Note that we may

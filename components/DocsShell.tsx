@@ -25,7 +25,7 @@ export default function DocsShell({ slug }: { slug: string }) {
                   onClick={() => setOpen(false)}
                   className={`block rounded-xl px-3 py-2 text-sm transition ${
                     a.slug === slug
-                      ? "bg-lime/15 font-semibold text-lime-deep"
+                      ? "bg-electric/15 font-semibold text-electric-deep"
                       : "text-ink-soft hover:bg-ink/5 hover:text-ink"
                   }`}
                 >
@@ -56,7 +56,7 @@ export default function DocsShell({ slug }: { slug: string }) {
             </Link>
             <Link
               href="/login"
-              className="pill bg-lime px-5 py-2.5 text-sm font-bold text-ink hover:bg-lime-soft"
+              className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft"
             >
               Start clipping
             </Link>
@@ -67,7 +67,7 @@ export default function DocsShell({ slug }: { slug: string }) {
       <main className="mx-auto max-w-6xl px-6 pb-20">
         <header className="flex items-center justify-between py-8">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-lime-deep">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-electric-deep">
               <BookOpen size={14} /> Docs
             </div>
             <h1 className="display mt-2 text-3xl md:text-4xl">ClipForge Guides</h1>
@@ -133,7 +133,7 @@ function DocPager({ slug, dir }: { slug: string; dir: -1 | 1 }) {
   return (
     <Link
       href={href}
-      className="inline-flex items-center gap-2 text-sm font-semibold text-ink-faint hover:text-lime-deep"
+      className="inline-flex items-center gap-2 text-sm font-semibold text-ink-faint hover:text-electric-deep"
     >
       {dir === -1 ? (
         <>

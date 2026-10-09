@@ -133,7 +133,7 @@ export function ContactCards() {
         </p>
         <a
           href={`mailto:${SUPPORT_EMAIL}`}
-          className="mt-4 inline-block text-sm font-semibold text-lime-deep hover:underline"
+          className="mt-4 inline-block text-sm font-semibold text-electric-deep hover:underline"
         >
           {SUPPORT_EMAIL}
         </a>
@@ -145,7 +145,7 @@ export function ContactCards() {
         </p>
         <Link
           href="/brand/login"
-          className="mt-4 inline-block text-sm font-semibold text-lime-deep hover:underline"
+          className="mt-4 inline-block text-sm font-semibold text-electric-deep hover:underline"
         >
           Go to the brand portal →
         </Link>

@@ -17,7 +17,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           <h1 className="display text-3xl">Post not found</h1>
           <Link
             href="/blog"
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-lime-deep"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-electric-deep"
           >
             <ArrowLeft size={16} /> Back to blog
           </Link>
@@ -37,7 +37,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
             <ThemeToggle />
             <Link
               href="/login"
-              className="pill bg-lime px-5 py-2.5 text-sm font-bold text-ink hover:bg-lime-soft"
+              className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft"
             >
               Start clipping
             </Link>
@@ -65,14 +65,14 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           <div className="mt-2">{post.content}</div>
         </article>
 
-        <div className="glass-dark glass-sheen glow-lime mt-16 rounded-[2rem] p-8 text-center text-white">
+        <div className="glass-dark glass-sheen glow-electric mt-16 rounded-[2rem] p-8 text-center text-white">
           <h2 className="font-display text-xl font-bold tracking-tight">Ready to put this into practice?</h2>
           <p className="mt-2 text-white/60">
             Join ClipForge free, verify an account, and post your first clip today.
           </p>
           <Link
             href="/login"
-            className="pill mt-6 inline-block bg-lime px-7 py-3 font-bold text-ink shadow-glow-lime hover:bg-lime-soft"
+            className="pill mt-6 inline-block bg-electric px-7 py-3 font-bold text-white shadow-glow-electric hover:bg-electric-soft"
           >
             Start clipping
           </Link>

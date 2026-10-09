@@ -29,7 +29,7 @@ export default function BlogIndex() {
             </Link>
             <Link
               href="/login"
-              className="pill bg-lime px-5 py-2.5 text-sm font-bold text-ink hover:bg-lime-soft"
+              className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft"
             >
               Start clipping
             </Link>
@@ -39,7 +39,7 @@ export default function BlogIndex() {
 
       <main className="mx-auto max-w-6xl px-6 pb-20">
         <header className="py-12">
-          <div className="text-xs font-bold uppercase tracking-[0.3em] text-lime-deep">
+          <div className="text-xs font-bold uppercase tracking-[0.3em] text-electric-deep">
             Blog
           </div>
           <h1 className="display mt-3 text-4xl md:text-5xl">Learn &amp; Earn</h1>
@@ -55,7 +55,7 @@ export default function BlogIndex() {
               onClick={() => setFilter(c)}
               className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                 filter === c
-                  ? "bg-lime text-ink"
+                  ? "bg-electric text-white"
                   : "border border-line/15 text-ink-soft hover:bg-ink/5 hover:text-ink"
               }`}
             >
@@ -67,18 +67,18 @@ export default function BlogIndex() {
         <div className="mt-8 grid gap-5 md:grid-cols-2">
           {posts.map((post) => (
             <Link key={post.slug} href={`/blog/${post.slug}`}>
-              <Card className="group flex h-full flex-col p-8 transition hover:border-lime-deep/40">
+              <Card className="group flex h-full flex-col p-8 transition hover:border-electric/40">
                 <div className="flex items-center gap-3">
                   <Badge tone="blue">{post.category}</Badge>
                   <span className="flex items-center gap-1.5 text-xs text-ink-faint">
                     <Clock size={13} /> {post.readTime}
                   </span>
                 </div>
-                <h2 className="mt-4 font-display text-2xl font-bold leading-snug tracking-tight group-hover:text-lime-deep">
+                <h2 className="mt-4 font-display text-2xl font-bold leading-snug tracking-tight group-hover:text-electric-deep">
                   {post.title}
                 </h2>
                 <p className="mt-3 flex-1 text-ink-soft">{post.excerpt}</p>
-                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-lime-deep">
+                <span className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-electric-deep">
                   Read guide <ArrowRight size={16} />
                 </span>
               </Card>
