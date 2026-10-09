@@ -115,7 +115,7 @@ export default function StoryNarrative() {
             return (
               <div
                 key={c.n}
-                className={`absolute inset-0 flex items-center transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+                className={`absolute inset-y-0 left-6 right-6 flex items-center transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] ${
                   active ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-12 opacity-0"
                 }`}
                 aria-hidden={!active}
