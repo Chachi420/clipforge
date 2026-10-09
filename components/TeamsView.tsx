@@ -41,7 +41,7 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
       <Header title="Teams" subtitle="Create a team and earn commissions" />
       <div className="px-4 py-6 sm:px-8 sm:py-8">
         <div className="mb-6 flex justify-end">
-          <Button variant="lime" onClick={() => setShowCreate(true)}><Plus size={15} /> Create team</Button>
+          <Button variant="electric" onClick={() => setShowCreate(true)}><Plus size={15} /> Create team</Button>
         </div>
         {initial.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-line/20 px-6 py-14 text-center">

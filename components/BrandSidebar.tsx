@@ -20,7 +20,7 @@ export default function BrandSidebar({
   return (
     <aside className="glass flex h-screen w-64 shrink-0 flex-col border-r border-line/10 px-4 py-6">
       <Link href="/brand" className="mb-8 flex items-center gap-2 px-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-lime text-lg font-black text-ink">
+        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-electric text-lg font-black text-white">
           {brand.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={brand.logoUrl} alt="" className="h-9 w-9 rounded-xl object-cover" />
@@ -42,7 +42,7 @@ export default function BrandSidebar({
               href={href}
               className={`flex items-center gap-3 rounded-full px-4 py-2.5 text-sm font-medium transition ${
                 active
-                  ? "bg-lime font-semibold text-ink shadow-card"
+                  ? "bg-electric font-semibold text-white shadow-card"
                   : "text-ink-soft hover:bg-ink/5 hover:text-ink"
               }`}
             >
@@ -61,7 +61,7 @@ export default function BrandSidebar({
           <ThemeToggle />
         </div>
         <div className="flex items-center gap-3 rounded-2xl bg-ink/5 p-3">
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-lime text-sm font-bold text-ink">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-electric text-sm font-bold text-white">
             {brand.name.slice(0, 1).toUpperCase()}
           </span>
           <div className="min-w-0 flex-1">

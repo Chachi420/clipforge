@@ -45,19 +45,19 @@ export default function BrandLoginPage() {
         <ThemeToggle />
       </div>
       <Card className="w-full max-w-md p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-lime text-2xl font-black text-ink">C</div>
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-electric text-2xl font-black text-white">C</div>
         <h1 className="display text-2xl">Brand sign in</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Access your ClipForge brand dashboard — campaigns, verified views, billing.
         </p>
         <div className="mt-8">
-          <Button onClick={signIn} disabled={loading} variant="lime" className="w-full py-3">
+          <Button onClick={signIn} disabled={loading} variant="electric" className="w-full py-3">
             <GoogleLogo /> {loading ? "Redirecting…" : "Continue with Google"}
           </Button>
         </div>
         <p className="mt-6 text-xs text-ink-faint">
           Brand accounts are provisioned by our team. New here?{" "}
-          <Link href="/brand/request" className="font-semibold text-lime-deep hover:text-ink">
+          <Link href="/brand/request" className="font-semibold text-electric-deep hover:text-ink">
             Request brand access
           </Link>
           .

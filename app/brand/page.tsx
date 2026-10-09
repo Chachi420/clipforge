@@ -77,7 +77,7 @@ export default async function BrandOverviewPage() {
             <h2 className="font-display text-lg font-bold text-ink">Campaigns</h2>
             <Link
               href="/brand/campaigns"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-lime-deep hover:text-ink"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-electric-deep hover:text-ink"
             >
               View all <ArrowRight size={14} />
             </Link>
