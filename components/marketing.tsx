@@ -1,26 +1,30 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 
 /* ---------- FAQ accordion ---------- */
 export function Faq({ items }: { items: { q: string; a: string }[] }) {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="space-y-3">
+    <div className="border-t border-ink/15">
       {items.map((it, i) => (
-        <div key={i} className="glass rounded-3xl">
+        <div key={i} className="border-b border-ink/15">
           <button
             onClick={() => setOpen(open === i ? null : i)}
-            className="flex w-full items-center justify-between gap-4 p-5 text-left"
+            className="flex w-full items-center justify-between gap-4 py-6 text-left"
+            aria-expanded={open === i}
           >
-            <span className="font-bold text-ink">{it.q}</span>
-            <ChevronDown
-              size={18}
-              className={`shrink-0 text-electric-deep transition-transform ${open === i ? "rotate-180" : ""}`}
-            />
+            <span className="text-lg font-semibold text-ink md:text-xl">{it.q}</span>
+            <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink/20 transition-all duration-300 ${open === i ? "rotate-45 border-electric bg-electric text-white" : ""}`}>
+              <Plus size={18} />
+            </span>
           </button>
-          {open === i && <p className="px-5 pb-5 text-sm leading-relaxed text-ink-soft">{it.a}</p>}
+          <div className={`grid transition-all duration-300 ease-out ${open === i ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}>
+            <div className="overflow-hidden">
+              <p className="max-w-xl pb-7 text-[15px] leading-relaxed text-ink-soft">{it.a}</p>
+            </div>
+          </div>
         </div>
       ))}
     </div>
@@ -73,7 +77,7 @@ export function MarketingFooter() {
         <div className="mt-4 text-center text-xs text-ice/40">ClipForge — a demo rebuild for product research.</div>
       </div>
       <div className="mt-12 overflow-hidden border-t border-ice/10 px-4 pt-8">
-        <div className="select-none text-center font-display text-[clamp(4rem,14vw,14rem)] font-bold leading-none tracking-tight text-ice/95">
+        <div className="select-none whitespace-nowrap text-center font-display text-[13.5vw] font-bold leading-none tracking-tight text-ice/95 md:text-[clamp(4rem,14vw,14rem)]">
           CLIPFORGE
         </div>
       </div>

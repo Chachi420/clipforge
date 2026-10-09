@@ -122,7 +122,7 @@ export default function StoryNarrative() {
               >
                 <div className="max-w-3xl">
                   <div className="micro-label">{c.kicker}</div>
-                  <h2 className="display mt-5 text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.0]">
+                  <h2 className="display mt-5 text-[clamp(2rem,8vw,5.5rem)] leading-[1.05] hyphens-none [text-wrap:balance]">
                     {c.title}
                   </h2>
                   <p className="mt-6 max-w-lg text-[17px] leading-relaxed text-ink-soft">{c.body}</p>
@@ -141,7 +141,7 @@ export default function StoryNarrative() {
           {/* spacer to give absolute children height */}
           <div className="invisible max-w-3xl">
             <div className="micro-label">.</div>
-            <h2 className="display mt-5 text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.0]">.</h2>
+            <h2 className="display mt-5 text-[clamp(2rem,8vw,5.5rem)] leading-[1.05]">.</h2>
             <p className="mt-6 max-w-lg text-[17px]">.</p>
           </div>
         </div>
