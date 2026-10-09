@@ -25,21 +25,21 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
               // eslint-disable-next-line @next/next/no-img-element
               <img src={profile.avatarUrl} alt="" className="h-20 w-20 rounded-full object-cover" />
             ) : (
-              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-lime/25 text-3xl font-bold text-lime-deep">
+              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-electric/25 text-3xl font-bold text-electric-deep">
                 {profile.displayName.slice(0, 1)}
               </span>
             )}
             <div className="flex-1">
               <h1 className="display flex items-center gap-2 text-2xl">
                 {profile.displayName}
-                <BadgeCheck size={20} className="text-lime-deep" />
+                <BadgeCheck size={20} className="text-electric-deep" />
               </h1>
               {profile.bio && <p className="mt-1 max-w-lg text-sm text-ink-soft">{profile.bio}</p>}
               <p className="mt-1 text-xs text-ink-faint">Clipper since {profile.joinedAt}</p>
             </div>
             <Link
               href="/login"
-              className="rounded-full bg-lime px-5 py-2.5 text-sm font-bold text-ink transition hover:bg-lime-soft"
+              className="rounded-full bg-electric px-5 py-2.5 text-sm font-bold text-white transition hover:bg-electric-soft"
             >
               Start clipping
             </Link>
@@ -100,7 +100,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                         </span>
                       </td>
                       <td className="max-w-[240px] truncate px-4 py-3">
-                        <a href={c.postUrl} target="_blank" rel="noreferrer" className="text-lime-deep hover:underline">
+                        <a href={c.postUrl} target="_blank" rel="noreferrer" className="text-electric-deep hover:underline">
                           {c.accountHandle || "View post"}
                         </a>
                       </td>

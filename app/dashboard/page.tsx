@@ -40,7 +40,7 @@ export default async function DashboardHome() {
             <div className="rounded-3xl border border-dashed border-line/20 px-6 py-10 text-center">
               <p className="text-sm text-ink-soft">You haven&apos;t joined any campaigns yet.</p>
               <Link href="/dashboard/campaigns" className="mt-4 inline-block">
-                <Button variant="lime">Browse campaigns</Button>
+                <Button variant="electric">Browse campaigns</Button>
               </Link>
             </div>
           ) : (

@@ -53,13 +53,13 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-paper px-4">
       <div className="glass glass-sheen w-full max-w-md rounded-3xl p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-lime text-2xl font-black text-ink">C</div>
+        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-electric text-2xl font-black text-white">C</div>
         <h1 className="display text-2xl">Welcome back</h1>
         <p className="mt-2 text-sm text-ink-faint">
           Sign in as a clipper with your Google or Microsoft account.
         </p>
         <div className="mt-8 space-y-3">
-          <Button variant="lime" onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
+          <Button variant="electric" onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
             <GoogleLogo /> {loading === "google" ? "Redirecting…" : "Continue with Google"}
           </Button>
           <Button onClick={() => signIn("azure")} disabled={loading !== null} variant="outline" className="w-full py-3">

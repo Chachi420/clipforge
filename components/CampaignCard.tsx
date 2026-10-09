@@ -15,9 +15,9 @@ function rateLine(c: Campaign): string {
 
 export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   return (
-    <Card className="flex flex-col p-5 transition hover:border-lime-deep/30">
+    <Card className="flex flex-col p-5 transition hover:border-electric-deep/30">
       <div className="mb-3 flex items-start justify-between">
-        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-lime/20 text-lg font-black text-lime-deep">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-electric/20 text-lg font-black text-electric-deep">
           {campaign.name.slice(0, 1)}
         </span>
         <Badge tone={toneFor(campaign.status)}>{campaign.status}</Badge>
@@ -28,7 +28,7 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
       <div className="mt-1 text-xs text-ink-faint">
         {campaign.daysLeft} days left · Min {formatCompact(campaign.minViewsTotal)} views to qualify
       </div>
-      <div className="mt-3 text-sm font-semibold text-lime-deep">{rateLine(campaign)}</div>
+      <div className="mt-3 text-sm font-semibold text-electric-deep">{rateLine(campaign)}</div>
       <div className="mt-3 flex items-center gap-1.5">
         <span className="mr-1 text-[11px] uppercase tracking-wider text-ink-faint">Platforms</span>
         {campaign.platforms.map((p) => (

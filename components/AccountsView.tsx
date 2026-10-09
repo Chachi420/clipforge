@@ -152,7 +152,7 @@ export default function AccountsView({ initial }: { initial: SocialAccount[] }) 
             toward payouts. Add an account, put your verification code in its bio, and verify —
             accounts need at least {MIN_FOLLOWERS.toLocaleString()} followers.
           </p>
-          <Button variant="lime" onClick={() => setShowAdd(true)}><Plus size={15} /> Add account</Button>
+          <Button variant="electric" onClick={() => setShowAdd(true)}><Plus size={15} /> Add account</Button>
         </div>
         {initial.length === 0 ? (
           <div className="rounded-3xl border border-dashed border-line/20 px-6 py-14 text-center">
@@ -176,7 +176,7 @@ export default function AccountsView({ initial }: { initial: SocialAccount[] }) 
               <div className="flex flex-wrap gap-2">
                 {PLATFORMS.map((p) => (
                   <button key={p} onClick={() => setPlatform(p)}
-                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${platform === p ? "bg-lime text-ink" : "bg-ink/5 text-ink-soft"}`}>
+                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${platform === p ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
                     {PLATFORM_LABELS[p]}
                   </button>
                 ))}
