@@ -29,13 +29,13 @@ export default async function BillingPage() {
           <Stat label="Total spend" value={formatMoney(balance.spent)} />
         </Card>
         <Card
-          className={`p-6 ${balance.balance < 0 ? "border-red-500/40" : "border-lime-deep/40"}`}
+          className={`p-6 ${balance.balance < 0 ? "border-red-500/40" : "border-electric-deep/40"}`}
         >
           <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
             Available balance
           </div>
           <div
-            className={`mt-1 font-display text-3xl font-bold ${balance.balance < 0 ? "text-red-600 dark:text-red-400" : "text-lime-deep dark:text-lime"}`}
+            className={`mt-1 font-display text-3xl font-bold ${balance.balance < 0 ? "text-red-600 dark:text-red-400" : "text-electric-deep dark:text-electric-soft"}`}
           >
             {formatMoney(balance.balance)}
           </div>
@@ -53,7 +53,7 @@ export default async function BillingPage() {
           Email{" "}
           <a
             href="mailto:billing@clipforge.example"
-            className="font-semibold text-lime-deep underline decoration-lime-deep/40 underline-offset-2"
+            className="font-semibold text-electric-deep underline decoration-electric-deep/40 underline-offset-2"
           >
             billing@clipforge.example
           </a>{" "}

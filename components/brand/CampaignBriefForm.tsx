@@ -118,7 +118,7 @@ export default function CampaignBriefForm() {
                 onClick={() => setType(t.value)}
                 className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   type === t.value
-                    ? "border-lime-deep/60 bg-lime/20 text-ink"
+                    ? "border-electric-deep/60 bg-electric/20 text-ink"
                     : "border-line/10 bg-surface text-ink-soft hover:text-ink"
                 }`}
               >
@@ -138,7 +138,7 @@ export default function CampaignBriefForm() {
                 aria-pressed={platforms.includes(p)}
                 className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   platforms.includes(p)
-                    ? "border-lime-deep/60 bg-lime/20 text-ink"
+                    ? "border-electric-deep/60 bg-electric/20 text-ink"
                     : "border-line/10 bg-surface text-ink-soft hover:text-ink"
                 }`}
               >
@@ -182,7 +182,7 @@ export default function CampaignBriefForm() {
                 onClick={() => setDurationMode(m)}
                 className={`flex-1 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
                   durationMode === m
-                    ? "border-lime-deep/60 bg-lime/20 text-ink"
+                    ? "border-electric-deep/60 bg-electric/20 text-ink"
                     : "border-line/10 bg-surface text-ink-soft hover:text-ink"
                 }`}
               >

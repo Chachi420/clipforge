@@ -84,7 +84,7 @@ export default function RequestForm({ defaultEmail }: { defaultEmail: string }) 
         />
       </div>
       {err && <p className="text-sm text-red-600 dark:text-red-400">{err}</p>}
-      <Button type="submit" variant="lime" disabled={saving} className="w-full py-3">
+      <Button type="submit" variant="electric" disabled={saving} className="w-full py-3">
         {saving ? "Sending…" : "Request brand access"}
       </Button>
       <p className="text-center text-xs text-ink-faint">

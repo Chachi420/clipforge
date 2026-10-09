@@ -56,14 +56,14 @@ export default async function AdminHome() {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {queues.map((q) => (
           <Link key={q.label} href={q.href}>
-            <Card className="group flex items-center justify-between p-5 transition hover:border-lime-deep/40">
+            <Card className="group flex items-center justify-between p-5 transition hover:border-electric-deep/40">
               <div>
                 <div className="font-semibold text-ink">{q.label}</div>
                 <div className="mt-0.5 text-sm text-ink-faint">{q.desc}</div>
               </div>
               <ArrowUpRight
                 size={18}
-                className="shrink-0 text-ink-faint transition group-hover:text-lime-deep"
+                className="shrink-0 text-ink-faint transition group-hover:text-electric-deep"
               />
             </Card>
           </Link>
