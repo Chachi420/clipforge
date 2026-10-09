@@ -11,7 +11,7 @@
  */
 
 import Link from "next/link";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 
 export interface HoverInfo {
@@ -63,6 +63,13 @@ export function Magnetic({
 /* ------------------------------------------------------------------ */
 function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<number> }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [entered, setEntered] = useState(false);
+
+  useEffect(() => {
+    // kinetic entrance: lines mask-reveal with stagger, once on load
+    const t = setTimeout(() => setEntered(true), 120);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (typeof matchMedia !== "undefined" && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -88,16 +95,45 @@ function HeroHeadline({ progressRef }: { progressRef: React.MutableRefObject<num
 
   return (
     <div ref={ref} className="will-change-transform" style={{ transformOrigin: "50% 0%" }}>
-      <div className="micro-label mb-6">The pay-per-view clipping network</div>
-      <h1 className="display text-[clamp(3rem,7vw,5.5rem)] leading-[1.02]">
-        Clip. Post.
-        <br />
-        Get Paid.
+      <div
+        className={`micro-label mb-8 transition-all duration-700 ease-out ${
+          entered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+        }`}
+      >
+        The pay-per-view clipping network
+      </div>
+      <h1 className="display text-[clamp(4rem,13vw,12rem)] leading-[0.92]">
+        <span className="block overflow-hidden">
+          <span
+            className={`block transition-all duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              entered ? "translate-y-0" : "translate-y-full"
+            }`}
+          >
+            Clip. Post.
+          </span>
+        </span>
+        <span className="block overflow-hidden">
+          <span
+            className={`block transition-all delay-100 duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] ${
+              entered ? "translate-y-0" : "translate-y-full"
+            }`}
+          >
+            Get Paid.
+          </span>
+        </span>
       </h1>
-      <p className="mx-auto mt-6 max-w-xl text-[17px] leading-relaxed text-ink-soft">
-        Brands run pay-per-view campaigns. Clippers earn for every verified view. No following required.
+      <p
+        className={`mx-auto mt-8 max-w-md text-[17px] leading-relaxed text-ink-soft transition-all delay-200 duration-700 ease-out ${
+          entered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+        }`}
+      >
+        Brands run pay-per-view campaigns. Clippers earn for every verified view.
       </p>
-      <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
+      <div
+        className={`mt-10 flex flex-wrap items-center justify-center gap-6 transition-all delay-300 duration-700 ease-out ${
+          entered ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+        }`}
+      >
         <Magnetic>
           <Link href="/login" className="pill pointer-events-auto inline-flex items-center gap-2 bg-electric px-8 py-4 font-semibold text-white shadow-[0_4px_20px_rgb(32_71_255/0.35)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB] hover:shadow-[0_10px_32px_rgb(32_71_255/0.45)]">
             Start clipping <ArrowRight size={18} />
