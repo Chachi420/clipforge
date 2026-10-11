@@ -84,7 +84,7 @@ export default function StoryNarrative() {
   };
 
   return (
-    <div ref={trackRef} className="relative" style={{ height: "250vh" }}>
+    <div ref={trackRef} className="relative bg-[#060606] text-white" style={{ height: "250vh" }}>
       <div className="sticky top-0 flex h-[100svh] items-center overflow-hidden">
         {/* giant background numeral — the chapter's anchor */}
         <div className="pointer-events-none absolute inset-0 flex items-center justify-center" aria-hidden>
@@ -96,7 +96,7 @@ export default function StoryNarrative() {
             return (
               <div
                 key={c.n}
-                className={`display absolute select-none text-[24vw] leading-none text-ink/[0.03] transition-opacity duration-700 md:text-[18vw] dark:text-paper/[0.035] ${
+                className={`display absolute select-none text-[24vw] leading-none text-white/[0.05] transition-opacity duration-700 md:text-[18vw] ${
                   active ? "opacity-100" : "opacity-0"
                 }`}
                 style={{ transform: `translateY(${-drift}px)` }}
@@ -121,11 +121,11 @@ export default function StoryNarrative() {
                 aria-hidden={!active}
               >
                 <div className={`max-w-3xl ${i % 2 === 1 ? "md:ml-auto md:text-right" : ""}`}>
-                  <div className="micro-label">{c.kicker}</div>
+                  <div className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">{c.kicker}</div>
                   <h2 className={`display mt-5 hyphens-none leading-[1.05] [text-wrap:balance] ${i === 3 ? "text-[clamp(2.2rem,9vw,6rem)]" : "text-[clamp(2rem,8vw,5.5rem)]"}`}>
                     {c.title}
                   </h2>
-                  <p className={`mt-6 max-w-lg text-[17px] leading-relaxed text-ink-soft ${i % 2 === 1 ? "md:ml-auto" : ""}`}>{c.body}</p>
+                  <p className={`mt-6 max-w-lg text-[17px] leading-relaxed text-white/60 ${i % 2 === 1 ? "md:ml-auto" : ""}`}>{c.body}</p>
                   {id === 4 && (
                     <Link
                       href="/login"
@@ -148,10 +148,10 @@ export default function StoryNarrative() {
 
         {/* progress: counter + bar + dots */}
         <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center gap-4">
-          <span className="micro-label tabular-nums">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50 tabular-nums">
             {String(chapter).padStart(2, "0")} / 04
           </span>
-          <div className="h-px w-24 overflow-hidden rounded-full bg-ink/15 md:w-32">
+          <div className="h-px w-24 overflow-hidden rounded-full bg-white/15 md:w-32">
             <div
               className="h-full w-full origin-left bg-electric transition-transform duration-150"
               style={{ transform: `scaleX(${Math.min(1, Math.max(0, progress))})` }}
@@ -167,10 +167,10 @@ export default function StoryNarrative() {
               aria-label={`Go to chapter ${i}`}
               className="group flex cursor-pointer items-center justify-end gap-2.5 px-2 py-1.5"
             >
-              <span className={`micro-label transition-colors ${chapter === i ? "text-ink" : "text-ink-faint group-hover:text-ink-soft"}`}>
+              <span className={`text-[11px] font-semibold uppercase tracking-[0.22em] transition-colors ${chapter === i ? "text-white" : "text-white/40 group-hover:text-white/70"}`}>
                 0{i}
               </span>
-              <span className={`h-2 w-2 rounded-full transition-all ${chapter === i ? "scale-125 bg-electric" : "bg-ink/25 group-hover:bg-ink/50"}`} />
+              <span className={`h-2 w-2 rounded-full transition-all ${chapter === i ? "scale-125 bg-electric" : "bg-white/25 group-hover:bg-white/50"}`} />
             </button>
           ))}
         </div>

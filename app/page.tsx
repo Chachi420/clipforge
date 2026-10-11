@@ -139,24 +139,27 @@ export default function Landing() {
 
         </section>
 
+      </main>
+
         {/* ---------- Final CTA ---------- */}
-        <section className="reveal py-24 text-center md:py-36">
-          <div className="micro-label mb-6">No followers needed. No fees. No catch.</div>
-          <h2 className="display mx-auto max-w-4xl text-[clamp(2.75rem,8vw,6rem)] leading-[1.0]">
-            Your first payout
-            <br />
-            is one clip away.
-          </h2>
-          <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <Link href="/login" className="pill inline-flex w-full items-center justify-center gap-2 bg-electric px-10 py-5 text-lg font-semibold text-white shadow-[0_4px_24px_rgb(32_71_255/0.4)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB] sm:w-auto">
-              Start clipping <ArrowRight size={20} />
-            </Link>
-            <Link href="/brands" className="link-under inline-flex items-center gap-1.5 font-semibold text-ink transition-colors hover:text-electric-deep">
-              I&apos;m a brand <ArrowRight size={16} />
-            </Link>
+        <section className="reveal bg-[#060606] py-24 text-center text-white md:py-36">
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="mb-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">No followers needed. No fees. No catch.</div>
+            <h2 className="display mx-auto max-w-4xl text-[clamp(2.75rem,8vw,6rem)] leading-[1.0]">
+              Your first payout
+              <br />
+              is one clip away.
+            </h2>
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+              <Link href="/login" className="pill inline-flex w-full items-center justify-center gap-2 bg-electric px-10 py-5 text-lg font-semibold text-white shadow-[0_4px_32px_rgb(32_71_255/0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB] sm:w-auto">
+                Start clipping <ArrowRight size={20} />
+              </Link>
+              <Link href="/brands" className="inline-flex items-center gap-1.5 font-semibold text-white/80 transition-colors hover:text-white">
+                I&apos;m a brand <ArrowRight size={16} />
+              </Link>
+            </div>
           </div>
         </section>
-      </main>
 
       <MarketingFooter />
     </div>
