@@ -116,6 +116,58 @@ export async function getBounties(campaignId: string): Promise<Bounty[]> {
   return (data ?? []).map(toBounty);
 }
 
+// ---------- clip activity (real data, last 52 weeks) ----------
+
+const ACTIVITY_DAYS = 364; // 52 weeks
+
+export interface ClipActivity {
+  /** counts[0] = 363 days ago … counts[363] = today */
+  counts: number[];
+  activeDays: number;
+  avgClipsPerDay: number;
+}
+
+export async function getClipActivity(userId: string): Promise<ClipActivity> {
+  const empty: ClipActivity = {
+    counts: Array(ACTIVITY_DAYS).fill(0),
+    activeDays: 0,
+    avgClipsPerDay: 0,
+  };
+  let submittedAt: (string | null | undefined)[];
+  if (!useSupabase) {
+    submittedAt = mock.clips.map((c) => c.submittedAt);
+  } else {
+    const supabase = await sb();
+    const { data } = await supabase
+      .from("clips")
+      .select("submitted_at")
+      .eq("user_id", userId);
+    submittedAt = (data ?? []).map((r: any) => r.submitted_at);
+  }
+  const today = new Date();
+  const start = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate()));
+  start.setUTCDate(start.getUTCDate() - (ACTIVITY_DAYS - 1));
+  const startKey = start.toISOString().slice(0, 10);
+  const counts = Array(ACTIVITY_DAYS).fill(0);
+  const active = new Set<string>();
+  for (const iso of submittedAt) {
+    if (!iso) continue;
+    const k = String(iso).slice(0, 10);
+    if (k < startKey) continue;
+    const idx = Math.round(
+      (new Date(k + "T00:00:00Z").getTime() - start.getTime()) / 86400000
+    );
+    if (idx >= 0 && idx < ACTIVITY_DAYS) {
+      counts[idx]++;
+      active.add(k);
+    }
+  }
+  const activeDays = active.size;
+  const total = counts.reduce((a, b) => a + b, 0);
+  const avgClipsPerDay = activeDays ? Math.round((total / activeDays) * 10) / 10 : 0;
+  return { counts, activeDays, avgClipsPerDay };
+}
+
 // ---------- profile ----------
 
 export async function getProfile(userId: string): Promise<ClipperProfile | null> {
@@ -126,6 +178,9 @@ export async function getProfile(userId: string): Promise<ClipperProfile | null>
   const profile = toProfile(data);
   const { count } = await supabase.from("clips").select("id", { count: "exact", head: true }).eq("user_id", userId);
   profile.clipsSubmitted = count ?? 0;
+  const activity = await getClipActivity(userId);
+  profile.activeDays = activity.activeDays;
+  profile.avgClipsPerDay = activity.avgClipsPerDay;
   return profile;
 }
 

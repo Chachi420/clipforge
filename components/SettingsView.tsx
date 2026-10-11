@@ -6,13 +6,10 @@ import { Badge, Button, Card, inputCls } from "@/components/ui";
 import { signOutAction, updateProfile } from "@/lib/actions";
 import { AUTH_PROVIDER_LABELS, type ClipperProfile } from "@/lib/types";
 
-function Heatmap() {
-  const weeks = Array.from({ length: 52 }, (_, w) =>
-    Array.from({ length: 7 }, (_, d) => {
-      const seed = (w * 7 + d * 13) % 11;
-      return seed > 8 ? 4 : seed > 6 ? 3 : seed > 4 ? 2 : seed > 2 ? 1 : 0;
-    })
-  );
+function Heatmap({ data }: { data: number[] }) {
+  // data[0] = 363 days ago … data[363] = today. Render 52 week columns.
+  const weeks = Array.from({ length: 52 }, (_, w) => data.slice(w * 7, w * 7 + 7));
+  const shade = (v: number) => (v === 0 ? 0 : v <= 2 ? 1 : v <= 5 ? 2 : v <= 10 ? 3 : 4);
   const shades = ["bg-ink/5", "bg-electric/25", "bg-electric/50", "bg-electric/70", "bg-electric"];
   return (
     <div>
@@ -20,7 +17,7 @@ function Heatmap() {
         {weeks.map((days, w) => (
           <div key={w} className="flex flex-col gap-[3px]">
             {days.map((v, d) => (
-              <span key={d} title={`${v} clips`} className={`h-2.5 w-2.5 rounded-[3px] ${shades[v]}`} />
+              <span key={d} title={`${v} clip${v === 1 ? "" : "s"}`} className={`h-2.5 w-2.5 rounded-[3px] ${shades[shade(v)]}`} />
             ))}
           </div>
         ))}
@@ -32,7 +29,7 @@ function Heatmap() {
   );
 }
 
-export default function SettingsView({ profile }: { profile: ClipperProfile }) {
+export default function SettingsView({ profile, activity }: { profile: ClipperProfile; activity: number[] }) {
   const [publicProfile, setPublicProfile] = useState(profile.publicProfile);
   const [displayName, setDisplayName] = useState(profile.displayName);
   const [bio, setBio] = useState(profile.bio ?? "");
@@ -173,7 +170,7 @@ export default function SettingsView({ profile }: { profile: ClipperProfile }) {
             <div><div className="text-xl font-bold text-ink">{profile.avgClipsPerDay}</div><div className="text-ink-faint">Avg clips / day</div></div>
             <div><div className="text-xl font-bold text-ink">{profile.activeDays}</div><div className="text-ink-faint">Active days</div></div>
           </div>
-          <Heatmap />
+          <Heatmap data={activity} />
         </Card>
 
         <div className="flex justify-end">
