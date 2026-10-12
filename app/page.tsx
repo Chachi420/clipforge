@@ -1,143 +1,58 @@
-import Link from "next/link";
-import { ArrowRight, Scissors, TrendingUp } from "lucide-react";
+import type { Metadata } from "next";
 import MarketingNav from "@/components/MarketingNav";
-import StoryNarrative from "@/components/StoryNarrative";
-import Hero from "@/components/Hero";
-import { Faq, MarketingFooter } from "@/components/marketing";
-import { RevealInit } from "@/components/landing-motion";
+import { MarketingFooter } from "@/components/marketing";
+import { EarningsCalculator } from "@/app/clip/calculator";
+import {
+  HomeHero,
+  HomeHowItWorks,
+  HomeMoneyMath,
+  HomeTwoPaths,
+  HomeFaq,
+  HomeFinalCta,
+} from "@/components/home-sections";
 
+export const metadata: Metadata = {
+  title: "ClipForge — Get Paid for Every View Your Clips Earn",
+  description:
+    "ClipForge is a pay-per-view clipping marketplace. Brands post campaigns with a per-view rate; clippers post clips and earn per verified view.",
+  alternates: { canonical: "/" },
+};
 
-const FAQ_ITEMS = [
-  { q: "I have 200 followers. Can I actually earn?", a: "Yes — that's the whole point. You get paid per view, not per follower. A sharp clip from a small account routinely outperforms a lazy one from a big account. The view counter doesn't care about your follower count." },
-  { q: "How do I know the view counts are real?", a: "We pull numbers directly from the platform APIs, strip out bot traffic, and humans spot-check the rest. Brands see the same dashboard you do — if a view didn't happen, nobody pays for it and nobody earns from it." },
-  { q: "When do I actually get paid?", a: "Campaigns run in monthly cycles. When a cycle closes, your verified views convert to earnings at the campaign's published rate, sent to your PayPal or crypto wallet. No minimum threshold games, no 90-day holds." },
-  { q: "How are views verified?", a: "View counts are pulled directly from the platforms, filtered through viewbot detection, and spot-checked by manual review. Only verified views count toward earnings and brand billing." },
-  { q: "What does it cost brands?", a: "Brands set their own budget and per-view rate — priced per 100K verified views — with a hard cap. There is no fixed pricing: you spend exactly what you approve, nothing more." },
-];
-
+/**
+ * Homepage (brief §10). Narrative order: What → Money → Fit → Start →
+ * Doubts → Go. One idea per section. Black reserved for the money math
+ * and the final CTA.
+ */
 export default function Landing() {
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <RevealInit />
-
-      {/* ---------- Nav ---------- */}
       <MarketingNav />
+      <main>
+        <HomeHero />
+        <HomeHowItWorks />
+        <HomeMoneyMath />
+        <HomeTwoPaths />
 
-      <Hero />
-
-      {/* ---------- The story: scroll-driven typographic narrative ---------- */}
-      <StoryNarrative />
-
-      <main className="bg-glow mx-auto max-w-6xl px-6">
-        {/* ---------- Do the math ---------- */}
-        <section className="reveal py-16 md:py-24">
-          <div className="border-y border-ink/15 py-10 md:py-14">
-            <div className="micro-label mb-6">How the money works</div>
-            <div className="grid gap-6 md:grid-cols-[1fr_auto_1fr_auto_1fr] md:items-center md:gap-8">
-              <div className="flex items-baseline gap-3 md:block">
-                <span className="display text-4xl md:text-5xl">100K</span>
-                <span className="text-sm text-ink-soft md:mt-2 md:block">verified views on your clip</span>
-              </div>
-              <div className="hidden display text-2xl text-ink-faint md:block">×</div>
-              <div className="flex items-baseline gap-3 border-t border-ink/10 pt-6 md:block md:border-0 md:pt-0">
-                <span className="display text-4xl md:text-5xl">$40</span>
-                <span className="text-sm text-ink-soft md:mt-2 md:block">the brand&apos;s rate per 100K</span>
-              </div>
-              <div className="hidden display text-2xl text-ink-faint md:block">=</div>
-              <div className="flex items-baseline gap-3 border-t border-ink/10 pt-6 md:block md:border-0 md:pt-0">
-                <span className="display text-4xl text-electric-deep md:text-5xl">$40</span>
-                <span className="text-sm text-ink-soft md:mt-2 md:block">in your pocket. That&apos;s the math.</span>
-              </div>
-            </div>
-            <p className="mt-8 text-xs text-ink-faint">Illustrative example — each campaign sets its own rate.</p>
-          </div>
-        </section>
-
-        {/* ---------- Two sides: pick your path ---------- */}
-        <section className="reveal py-24 md:py-36">
-          <div className="micro-label mb-6">Two ways in</div>
-          <h2 className="display max-w-4xl text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.02]">
-            Start here.
-            <br />
-            Pick your path.
+        <section aria-labelledby="calculator" className="mx-auto max-w-6xl px-6 py-20 md:py-28">
+          <p className="micro-label text-center">Do the math</p>
+          <h2
+            id="calculator"
+            className="display mx-auto mt-4 max-w-2xl text-center text-[clamp(2rem,5vw,3.5rem)]"
+          >
+            What could your clips earn?
           </h2>
-
-          <div className="mt-14 space-y-5">
-            <Link href="/clip" className="group block border-t border-ink/15 py-10 transition-colors hover:bg-ink/[0.02] md:py-12">
-              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="max-w-xl">
-                  <div className="mb-3 flex items-center gap-3">
-                    <Scissors size={20} className="text-electric-deep" />
-                    <span className="micro-label">For clippers</span>
-                  </div>
-                  <p className="display text-2xl leading-snug md:text-[2rem]">
-                    You&apos;re already posting clips for free.{" "}
-                    <span className="text-ink-faint">Might as well get paid for it.</span>
-                  </p>
-                  <p className="mt-3 max-w-md text-[15px] leading-relaxed text-ink-soft">
-                    Free to join, no follower minimum. Pick a brief, post, and watch the view counter turn into money.
-                  </p>
-                </div>
-                <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-ink/20 transition-all duration-300 group-hover:border-electric group-hover:bg-electric group-hover:text-white">
-                  <ArrowRight size={20} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </Link>
-
-            <Link href="/brands" className="group block border-t border-b border-ink/15 py-10 transition-colors hover:bg-ink/[0.02] md:py-12">
-              <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
-                <div className="max-w-xl">
-                  <div className="mb-3 flex items-center gap-3">
-                    <TrendingUp size={20} className="text-electric-deep" />
-                    <span className="micro-label">For brands</span>
-                  </div>
-                  <p className="display text-2xl leading-snug md:text-[2rem]">
-                    Stop paying for posts.{" "}
-                    <span className="text-ink-faint">Pay for the views that actually happened.</span>
-                  </p>
-                  <p className="mt-3 max-w-md text-[15px] leading-relaxed text-ink-soft">
-                    Set a rate per view, cap the budget, and only pay for verified reach. If nobody watches, you pay nothing.
-                  </p>
-                </div>
-                <span className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-ink/20 transition-all duration-300 group-hover:border-electric group-hover:bg-electric group-hover:text-white">
-                  <ArrowRight size={20} className="transition-transform duration-300 group-hover:translate-x-0.5" />
-                </span>
-              </div>
-            </Link>
+          <p className="mx-auto mt-4 max-w-xl text-center leading-relaxed text-ink-soft">
+            Move the sliders to see what a posting habit could be worth at a
+            campaign&apos;s rate.
+          </p>
+          <div className="mt-10">
+            <EarningsCalculator />
           </div>
         </section>
 
-        {/* ---------- FAQ: objection handling, trimmed ---------- */}
-        <section className="reveal py-24 md:py-32">
-          <h2 className="display mb-12 text-center text-[clamp(2rem,5vw,3.5rem)]">Questions, answered</h2>
-          <div className="mx-auto max-w-2xl">
-            <Faq items={FAQ_ITEMS} />
-          </div>
-
-        </section>
-
+        <HomeFaq />
+        <HomeFinalCta />
       </main>
-
-        {/* ---------- Final CTA ---------- */}
-        <section className="reveal bg-[#060606] py-24 text-center text-white md:py-36">
-          <div className="mx-auto max-w-6xl px-6">
-            <div className="mb-6 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/50">No followers needed. No fees. No catch.</div>
-            <h2 className="display mx-auto max-w-4xl text-[clamp(2.75rem,8vw,6rem)] leading-[1.0]">
-              Your first payout
-              <br />
-              is one clip away.
-            </h2>
-            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-              <Link href="/login" className="pill inline-flex w-full items-center justify-center gap-2 bg-electric px-10 py-5 text-lg font-semibold text-white shadow-[0_4px_32px_rgb(32_71_255/0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1A3BDB] sm:w-auto">
-                Start clipping <ArrowRight size={20} />
-              </Link>
-              <Link href="/brands" className="inline-flex items-center gap-1.5 font-semibold text-white/80 transition-colors hover:text-white">
-                I&apos;m a brand <ArrowRight size={16} />
-              </Link>
-            </div>
-          </div>
-        </section>
-
       <MarketingFooter />
     </div>
   );

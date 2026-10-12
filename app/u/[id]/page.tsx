@@ -1,123 +1,180 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { BadgeCheck } from "lucide-react";
-import { Badge, Card, PlatformDot } from "@/components/ui";
-import { getPublicClips, getPublicProfile, getUserSocialAccounts } from "@/lib/db";
+import { ArrowUpRight, BadgeCheck } from "lucide-react";
+import MarketingNav from "@/components/MarketingNav";
+import { MarketingFooter } from "@/components/marketing";
+import { Badge, EmptyState, PlatformDot } from "@/components/ui";
+import { getPublicClips, getPublicProfile, getUserSocialAccounts, getCampaigns } from "@/lib/db";
 import { PLATFORM_LABELS } from "@/lib/types";
 import { formatCompact } from "@/lib/format";
 
+/**
+ * Public clipper profile (brief §11). Contra-style: identity first, work
+ * shown as a grid, stats second. All figures are real data from the
+ * PII-safe public_profiles view — no emails, no invented numbers.
+ */
 export default async function PublicProfilePage({ params }: { params: { id: string } }) {
   const profile = await getPublicProfile(params.id);
   if (!profile) notFound();
-  const [clips, accounts] = await Promise.all([
+  const [clips, accounts, allCampaigns] = await Promise.all([
     getPublicClips(params.id),
     getUserSocialAccounts(params.id),
+    getCampaigns(),
   ]);
   const verified = accounts.filter((a) => a.verified);
   const totalViews = clips.reduce((s, c) => s + c.views, 0);
+  const campaignNames = new Map(allCampaigns.map((c) => [c.id, c.name]));
+  const campaigns = [
+    ...new Set(
+      clips.map((c) => campaignNames.get(c.campaignId)).filter((n): n is string => Boolean(n))
+    ),
+  ];
 
   return (
-    <div className="min-h-screen bg-paper">
-      <div className="mx-auto max-w-4xl px-4 py-10 sm:px-8">
-        <Card className="p-6 sm:p-8">
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-            {profile.avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={profile.avatarUrl} alt="" className="h-20 w-20 rounded-full object-cover" />
-            ) : (
-              <span className="flex h-20 w-20 items-center justify-center rounded-full bg-electric/25 text-3xl font-bold text-electric-deep">
-                {profile.displayName.slice(0, 1)}
-              </span>
-            )}
-            <div className="flex-1">
-              <h1 className="display flex items-center gap-2 text-2xl">
-                {profile.displayName}
-                <BadgeCheck size={20} className="text-electric-deep" />
-              </h1>
-              {profile.bio && <p className="mt-1 max-w-lg text-sm text-ink-soft">{profile.bio}</p>}
-              <p className="mt-1 text-xs text-ink-faint">Clipper since {profile.joinedAt}</p>
-            </div>
-            <Link
-              href="/login"
-              className="rounded-full bg-electric px-5 py-2.5 text-sm font-bold text-white transition hover:bg-electric-soft"
+    <div className="min-h-screen bg-paper text-ink">
+      <MarketingNav />
+
+      <main className="mx-auto max-w-5xl px-6 pb-24">
+        {/* Identity */}
+        <header className="flex flex-col gap-6 py-12 md:flex-row md:items-center md:py-16">
+          {profile.avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={profile.avatarUrl}
+              alt=""
+              className="h-24 w-24 rounded-full border border-line/10 object-cover"
+            />
+          ) : (
+            <span
+              className="flex h-24 w-24 items-center justify-center rounded-full border border-line/10 bg-surface text-4xl font-bold text-ink"
+              aria-hidden
             >
-              Start clipping
-            </Link>
+              {profile.displayName.slice(0, 1).toUpperCase()}
+            </span>
+          )}
+          <div className="flex-1">
+            <p className="micro-label">Clipper</p>
+            <h1 className="display mt-2 flex items-center gap-2 text-[clamp(2rem,6vw,3.5rem)] leading-none">
+              {profile.displayName}
+              <BadgeCheck size={28} className="shrink-0 text-ink" aria-label="Verified clipper" />
+            </h1>
           </div>
+          <Link
+            href="/login"
+            className="pill min-h-[44px] shrink-0 bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+          >
+            Start clipping
+          </Link>
+        </header>
 
-          <div className="mt-6 grid grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-line/10 p-4 text-center">
-              <div className="display text-2xl">{formatCompact(clips.length)}</div>
-              <div className="text-xs text-ink-faint">Clips</div>
+        {/* Stat row — real data only */}
+        <dl className="grid grid-cols-3 gap-4 border-y border-line/10 py-8">
+          {[
+            { label: "Clips", value: formatCompact(clips.length) },
+            { label: "Verified views", value: formatCompact(totalViews) },
+            { label: "Verified accounts", value: String(verified.length) },
+          ].map((s) => (
+            <div key={s.label}>
+              <dd className="display tnum text-3xl md:text-4xl">{s.value}</dd>
+              <dt className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-faint">
+                {s.label}
+              </dt>
             </div>
-            <div className="rounded-2xl border border-line/10 p-4 text-center">
-              <div className="display text-2xl">{formatCompact(totalViews)}</div>
-              <div className="text-xs text-ink-faint">Total views</div>
-            </div>
-            <div className="rounded-2xl border border-line/10 p-4 text-center">
-              <div className="display text-2xl">{verified.length}</div>
-              <div className="text-xs text-ink-faint">Verified accounts</div>
-            </div>
-          </div>
-        </Card>
+          ))}
+        </dl>
 
-        {verified.length > 0 && (
-          <div className="mt-6">
-            <h2 className="display mb-3">Verified accounts</h2>
-            <div className="flex flex-wrap gap-2">
-              {verified.map((a) => (
-                <span key={a.id} className="flex items-center gap-2 rounded-full border border-line/10 bg-surface/70 px-4 py-2 text-sm text-ink-soft">
-                  <PlatformDot platform={a.platform} />
-                  <span className="font-mono">{a.handle}</span>
-                  <Badge tone="green">Verified</Badge>
-                </span>
+        {/* Work — clip grid linking out */}
+        <section aria-labelledby="profile-clips" className="mt-14">
+          <h2 id="profile-clips" className="display text-2xl">
+            Clips
+          </h2>
+          {clips.length === 0 ? (
+            <div className="mt-6">
+              <EmptyState
+                title="No public clips yet"
+                body={`${profile.displayName} hasn't posted any public clips. Check back soon — or start clipping yourself.`}
+                action={
+                  <Link
+                    href="/login"
+                    className="pill min-h-[44px] bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+                  >
+                    Start clipping
+                  </Link>
+                }
+              />
+            </div>
+          ) : (
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {clips.slice(0, 24).map((c) => (
+                <a
+                  key={c.id}
+                  href={c.postUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="group rounded-card border border-line/10 bg-surface p-5 transition-colors duration-micro hover:border-ink/30"
+                >
+                  <div className="flex items-center gap-2 text-sm text-ink-soft">
+                    <PlatformDot platform={c.platform} />
+                    <span className="font-mono text-[13px]">{c.accountHandle || PLATFORM_LABELS[c.platform]}</span>
+                  </div>
+                  <div className="display tnum mt-4 text-3xl">{formatCompact(c.views)}</div>
+                  <div className="text-xs text-ink-faint">verified views</div>
+                  {c.campaignId && campaignNames.get(c.campaignId) && (
+                    <div className="mt-3">
+                      <Badge>{campaignNames.get(c.campaignId)}</Badge>
+                    </div>
+                  )}
+                  <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-ink">
+                    View post <ArrowUpRight size={15} aria-hidden />
+                  </span>
+                </a>
               ))}
             </div>
-          </div>
+          )}
+        </section>
+
+        {/* Verified accounts */}
+        {verified.length > 0 && (
+          <section aria-labelledby="profile-accounts" className="mt-14">
+            <h2 id="profile-accounts" className="display text-2xl">
+              Verified accounts
+            </h2>
+            <ul className="mt-6 flex flex-wrap gap-2">
+              {verified.map((a) => (
+                <li
+                  key={a.id}
+                  className="flex min-h-[44px] items-center gap-2 rounded-full border border-line/10 bg-surface px-4 py-2 text-sm text-ink-soft"
+                >
+                  <PlatformDot platform={a.platform} />
+                  <span className="font-mono text-[13px]">{a.handle}</span>
+                  <Badge tone="success">Verified</Badge>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
-        <div className="mt-6">
-          <h2 className="display mb-3">Recent clips</h2>
-          {clips.length === 0 ? (
-            <p className="text-sm text-ink-faint">No clips yet.</p>
-          ) : (
-            <div className="glass overflow-x-auto rounded-3xl">
-              <table className="w-full min-w-[560px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
-                    <th className="px-4 py-3">Platform</th>
-                    <th className="px-4 py-3">Clip</th>
-                    <th className="px-4 py-3 text-right">Views</th>
-                    <th className="px-4 py-3 text-right">Submitted</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {clips.slice(0, 20).map((c) => (
-                    <tr key={c.id} className="border-b border-line/10 last:border-0">
-                      <td className="px-4 py-3">
-                        <span className="flex items-center gap-2 text-ink-soft">
-                          <PlatformDot platform={c.platform} /> {PLATFORM_LABELS[c.platform]}
-                        </span>
-                      </td>
-                      <td className="max-w-[240px] truncate px-4 py-3">
-                        <a href={c.postUrl} target="_blank" rel="noreferrer" className="text-electric-deep hover:underline">
-                          {c.accountHandle || "View post"}
-                        </a>
-                      </td>
-                      <td className="px-4 py-3 text-right font-semibold text-ink">{formatCompact(c.views)}</td>
-                      <td className="px-4 py-3 text-right text-ink-faint">{c.submittedAt.slice(0, 10)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+        {/* Campaigns */}
+        {campaigns.length > 0 && (
+          <section aria-labelledby="profile-campaigns" className="mt-14">
+            <h2 id="profile-campaigns" className="display text-2xl">
+              Campaigns
+            </h2>
+            <ul className="mt-6 space-y-0 border-t border-line/10">
+              {campaigns.map((name) => (
+                <li
+                  key={name}
+                  className="border-b border-line/10 py-4 text-[15px] font-medium text-ink"
+                >
+                  {name}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </main>
 
-        <p className="mt-10 text-center text-xs text-ink-faint">
-          ClipForge — clip, post, get paid. <Link href="/" className="underline">Learn more</Link>
-        </p>
-      </div>
+      <MarketingFooter />
     </div>
   );
 }

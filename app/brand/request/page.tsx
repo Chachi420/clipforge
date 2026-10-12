@@ -26,11 +26,13 @@ export default async function BrandRequestPage() {
         <ThemeToggle />
       </div>
       <Card className="w-full max-w-xl p-8">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-electric text-2xl font-black text-white">C</div>
-        <h1 className="display text-center text-2xl">Request brand access</h1>
+        <Link href="/" className="mx-auto block w-fit font-display text-lg font-bold tracking-tight text-ink">
+          CLIPFORGE
+        </Link>
+        <h1 className="display mt-4 text-center text-2xl">Request brand access</h1>
         {existing?.status === "pending" ? (
-          <div className="mt-8 rounded-2xl border border-amber-400/20 bg-amber-400/5 p-6 text-center">
-            <p className="font-semibold text-amber-700 dark:text-amber-200">Request under review</p>
+          <div className="mt-8 rounded-card border border-status-warning/25 bg-status-warning/10 p-6 text-center">
+            <p className="font-semibold text-ink">Request under review</p>
             <p className="mt-2 text-sm text-ink-soft">
               Your request for <span className="font-semibold text-ink">{existing.company_name}</span> is
               being reviewed. We&apos;ll enable your brand dashboard as soon as it&apos;s approved.
@@ -38,8 +40,8 @@ export default async function BrandRequestPage() {
           </div>
         ) : existing?.status === "approved" ? (
           <div className="mt-8 text-center">
-            <p className="font-semibold text-emerald-600 dark:text-emerald-300">You&apos;re approved!</p>
-            <Link href="/brand" className="mt-4 inline-block rounded-full bg-electric px-6 py-3 text-sm font-bold text-white transition hover:bg-electric-soft">
+            <p className="font-semibold text-status-success">You&apos;re approved!</p>
+            <Link href="/brand" className="pill mt-4 inline-block bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft">
               Open your brand dashboard
             </Link>
           </div>

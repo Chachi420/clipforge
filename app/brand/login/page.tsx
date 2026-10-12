@@ -45,25 +45,27 @@ export default function BrandLoginPage() {
         <ThemeToggle />
       </div>
       <Card className="w-full max-w-md p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-electric text-2xl font-black text-white">C</div>
-        <h1 className="display text-2xl">Brand sign in</h1>
+        <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
+          CLIPFORGE
+        </Link>
+        <h1 className="display mt-4 text-2xl">Brand sign in</h1>
         <p className="mt-2 text-sm text-ink-soft">
           Access your ClipForge brand dashboard — campaigns, verified views, billing.
         </p>
         <div className="mt-8">
-          <Button onClick={signIn} disabled={loading} variant="electric" className="w-full py-3">
+          <Button onClick={signIn} disabled={loading} variant="primary" className="w-full py-3">
             <GoogleLogo /> {loading ? "Redirecting…" : "Continue with Google"}
           </Button>
         </div>
         <p className="mt-6 text-xs text-ink-faint">
           Brand accounts are provisioned by our team. New here?{" "}
-          <Link href="/brand/request" className="font-semibold text-electric-deep hover:text-ink">
+          <Link href="/brand/request" className="font-semibold text-ink-soft hover:text-ink">
             Request brand access
           </Link>
           .
         </p>
         {!isLive && (
-          <p className="mt-4 rounded-xl bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+          <p className="mt-4 rounded-md border border-status-warning/25 bg-status-warning/10 px-3 py-2 text-xs text-ink-soft">
             Demo mode: Supabase isn&apos;t configured, so this signs you into a demo brand dashboard.
           </p>
         )}

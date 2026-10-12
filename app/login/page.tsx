@@ -1,7 +1,8 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { Button } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import type { AuthProvider } from "@/lib/types";
 
@@ -32,6 +33,10 @@ function MicrosoftLogo() {
   );
 }
 
+/**
+ * Clipper sign-in (brief §11). Centered monochrome card, one action.
+ * Helper copy says what happens next.
+ */
 export default function LoginPage() {
   const [loading, setLoading] = useState<AuthProvider | null>(null);
   const router = useRouter();
@@ -51,33 +56,36 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-paper px-4">
-      <div className="glass glass-sheen w-full max-w-md rounded-3xl p-8 text-center">
-        <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-electric text-2xl font-black text-white">C</div>
-        <h1 className="display text-2xl">Welcome back</h1>
-        <p className="mt-2 text-sm text-ink-faint">
-          Sign in as a clipper with your Google or Microsoft account.
+    <div className="flex min-h-screen items-center justify-center bg-paper px-4 py-10">
+      <Card className="w-full max-w-md p-8 text-center">
+        <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
+          CLIPFORGE
+        </Link>
+        <h1 className="display mt-4 text-2xl">Sign in as a clipper</h1>
+        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+          Connect with Google or Microsoft. Next: verify your accounts, pick a
+          campaign, post your first clip.
         </p>
         <div className="mt-8 space-y-3">
-          <Button variant="electric" onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
+          <Button variant="primary" onClick={() => signIn("google")} disabled={loading !== null} className="w-full py-3">
             <GoogleLogo /> {loading === "google" ? "Redirecting…" : "Continue with Google"}
           </Button>
           <Button onClick={() => signIn("azure")} disabled={loading !== null} variant="outline" className="w-full py-3">
             <MicrosoftLogo /> {loading === "azure" ? "Redirecting…" : "Continue with Microsoft"}
           </Button>
         </div>
-        <p className="mt-6 text-xs text-ink-faint">
-          Don&apos;t worry — we&apos;ll check if you already have an account. If not, we&apos;ll get you started.
-        </p>
         {!isLive && (
-          <p className="mt-4 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-xs text-amber-700 dark:text-amber-300">
+          <p className="mt-4 rounded-md border border-status-warning/25 bg-status-warning/10 px-3 py-2 text-xs text-ink-soft">
             Demo mode: Supabase isn&apos;t configured, so this signs you into a demo dashboard.
           </p>
         )}
         <div className="mt-6 border-t border-line/10 pt-4 text-xs text-ink-faint">
-          Are you a brand? <span className="cursor-pointer font-semibold text-ink-soft hover:text-ink">Sign in as a client →</span>
+          Are you a brand?{" "}
+          <Link href="/brand/login" className="font-semibold text-ink-soft hover:text-ink">
+            Sign in as a brand →
+          </Link>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

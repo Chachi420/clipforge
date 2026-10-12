@@ -14,7 +14,7 @@ const FAQS = [
   },
   {
     q: "How do brands start?",
-    a: "Brands go to the brand portal and submit a campaign brief (campaign goal, budget, and the rate per 100K views you're offering). Our team reviews every brief, and once approved the campaign goes live so clippers can join. It's a sales-led process for now — you'll hear back within 2 business days.",
+    a: "Brands go to the brand portal and submit a campaign brief (campaign goal, budget, and the rate per 100K views you're offering). Our team reviews every brief, and once approved the campaign goes live so clippers can join. It's a sales-led process for now — we read every request and reply as soon as we've reviewed it.",
   },
   {
     q: "How are views verified?",
@@ -31,19 +31,45 @@ export function ContactForm() {
   const [email, setEmail] = useState("");
   const [topic, setTopic] = useState<(typeof TOPICS)[number]>("General");
   const [message, setMessage] = useState("");
+  const [company, setCompany] = useState(""); // honeypot — humans never see it
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const subject = encodeURIComponent(`[${topic}] Contact from ${name || "a visitor"}`);
-    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nTopic: ${topic}\n\n${message}`);
-    window.location.href = `mailto:${SUPPORT_EMAIL}?subject=${subject}&body=${body}`;
+    setStatus("sending");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, topic, message, company }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data?.error || "Something went wrong. Please try again.");
+      setStatus("sent");
+    } catch (err: any) {
+      setErrorMsg(err?.message || "Something went wrong. Please try again.");
+      setStatus("error");
+    }
+  }
+
+  if (status === "sent") {
+    return (
+      <Card className="p-8">
+        <h2 className="font-display text-xl font-bold tracking-tight text-ink">Message sent</h2>
+        <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+          Thanks for reaching out — we read everything and will get back to you as soon as we can.
+        </p>
+      </Card>
+    );
   }
 
   return (
     <Card className="p-8">
       <h2 className="font-display text-xl font-bold tracking-tight text-ink">Send us a message</h2>
       <p className="mt-1 text-sm text-ink-soft">
-        This opens your email app with everything filled in — nothing is sent automatically.
+        Goes straight to the team — no email app needed.
       </p>
       <form onSubmit={onSubmit} className="mt-6 space-y-5">
         <div className="grid gap-5 sm:grid-cols-2">
@@ -54,6 +80,8 @@ export function ContactForm() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              maxLength={100}
+              autoComplete="name"
             />
           </Field>
           <Field label="Email">
@@ -64,6 +92,8 @@ export function ContactForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              maxLength={254}
+              autoComplete="email"
             />
           </Field>
         </div>
@@ -87,9 +117,28 @@ export function ContactForm() {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             required
+            maxLength={5000}
           />
         </Field>
-        <Button type="submit">Open email app</Button>
+        {/* Honeypot — invisible to humans, bots fill it in */}
+        <input
+          type="text"
+          name="company"
+          value={company}
+          onChange={(e) => setCompany(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+          aria-hidden="true"
+          className="absolute -left-[9999px] h-px w-px opacity-0"
+        />
+        {status === "error" && (
+          <p role="alert" className="text-sm font-medium text-status-error">
+            {errorMsg}
+          </p>
+        )}
+        <Button type="submit" disabled={status === "sending"}>
+          {status === "sending" ? "Sending…" : "Send message"}
+        </Button>
       </form>
     </Card>
   );
@@ -129,11 +178,11 @@ export function ContactCards() {
       <Card className="p-6">
         <h2 className="text-base font-bold text-ink">Email us</h2>
         <p className="mt-1 text-sm text-ink-soft">
-          We reply within 2 business days.
+          Prefer email? Every message lands with the team.
         </p>
         <a
           href={`mailto:${SUPPORT_EMAIL}`}
-          className="mt-4 inline-block text-sm font-semibold text-electric-deep hover:underline"
+          className="mt-4 inline-block text-sm font-semibold text-ink hover:underline"
         >
           {SUPPORT_EMAIL}
         </a>
@@ -145,7 +194,7 @@ export function ContactCards() {
         </p>
         <Link
           href="/brand/login"
-          className="mt-4 inline-block text-sm font-semibold text-electric-deep hover:underline"
+          className="mt-4 inline-block text-sm font-semibold text-ink hover:underline"
         >
           Go to the brand portal →
         </Link>

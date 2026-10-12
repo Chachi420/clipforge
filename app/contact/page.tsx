@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import MarketingNav from "@/components/MarketingNav";
+import { MarketingFooter } from "@/components/marketing";
 import { ContactForm, FaqAccordion, ContactCards } from "./ContactClient";
 
 export const metadata: Metadata = {
@@ -6,26 +8,38 @@ export const metadata: Metadata = {
   description: "Questions, partnerships, or campaign inquiries — reach the ClipForge team.",
 };
 
+/**
+ * Contact page (brief §11). Keeps the built form, reskinned chrome.
+ * Copy rule: no invented response-time promises.
+ */
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <main className="mx-auto max-w-6xl px-6 py-14">
-        <h1 className="display text-4xl md:text-5xl">Contact ClipForge</h1>
-        <p className="mt-3 max-w-2xl text-ink-soft">
-          Questions, partnerships, or campaign inquiries — we reply within 2 business days.
+      <MarketingNav />
+
+      <main className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+        <h1 className="display text-[clamp(2.5rem,7vw,4.5rem)] leading-[0.95]">
+          Talk to a human.
+        </h1>
+        <p className="mt-4 max-w-2xl text-lg leading-relaxed text-ink-soft">
+          Questions, partnerships, or campaign inquiries — every message is read
+          by someone on the team.
         </p>
 
-        <ContactCards />
+        <div className="mt-12">
+          <ContactCards />
+        </div>
 
-        <div className="mt-10">
+        <div className="mt-10 max-w-3xl">
           <ContactForm />
         </div>
 
-        <FaqAccordion />
+        <div className="mt-16 max-w-3xl">
+          <FaqAccordion />
+        </div>
       </main>
-      <footer className="border-t border-line/10 py-8 text-center text-sm text-ink-faint">
-        ClipForge — a demo rebuild for product research.
-      </footer>
+
+      <MarketingFooter />
     </div>
   );
 }
