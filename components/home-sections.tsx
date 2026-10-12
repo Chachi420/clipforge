@@ -1,33 +1,43 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 import { Faq } from "@/components/marketing";
+import { CountUp, Reveal } from "@/components/motion";
+import { MoneyFlowDiagram } from "@/components/infographics";
 
 /* ------------------------------------------------------------------ */
 /* Hero (brief §10.2) — white. Kicker, massive H1, one-line subline,    */
 /* single CTA, typographic money-equation lockup labeled Illustrative. */
+/* Staggered entrance via Reveal (above the fold = plays on mount).    */
 /* ------------------------------------------------------------------ */
 export function HomeHero() {
   return (
-    <header className="mx-auto flex min-h-[88svh] max-w-6xl flex-col items-center justify-center px-6 py-20 text-center">
-      <p className="micro-label">Pay-per-view clipping marketplace</p>
-      <h1 className="display mt-6 max-w-5xl text-[clamp(3rem,10vw,7rem)] leading-[0.95]">
+    <header className="mx-auto flex min-h-[80svh] max-w-6xl flex-col items-center justify-center px-6 py-16 text-center">
+      <Reveal as="p" className="micro-label">
+        Pay-per-view clipping marketplace
+      </Reveal>
+      <Reveal as="h1" delay={80} className="display mt-6 max-w-5xl text-[clamp(3rem,10vw,7rem)] leading-[0.95]">
         Get paid for every view your clips earn.
-      </h1>
-      <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
+      </Reveal>
+      <Reveal as="p" delay={160} className="mt-6 max-w-xl text-lg leading-relaxed text-ink-soft">
         Brands post campaigns with a per-view rate. You clip, post, and earn per
         verified view — monthly payouts via PayPal or crypto.
-      </p>
-      <div className="mt-10">
+      </Reveal>
+      <Reveal delay={240} className="mt-10">
         <Link
           href="/login"
-          className="pill min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+          className="group pill min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
         >
-          Start clipping <ArrowRight size={18} aria-hidden />
+          Start clipping{" "}
+          <ArrowRight
+            size={18}
+            aria-hidden
+            className="transition-transform duration-micro group-hover:translate-x-0.5"
+          />
         </Link>
-      </div>
+      </Reveal>
 
       {/* Money equation lockup */}
-      <div className="mt-14 w-full max-w-3xl">
+      <Reveal delay={320} className="mt-14 w-full max-w-3xl">
         <div className="flex flex-col items-stretch justify-center gap-3 rounded-card border border-line/10 bg-surface px-6 py-6 sm:flex-row sm:items-center sm:gap-6">
           <span className="display text-2xl sm:text-3xl">100K verified views</span>
           <span className="display text-2xl text-ink-faint" aria-hidden>×</span>
@@ -38,7 +48,7 @@ export function HomeHero() {
         <p className="mt-3 text-xs text-ink-faint">
           Illustrative — each campaign sets its own rate.
         </p>
-      </div>
+      </Reveal>
     </header>
   );
 }
@@ -66,16 +76,19 @@ const STEPS = [
 
 export function HomeHowItWorks() {
   return (
-    <section aria-labelledby="how-it-works" className="mx-auto max-w-6xl px-6 py-20 md:py-28">
-      <p className="micro-label">How it works</p>
-      <h2 id="how-it-works" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
+    <section aria-labelledby="how-it-works" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+      <Reveal as="p" className="micro-label">
+        How it works
+      </Reveal>
+      <Reveal as="h2" delay={80} id="how-it-works" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
         Three steps. No pitch decks.
-      </h2>
-      <div className="mt-12">
+      </Reveal>
+      <div className="mt-10">
         {STEPS.map((s, i) => (
-          <div
+          <Reveal
             key={s.n}
-            className={`border-t border-line/10 py-10 md:py-12 ${
+            delay={i * 80}
+            className={`border-t border-line/10 py-8 md:py-10 ${
               i === 1 ? "md:ml-24" : i === 2 ? "md:ml-48" : ""
             } ${i === STEPS.length - 1 ? "border-b" : ""}`}
           >
@@ -88,7 +101,7 @@ export function HomeHowItWorks() {
                 <p className="mt-3 leading-relaxed text-ink-soft">{s.body}</p>
               </div>
             </div>
-          </div>
+          </Reveal>
         ))}
       </div>
     </section>
@@ -97,27 +110,32 @@ export function HomeHowItWorks() {
 
 /* ------------------------------------------------------------------ */
 /* Money math (brief §10.4) — BLACK full-bleed. The entire model in    */
-/* one equation.                                                       */
+/* one equation, then the money-flow diagram showing the mechanism.    */
 /* ------------------------------------------------------------------ */
 export function HomeMoneyMath() {
   return (
-    <section aria-labelledby="money-math" className="bg-black py-20 text-white md:py-28">
+    <section aria-labelledby="money-math" className="bg-black py-16 text-white md:py-24">
       <div className="mx-auto max-w-6xl px-6">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
+        <Reveal as="p" className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
           The business model
-        </p>
-        <p
-          id="money-math"
-          className="display mt-8 text-[clamp(2.25rem,8vw,5.5rem)] leading-[1.05] text-white"
-        >
-          100K verified views × $40/100K = $40
-        </p>
-        <p className="mt-8 max-w-xl text-lg leading-relaxed text-white/70">
+        </Reveal>
+        <Reveal delay={80}>
+          <p
+            id="money-math"
+            className="display mt-8 text-[clamp(2.25rem,8vw,5.5rem)] leading-[1.05] text-white"
+          >
+            100K verified views × $40/100K ={" "}
+            <CountUp value={40} format="usd" />
+          </p>
+        </Reveal>
+        <Reveal as="p" delay={160} className="mt-8 max-w-xl text-lg leading-relaxed text-white/70">
           That&apos;s the entire business model.
-        </p>
-        <p className="mt-4 text-xs text-white/40">
+        </Reveal>
+        <Reveal as="p" delay={200} className="mt-4 text-xs text-white/40">
           Illustrative example — each campaign sets its own rate.
-        </p>
+        </Reveal>
+
+        <MoneyFlowDiagram />
       </div>
     </section>
   );
@@ -169,9 +187,14 @@ function PathPanel({
       <div className="mt-8">
         <Link
           href={ctaHref}
-          className="pill min-h-[44px] bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+          className="group pill min-h-[44px] bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
         >
-          {ctaLabel} <ArrowRight size={16} aria-hidden />
+          {ctaLabel}{" "}
+          <ArrowRight
+            size={16}
+            aria-hidden
+            className="transition-transform duration-micro group-hover:translate-x-0.5"
+          />
         </Link>
       </div>
     </div>
@@ -180,28 +203,34 @@ function PathPanel({
 
 export function HomeTwoPaths() {
   return (
-    <section aria-labelledby="two-paths" className="mx-auto max-w-6xl px-6 py-20 md:py-28">
-      <p className="micro-label">Two ways in</p>
-      <h2 id="two-paths" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
+    <section aria-labelledby="two-paths" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+      <Reveal as="p" className="micro-label">
+        Two ways in
+      </Reveal>
+      <Reveal as="h2" delay={80} id="two-paths" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
         Clippers earn. Brands pay for views.
-      </h2>
-      <div className="mt-12 grid gap-6 md:grid-cols-2">
-        <PathPanel
-          kicker="For clippers"
-          title="Already posting clips? Get paid for it."
-          body="Pick a brief, post to your own accounts, and watch verified views turn into money."
-          bullets={CLIPPER_BULLETS}
-          ctaLabel="Start clipping"
-          ctaHref="/login"
-        />
-        <PathPanel
-          kicker="For brands"
-          title="Stop paying for posts. Pay for views."
-          body="Set a rate, cap the budget, and pay only for verified reach. If nobody watches, you pay nothing."
-          bullets={BRAND_BULLETS}
-          ctaLabel="Start a campaign"
-          ctaHref="/brand/request"
-        />
+      </Reveal>
+      <div className="mt-10 grid gap-6 md:grid-cols-2">
+        <Reveal delay={120}>
+          <PathPanel
+            kicker="For clippers"
+            title="Already posting clips? Get paid for it."
+            body="Pick a brief, post to your own accounts, and watch verified views turn into money."
+            bullets={CLIPPER_BULLETS}
+            ctaLabel="Start clipping"
+            ctaHref="/login"
+          />
+        </Reveal>
+        <Reveal delay={200}>
+          <PathPanel
+            kicker="For brands"
+            title="Stop paying for posts. Pay for views."
+            body="Set a rate, cap the budget, and pay only for verified reach. If nobody watches, you pay nothing."
+            bullets={BRAND_BULLETS}
+            ctaLabel="Start a campaign"
+            ctaHref="/brand/request"
+          />
+        </Reveal>
       </div>
     </section>
   );
@@ -235,13 +264,13 @@ const FAQ_ITEMS = [
 
 export function HomeFaq() {
   return (
-    <section aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-20 md:py-28">
-      <h2 id="faq" className="display text-center text-[clamp(2rem,5vw,3.5rem)]">
+    <section aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-14 md:py-20">
+      <Reveal as="h2" id="faq" className="display text-center text-[clamp(2rem,5vw,3.5rem)]">
         Questions, answered
-      </h2>
-      <div className="mt-10">
+      </Reveal>
+      <Reveal delay={100} className="mt-10">
         <Faq items={FAQ_ITEMS} />
-      </div>
+      </Reveal>
     </section>
   );
 }
@@ -251,19 +280,24 @@ export function HomeFaq() {
 /* ------------------------------------------------------------------ */
 export function HomeFinalCta() {
   return (
-    <section className="bg-black py-24 text-center text-white md:py-32">
+    <section className="bg-black py-20 text-center text-white md:py-28">
       <div className="mx-auto max-w-6xl px-6">
-        <h2 className="display mx-auto max-w-4xl text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.0] text-white">
+        <Reveal as="h2" className="display mx-auto max-w-4xl text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.0] text-white">
           Your clips. Your views. Your money.
-        </h2>
-        <div className="mt-10">
+        </Reveal>
+        <Reveal delay={120} className="mt-10">
           <Link
             href="/login"
-            className="pill min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
+            className="group pill min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
           >
-            Start clipping <ArrowRight size={18} aria-hidden />
+            Start clipping{" "}
+            <ArrowRight
+              size={18}
+              aria-hidden
+              className="transition-transform duration-micro group-hover:translate-x-0.5"
+            />
           </Link>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

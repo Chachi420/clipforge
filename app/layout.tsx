@@ -46,11 +46,15 @@ export const metadata: Metadata = {
  */
 const themeInit = `(function(){try{var t=localStorage.getItem('cf-theme');if(t==='dark'||(!t&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})();`;
 
+/** Marks JS availability so .reveal content never hides when JS fails. */
+const jsInit = `(function(){document.documentElement.classList.add('js')})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={display.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
+        <script dangerouslySetInnerHTML={{ __html: jsInit }} />
       </head>
       <body>{children}</body>
     </html>
