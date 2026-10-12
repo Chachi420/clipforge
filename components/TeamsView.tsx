@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Copy, Plus, Users } from "lucide-react";
+import { Copy, Plus } from "lucide-react";
 import Header from "@/components/Header";
-import { Button, Card, Dialog, Field, inputCls } from "@/components/ui";
+import { Button, Card, Dialog, EmptyState, Field, inputCls } from "@/components/ui";
 import { createTeam } from "@/lib/actions";
 import type { Team } from "@/lib/types";
 
@@ -38,30 +38,31 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
 
   return (
     <>
-      <Header title="Teams" subtitle="Create a team and earn commissions" />
+      <Header
+        title="Teams"
+        subtitle="Create a team and earn commissions"
+        action={
+          <Button variant="primary" onClick={() => setShowCreate(true)}>
+            <Plus size={15} /> Create team
+          </Button>
+        }
+      />
       <div className="px-4 py-6 sm:px-8 sm:py-8">
-        <div className="mb-6 flex justify-end">
-          <Button variant="electric" onClick={() => setShowCreate(true)}><Plus size={15} /> Create team</Button>
-        </div>
         {initial.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-line/20 px-6 py-14 text-center">
-            <Users size={28} className="mb-3 text-ink-faint" />
-            <div className="text-base font-semibold text-ink">No team created</div>
-            <p className="mt-2 max-w-sm text-sm text-ink-faint">
-              Create a team to start earning commissions from referrals. Share your referral link
-              and earn a cut of everything your team earns.
-            </p>
-          </div>
+          <EmptyState
+            title="No team created"
+            body="Create a team to start earning commissions from referrals. Share your referral link and earn a cut of everything your team earns."
+          />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {initial.map((t) => (
               <Card key={t.id} className="p-5">
                 <div className="font-bold text-ink">{t.name}</div>
-                <div className="mt-3 flex items-center justify-between rounded-2xl border border-line/10 bg-surface-deep/70 px-3 py-2">
-                  <code className="font-mono text-sm text-ink-soft">{t.referralCode}</code>
+                <div className="mt-3 flex items-center justify-between gap-2 rounded-card border border-line/10 bg-surface-deep px-3 py-2">
+                  <code className="tnum truncate font-mono text-sm text-ink-soft">{t.referralCode}</code>
                   <button
                     onClick={() => copyCode(t.referralCode)}
-                    className="flex items-center gap-1.5 text-xs font-medium text-ink-faint hover:text-ink"
+                    className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-ink-faint hover:text-ink"
                   >
                     <Copy size={13} /> {copied === t.referralCode ? "Copied!" : "Copy link"}
                   </button>
@@ -80,10 +81,10 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
           <Field label="Team name">
             <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Night Shift Clippers" />
           </Field>
-          {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
+          {error && <p className="mt-3 rounded-md bg-status-error/10 px-3 py-2 text-sm text-status-error">{error}</p>}
           <div className="mt-5 flex justify-end gap-2">
             <Button variant="ghost" onClick={() => setShowCreate(false)}>Cancel</Button>
-            <Button disabled={!name.trim() || saving} onClick={handleCreate}>
+            <Button variant="primary" disabled={!name.trim() || saving} onClick={handleCreate}>
               {saving ? "Creating…" : "Create team"}
             </Button>
           </div>

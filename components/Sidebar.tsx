@@ -1,78 +1,145 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import ThemeToggle from "./ThemeToggle";
 import {
-  Bug, Clapperboard, CreditCard, Home, Lightbulb, Settings, Users, Wallet,
+  AtSign,
+  Clapperboard,
+  CreditCard,
+  Film,
+  Home,
+  LogOut,
+  Settings,
+  Users,
 } from "lucide-react";
+import { signOutAction } from "@/lib/actions";
 
 const NAV = [
   { href: "/dashboard", label: "Dashboard", icon: Home },
   { href: "/dashboard/campaigns", label: "Campaigns", icon: Clapperboard },
-  { href: "/dashboard/clips", label: "Clips", icon: Wallet },
+  { href: "/dashboard/clips", label: "Clips", icon: Film },
   { href: "/dashboard/payments", label: "Payments", icon: CreditCard },
   { href: "/dashboard/teams", label: "Teams", icon: Users },
-  { href: "/dashboard/accounts", label: "Accounts", icon: Lightbulb },
+  { href: "/dashboard/accounts", label: "Accounts", icon: AtSign },
 ];
 
-export default function Sidebar({
+export type SidebarProfile = {
+  displayName: string;
+  avatarUrl?: string | null;
+};
+
+const itemCls =
+  "relative flex min-h-[44px] items-center gap-3 rounded-md px-3 text-sm font-medium transition-colors";
+
+function isActive(pathname: string, href: string) {
+  return href === "/dashboard" ? pathname === href : pathname.startsWith(href);
+}
+
+/**
+ * The dashboard nav content. Rendered by DashboardChrome inside the desktop
+ * aside and the mobile drawer — never used directly as a floating element.
+ */
+export function SidebarNav({
   profile,
+  onNavigate,
 }: {
-  profile: { displayName: string; email: string; avatarUrl: string };
+  profile: SidebarProfile;
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const initial = (profile.displayName || "C").slice(0, 1).toUpperCase();
+
   return (
-    <aside className="flex h-screen w-64 shrink-0 flex-col border-r border-line/10 bg-surface/70 px-4 py-6 backdrop-blur-xl">
-      <Link href="/dashboard" className="mb-8 flex items-center gap-2 px-2">
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-electric text-lg font-black text-white">C</span>
-        <span className="text-lg font-black tracking-tight text-ink">
-          CLIPFORGE <span className="ml-1 rounded bg-ink/10 px-1.5 py-0.5 text-[10px] font-bold text-ink-faint">BETA</span>
+    <div className="flex h-full flex-col">
+      {/* Profile block — top, links to settings */}
+      <Link
+        href="/dashboard/settings"
+        onClick={onNavigate}
+        className="flex min-h-[44px] items-center gap-3 px-4 py-4"
+      >
+        <span
+          aria-hidden
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ink text-sm font-semibold text-paper"
+        >
+          {initial}
+        </span>
+        <span className="min-w-0">
+          <span className="block truncate text-sm font-semibold text-ink">
+            {profile.displayName}
+          </span>
+          <span className="block text-xs text-ink-faint">Clipper account</span>
         </span>
       </Link>
 
-      <nav className="flex-1 space-y-1">
-        {NAV.map(({ href, label, icon: Icon }) => {
-          const active = href === "/dashboard" ? pathname === href : pathname.startsWith(href);
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`pill justify-start px-4 py-2.5 text-sm transition ${
-                active ? "bg-electric text-white shadow-card" : "text-ink-soft hover:bg-ink/5 hover:text-ink"
-              }`}
-            >
-              <Icon size={18} />
-              {label}
-            </Link>
-          );
-        })}
+      <div className="mx-4 border-t border-line" aria-hidden />
+
+      {/* Primary nav */}
+      <nav aria-label="Dashboard" className="flex-1 px-2 py-3">
+        <ul className="space-y-0.5">
+          {NAV.map(({ href, label, icon: Icon }) => {
+            const active = isActive(pathname, href);
+            return (
+              <li key={href}>
+                <Link
+                  href={href}
+                  onClick={onNavigate}
+                  aria-current={active ? "page" : undefined}
+                  className={`${itemCls} ${
+                    active ? "text-ink" : "text-ink-soft hover:bg-ink/5 hover:text-ink"
+                  }`}
+                >
+                  {active && (
+                    <span
+                      aria-hidden
+                      className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-ink"
+                    />
+                  )}
+                  <Icon size={18} aria-hidden />
+                  {label}
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
 
-      <div className="mb-4 rounded-2xl border border-line/10 bg-surface-deep/60 p-3">
-        <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-ink-faint">Feedback</div>
-        <div className="flex gap-2">
-          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-ink/5 px-2 py-2 text-xs font-medium text-ink-soft hover:bg-ink/10">
-            <Bug size={14} /> Report bug
-          </button>
-          <button className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-ink/5 px-2 py-2 text-xs font-medium text-ink-soft hover:bg-ink/10">
-            <Lightbulb size={14} /> Request feature
-          </button>
-        </div>
+      {/* Bottom: settings + sign out */}
+      <div className="border-t border-line px-2 py-3">
+        <ul className="space-y-0.5">
+          <li>
+            <Link
+              href="/dashboard/settings"
+              onClick={onNavigate}
+              aria-current={pathname === "/dashboard/settings" ? "page" : undefined}
+              className={`${itemCls} ${
+                pathname === "/dashboard/settings"
+                  ? "text-ink"
+                  : "text-ink-soft hover:bg-ink/5 hover:text-ink"
+              }`}
+            >
+              {pathname === "/dashboard/settings" && (
+                <span
+                  aria-hidden
+                  className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full bg-ink"
+                />
+              )}
+              <Settings size={18} aria-hidden />
+              Settings
+            </Link>
+          </li>
+          <li>
+            <form action={signOutAction}>
+              <button
+                type="submit"
+                className={`${itemCls} w-full text-ink-soft hover:bg-ink/5 hover:text-ink`}
+              >
+                <LogOut size={18} aria-hidden />
+                Sign out
+              </button>
+            </form>
+          </li>
+        </ul>
       </div>
-
-      <div className="flex items-center gap-3 rounded-2xl border border-line/10 bg-surface/80 p-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-electric/25 text-sm font-bold text-electric-deep">
-          {profile.displayName.slice(0, 1)}
-        </span>
-        <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-ink">{profile.displayName}</div>
-          <div className="truncate text-xs text-ink-faint">{profile.email}</div>
-        </div>
-        <Link href="/dashboard/settings" className="text-ink-faint hover:text-ink" aria-label="Settings">
-          <Settings size={16} />
-        </Link>
-        <ThemeToggle />
-      </div>
-    </aside>
+    </div>
   );
 }

@@ -1,37 +1,64 @@
 "use client";
 import { useMemo, useState } from "react";
+import { SlidersHorizontal } from "lucide-react";
 import Header from "@/components/Header";
 import CampaignCard from "@/components/CampaignCard";
-import { Button, Dialog, Field, inputCls } from "@/components/ui";
+import { Button, Card, Dialog, EmptyState, Field, inputCls } from "@/components/ui";
 import { CAMPAIGN_RULES, HOW_IT_WORKS } from "@/lib/mock";
+import { PLATFORM_LABELS, type Platform } from "@/lib/types";
 import type { Campaign } from "@/lib/types";
 
-const SORTS = ["Recently updated", "Recently created", "Highest payout", "Name A–Z"] as const;
+const SORTS = [
+  { v: "newest", l: "Newest" },
+  { v: "rate", l: "Highest rate" },
+  { v: "ending", l: "Ending soon" },
+] as const;
+type SortKey = (typeof SORTS)[number]["v"];
+
 const STATUSES = ["all", "active", "paused"] as const;
 const TYPES = [
-  { v: "all", l: "All types" }, { v: "per_view", l: "Per-view rate" },
-  { v: "bounty", l: "Has bounties" }, { v: "pot", l: "Pot payout" },
+  { v: "all", l: "All types" },
+  { v: "per_view", l: "Per-view rate" },
+  { v: "bounty", l: "Has bounties" },
+  { v: "pot", l: "Pot payout" },
 ] as const;
 const CATEGORIES = ["All categories", "IRL Content", "Brands", "Gaming", "Sports", "Podcasts", "Music", "Gambling", "TV & Streaming", "Other"];
-const PLATFORMS = ["tiktok", "instagram", "youtube", "x"] as const;
+const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
 
 interface Filters {
-  sort: (typeof SORTS)[number];
-  minPayout: number;
+  sort: SortKey;
+  minRate: number;
   status: (typeof STATUSES)[number];
   type: string;
   category: string;
-  platforms: string[];
+  platforms: Platform[];
 }
 
 const DEFAULTS: Filters = {
-  sort: "Recently updated", minPayout: 0, status: "all",
+  sort: "newest", minRate: 0, status: "all",
   type: "all", category: "All categories", platforms: [],
 };
 
-export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
+function activeCount(f: Filters) {
+  let n = 0;
+  if (f.sort !== DEFAULTS.sort) n++;
+  if (f.minRate !== 0) n++;
+  if (f.status !== "all") n++;
+  if (f.type !== "all") n++;
+  if (f.category !== "All categories") n++;
+  if (f.platforms.length) n++;
+  return n;
+}
+
+function chip(active: boolean) {
+  return `rounded-full px-3.5 py-2 text-sm font-medium transition-colors duration-micro ${
+    active ? "bg-ink text-paper" : "bg-ink/5 text-ink-soft hover:bg-ink/10"
+  }`;
+}
+
+export default function CampaignsExplorer({ initial }: { initial: Campaign[] }) {
   const [filters, setFilters] = useState<Filters>(DEFAULTS);
-  const [showFilters, setShowFilters] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [showHow, setShowHow] = useState(false);
 
@@ -41,97 +68,142 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
     if (filters.type !== "all")
       out = out.filter((c) => (filters.type === "bounty" ? c.type !== "per_view" : c.type === filters.type));
     if (filters.category !== "All categories") out = out.filter((c) => c.category === filters.category);
-    if (filters.platforms.length) out = out.filter((c) => filters.platforms.some((p) => c.platforms.includes(p as any)));
-    out = out.filter((c) => (c.potValue ?? c.ratePer100k) >= filters.minPayout);
+    if (filters.platforms.length) out = out.filter((c) => filters.platforms.some((p) => c.platforms.includes(p)));
+    out = out.filter((c) => (c.potValue ?? c.ratePer100k) >= filters.minRate);
     switch (filters.sort) {
-      case "Highest payout": out.sort((a, b) => (b.potValue ?? b.ratePer100k) - (a.potValue ?? a.ratePer100k)); break;
-      case "Name A–Z": out.sort((a, b) => a.name.localeCompare(b.name)); break;
+      case "newest": out.sort((a, b) => b.startDate.localeCompare(a.startDate)); break;
+      case "rate": out.sort((a, b) => (b.potValue ?? b.ratePer100k) - (a.potValue ?? a.ratePer100k)); break;
+      case "ending": out.sort((a, b) => a.daysLeft - b.daysLeft); break;
     }
     return out;
   }, [initial, filters]);
 
+  const n = activeCount(filters);
+
   return (
     <>
-      <Header title="Campaigns" subtitle={`${initial.length} campaigns available`} />
+      <Header title="Campaigns" subtitle={`${list.length} of ${initial.length} campaigns`} />
       <div className="px-4 py-6 sm:px-8 sm:py-8">
-        <div className="glass mb-6 flex flex-wrap items-center justify-between gap-3 rounded-3xl p-4">
+        {/* Newcomer banner */}
+        <Card className="mb-6 flex flex-wrap items-center justify-between gap-3 p-4">
           <p className="text-sm text-ink-soft">New to campaigns? Learn how they work before you join.</p>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setShowRules(true)}>Rules</Button>
+            <Button variant="outline" onClick={() => setShowRules(true)}>Campaign rules</Button>
             <Button variant="outline" onClick={() => setShowHow(true)}>How it works</Button>
-            <Button onClick={() => setShowFilters(true)}>Filters</Button>
           </div>
+        </Card>
+
+        {/* Mobile filter toggle */}
+        <div className="mb-3 md:hidden">
+          <Button variant="outline" className="w-full" onClick={() => setFiltersOpen((v) => !v)}>
+            <SlidersHorizontal size={15} /> {filtersOpen ? "Hide filters" : "Show filters"}
+            {n > 0 && ` (${n})`}
+          </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {list.map((c) => <CampaignCard key={c.id} campaign={c} />)}
-        </div>
-        {list.length === 0 && <p className="py-16 text-center text-ink-faint">No campaigns match these filters.</p>}
-      </div>
-
-      {showFilters && (
-        <Dialog title="Filters" onClose={() => setShowFilters(false)}>
-          <div className="space-y-5">
+        {/* Filter bar — inline on desktop, collapsible on mobile */}
+        <Card className={`mb-6 p-4 ${filtersOpen ? "" : "hidden"} md:block`}>
+          <div className="flex flex-wrap items-end gap-x-6 gap-y-4">
             <Field label="Sort by">
-              <select className={inputCls} value={filters.sort}
-                onChange={(e) => setFilters({ ...filters, sort: e.target.value as Filters["sort"] })}>
-                {SORTS.map((s) => <option key={s}>{s}</option>)}
+              <select
+                className={inputCls}
+                value={filters.sort}
+                aria-label="Sort campaigns"
+                onChange={(e) => setFilters({ ...filters, sort: e.target.value as SortKey })}
+              >
+                {SORTS.map((s) => (
+                  <option key={s.v} value={s.v}>{s.l}</option>
+                ))}
               </select>
             </Field>
-            <Field label={`Minimum payout — $${filters.minPayout} per 100k`}>
-              <input type="range" min={0} max={300} step={15} className="w-full accent-electric"
-                value={filters.minPayout}
-                onChange={(e) => setFilters({ ...filters, minPayout: Number(e.target.value) })} />
+            <Field label={`Minimum rate — $${filters.minRate}+ per 100K`}>
+              <input
+                type="range"
+                min={0}
+                max={300}
+                step={15}
+                className="w-44 accent-ink md:w-56"
+                aria-label="Minimum rate per 100K views"
+                value={filters.minRate}
+                onChange={(e) => setFilters({ ...filters, minRate: Number(e.target.value) })}
+              />
             </Field>
             <Field label="Status">
-              <div className="flex gap-2">
+              <div className="flex gap-2" role="group" aria-label="Filter by status">
                 {STATUSES.map((s) => (
-                  <button key={s} onClick={() => setFilters({ ...filters, status: s })}
-                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.status === s ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
-                    {s}
+                  <button key={s} type="button" onClick={() => setFilters({ ...filters, status: s })}
+                    className={chip(filters.status === s)} aria-pressed={filters.status === s}>
+                    {s === "all" ? "All" : s[0].toUpperCase() + s.slice(1)}
                   </button>
                 ))}
               </div>
             </Field>
             <Field label="Campaign type">
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by campaign type">
                 {TYPES.map((t) => (
-                  <button key={t.v} onClick={() => setFilters({ ...filters, type: t.v })}
-                    className={`rounded-full px-3 py-1.5 text-sm ${filters.type === t.v ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
+                  <button
+                    key={t.v}
+                    type="button"
+                    aria-pressed={filters.type === t.v}
+                    onClick={() => setFilters({ ...filters, type: t.v })}
+                    className={chip(filters.type === t.v)}
+                  >
                     {t.l}
                   </button>
                 ))}
               </div>
             </Field>
             <Field label="Category">
-              <select className={inputCls} value={filters.category}
-                onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
+              <select
+                className={inputCls}
+                value={filters.category}
+                aria-label="Filter by category"
+                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+              >
                 {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
               </select>
             </Field>
             <Field label="Platforms">
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by platform">
                 {PLATFORMS.map((p) => (
-                  <button key={p}
-                    onClick={() => setFilters({
-                      ...filters,
-                      platforms: filters.platforms.includes(p)
-                        ? filters.platforms.filter((x) => x !== p)
-                        : [...filters.platforms, p],
-                    })}
-                    className={`rounded-full px-3 py-1.5 text-sm capitalize ${filters.platforms.includes(p) ? "bg-electric text-white" : "bg-ink/5 text-ink-soft"}`}>
-                    {p}
+                  <button
+                    key={p}
+                    type="button"
+                    aria-pressed={filters.platforms.includes(p)}
+                    onClick={() =>
+                      setFilters({
+                        ...filters,
+                        platforms: filters.platforms.includes(p)
+                          ? filters.platforms.filter((x) => x !== p)
+                          : [...filters.platforms, p],
+                      })
+                    }
+                    className={chip(filters.platforms.includes(p))}
+                  >
+                    {PLATFORM_LABELS[p]}
                   </button>
                 ))}
               </div>
             </Field>
-            <div className="flex justify-between pt-2">
+            {n > 0 && (
               <Button variant="ghost" onClick={() => setFilters(DEFAULTS)}>Reset filters</Button>
-              <Button onClick={() => setShowFilters(false)}>Apply filters</Button>
-            </div>
+            )}
           </div>
-        </Dialog>
-      )}
+        </Card>
+
+        {/* Campaign grid */}
+        {list.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {list.map((c) => <CampaignCard key={c.id} campaign={c} />)}
+          </div>
+        ) : (
+          <EmptyState
+            title="No campaigns match these filters"
+            body="Try lowering the minimum rate or clearing a filter to see more campaigns."
+            action={<Button variant="outline" onClick={() => setFilters(DEFAULTS)}>Reset filters</Button>}
+          />
+        )}
+      </div>
 
       {showRules && (
         <Dialog title="Campaign rules" subtitle="Read these before you post" onClose={() => setShowRules(false)}>
@@ -146,7 +218,7 @@ export default function CampaignsPage({ initial }: { initial: Campaign[] }) {
         <Dialog title="How campaigns work" onClose={() => setShowHow(false)} wide>
           <div className="grid gap-4 md:grid-cols-2">
             {HOW_IT_WORKS.map((h) => (
-              <div key={h.title} className="rounded-2xl border border-line/10 p-4">
+              <div key={h.title} className="rounded-card border border-line/10 p-4">
                 <div className="font-bold text-ink">{h.title}</div>
                 <p className="mt-1.5 text-sm text-ink-soft">{h.body}</p>
               </div>

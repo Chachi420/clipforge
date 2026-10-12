@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Download, Plus, Trash2 } from "lucide-react";
 import Header from "@/components/Header";
-import { Badge, Button, Card, Dialog, Field, NightCard, Stat, inputCls } from "@/components/ui";
+import { Badge, Button, Card, Dialog, EmptyState, Field, NightCard, Stat, inputCls } from "@/components/ui";
 import { addPaymentMethod, deletePaymentMethod, setDefaultPaymentMethod } from "@/lib/actions";
 import { PAYOUT_METHOD_LABELS, type PaymentMethodRow, type PayoutCycle, type PayoutMethod } from "@/lib/types";
 import { formatMoney } from "@/lib/format";
@@ -75,7 +75,7 @@ export default function PaymentsView({
       await deletePaymentMethod(id);
       router.refresh();
     } catch (e: any) {
-      alert(e.message ?? "Could not remove.");
+      setError(e.message ?? "Could not remove.");
     }
   }
 
@@ -84,13 +84,21 @@ export default function PaymentsView({
       await setDefaultPaymentMethod(id);
       router.refresh();
     } catch (e: any) {
-      alert(e.message ?? "Could not update.");
+      setError(e.message ?? "Could not update.");
     }
   }
 
   return (
     <>
-      <Header title="Payments" subtitle="Manage your earnings and payment methods" />
+      <Header
+        title="Payments"
+        subtitle="Manage your earnings and payment methods"
+        action={
+          <Button variant="primary" onClick={() => setShowAdd(true)}>
+            <Plus size={15} /> Add payment method
+          </Button>
+        }
+      />
       <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
         <div className="grid gap-4 md:grid-cols-3">
           <NightCard className="p-5">
@@ -105,87 +113,111 @@ export default function PaymentsView({
         </div>
 
         <Card className="p-6">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4">
             <h3 className="font-bold text-ink">Payment methods</h3>
-            <Button variant="outline" onClick={() => setShowAdd(true)}>
-              <Plus size={15} /> Add payment method
-            </Button>
           </div>
-          <div className="space-y-2">
-            {methods.map((m) => (
-              <div key={m.id} className="flex items-center justify-between rounded-2xl border border-line/10 p-4">
-                <div>
-                  <div className="flex items-center gap-2 font-semibold text-ink">
-                    {PAYOUT_METHOD_LABELS[m.type]}
-                    {m.isDefault && <Badge tone="blue">Default</Badge>}
+          {methods.length === 0 ? (
+            <EmptyState
+              title="No payment methods yet"
+              body="Add one to receive payouts — PayPal or crypto (USDT/USDC on Ethereum)."
+            />
+          ) : (
+            <div className="space-y-2">
+              {methods.map((m) => (
+                <div key={m.id} className="flex items-center justify-between gap-3 rounded-card border border-line/10 p-4">
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 font-semibold text-ink">
+                      {PAYOUT_METHOD_LABELS[m.type]}
+                      {m.isDefault && <Badge tone="default">Default</Badge>}
+                    </div>
+                    <div className="mt-0.5 truncate font-mono text-xs text-ink-faint">{m.masked}</div>
                   </div>
-                  <div className="font-mono text-xs text-ink-faint">{m.masked}</div>
-                </div>
-                <div className="flex gap-2">
-                  {!m.isDefault && (
-                    <button onClick={() => handleDefault(m.id)} className="rounded-full bg-ink/5 px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-ink/10">
-                      Set default
+                  <div className="flex shrink-0 gap-2">
+                    {!m.isDefault && (
+                      <button onClick={() => handleDefault(m.id)} className="rounded-full bg-ink/5 px-3 py-1.5 text-xs font-medium text-ink-soft hover:bg-ink/10">
+                        Set default
+                      </button>
+                    )}
+                    <button onClick={() => handleDelete(m.id)} className="rounded-full bg-ink/5 p-2 text-status-error hover:bg-ink/10" aria-label="Remove">
+                      <Trash2 size={14} />
                     </button>
-                  )}
-                  <button onClick={() => handleDelete(m.id)} className="rounded-full bg-ink/5 p-2 text-red-600 hover:bg-ink/10 dark:text-red-300" aria-label="Remove">
-                    <Trash2 size={14} />
-                  </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-            {methods.length === 0 && (
-              <p className="py-6 text-center text-sm text-ink-faint">
-                No payment methods yet. Add one to receive payouts — PayPal or crypto (USDT/USDC on Ethereum).
-              </p>
-            )}
-          </div>
+              ))}
+            </div>
+          )}
         </Card>
 
         <Card className="p-6">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between gap-3">
             <h3 className="font-bold text-ink">Payout history</h3>
             <Button variant="ghost" onClick={handleExport} disabled={history.length === 0}>
               <Download size={15} /> Export CSV
             </Button>
           </div>
           {awaitingTotal > 0 && (
-            <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 text-sm">
-              <span className="font-bold text-amber-700 dark:text-amber-300">{formatMoney(awaitingTotal)}</span>
+            <div className="mb-4 rounded-card border border-status-warning/30 bg-status-warning/10 p-4 text-sm">
+              <span className="tnum font-bold text-status-warning">{formatMoney(awaitingTotal)}</span>
               <span className="text-ink-soft"> awaiting payout — {awaiting.length} cycle{awaiting.length === 1 ? "" : "s"} awaiting Mark Paid</span>
             </div>
           )}
           {history.length === 0 ? (
-            <p className="py-8 text-center text-sm text-ink-faint">
-              No payouts yet. Submit clips to a campaign and your earnings will appear here after each cycle closes.
-            </p>
+            <EmptyState
+              title="No payouts yet"
+              body="Submit clips to a campaign and your earnings will appear here after each cycle closes."
+            />
           ) : (
-            <div className="glass overflow-x-auto rounded-3xl">
-              <table className="w-full min-w-[560px] text-left text-sm">
-                <thead>
-                  <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
-                    <th className="px-4 py-3">Cycle</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {history.map((c) => (
-                    <tr key={c.id} onClick={() => setReceiptId(c.id)}
-                      className="cursor-pointer border-b border-line/10 transition last:border-0 hover:bg-ink/[0.03]">
-                      <td className="px-4 py-3 font-medium text-ink">{c.campaignName} #{c.cycleNumber}</td>
-                      <td className="px-4 py-3">
-                        <Badge tone={c.status === "paid" ? "green" : "amber"}>{STATUS_LABEL[c.status]}</Badge>
-                      </td>
-                      <td className="px-4 py-3 text-ink-soft">
+            <>
+              {/* Mobile: cards */}
+              <div className="space-y-2 md:hidden">
+                {history.map((c) => (
+                  <button
+                    key={c.id}
+                    onClick={() => setReceiptId(c.id)}
+                    className="w-full rounded-card border border-line/10 bg-surface p-4 text-left transition-colors hover:bg-ink/[0.03]"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="truncate font-semibold text-ink">{c.campaignName} #{c.cycleNumber}</div>
+                      <Badge tone={c.status === "paid" ? "success" : "warning"}>{STATUS_LABEL[c.status]}</Badge>
+                    </div>
+                    <div className="mt-1.5 flex items-center justify-between gap-2 text-sm">
+                      <span className="truncate text-ink-faint">
                         {c.snapshotAt ? `Snapshotted ${c.snapshotAt}` : `${c.periodStart} → ${c.periodEnd}`}
-                      </td>
-                      <td className="px-4 py-3 text-right font-semibold text-electric-deep">{formatMoney(c.estimatedAmount)}</td>
+                      </span>
+                      <span className="tnum shrink-0 font-bold text-ink">{formatMoney(c.estimatedAmount)}</span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+              {/* Desktop: table */}
+              <div className="hidden overflow-x-auto md:block">
+                <table className="w-full min-w-[560px] text-left text-sm">
+                  <thead>
+                    <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
+                      <th className="px-4 py-3">Cycle</th>
+                      <th className="px-4 py-3">Status</th>
+                      <th className="px-4 py-3">Date</th>
+                      <th className="px-4 py-3 text-right">Amount</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody>
+                    {history.map((c) => (
+                      <tr key={c.id} onClick={() => setReceiptId(c.id)}
+                        className="cursor-pointer border-b border-line/10 transition last:border-0 hover:bg-ink/[0.03]">
+                        <td className="px-4 py-3 font-medium text-ink">{c.campaignName} #{c.cycleNumber}</td>
+                        <td className="px-4 py-3">
+                          <Badge tone={c.status === "paid" ? "success" : "warning"}>{STATUS_LABEL[c.status]}</Badge>
+                        </td>
+                        <td className="px-4 py-3 text-ink-soft">
+                          {c.snapshotAt ? `Snapshotted ${c.snapshotAt}` : `${c.periodStart} → ${c.periodEnd}`}
+                        </td>
+                        <td className="tnum px-4 py-3 text-right font-semibold text-ink">{formatMoney(c.estimatedAmount)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </Card>
       </div>
@@ -208,10 +240,10 @@ export default function PaymentsView({
                 placeholder={mType === "paypal" ? "you@example.com" : "0x…"}
               />
             </Field>
-            {error && <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
+            {error && <p className="rounded-md bg-status-error/10 px-3 py-2 text-sm text-status-error">{error}</p>}
             <div className="flex justify-end gap-2">
               <Button variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>
-              <Button disabled={saving || !mId.trim()} onClick={handleAdd}>
+              <Button variant="primary" disabled={saving || !mId.trim()} onClick={handleAdd}>
                 {saving ? "Saving…" : "Add method"}
               </Button>
             </div>
@@ -224,7 +256,7 @@ export default function PaymentsView({
           <dl className="space-y-4 text-sm">
             <div className="flex justify-between">
               <dt className="text-ink-faint">Status</dt>
-              <dd><Badge tone={receipt.status === "paid" ? "green" : "amber"}>{STATUS_LABEL[receipt.status]}</Badge></dd>
+              <dd><Badge tone={receipt.status === "paid" ? "success" : "warning"}>{STATUS_LABEL[receipt.status]}</Badge></dd>
             </div>
             <div className="flex justify-between">
               <dt className="text-ink-faint">Pay period</dt>
@@ -232,7 +264,7 @@ export default function PaymentsView({
             </div>
             <div className="flex justify-between border-t border-line/10 pt-4">
               <dt className="font-bold text-ink">Estimated amount</dt>
-              <dd className="font-black text-electric-deep">{formatMoney(receipt.estimatedAmount)}</dd>
+              <dd className="tnum font-bold text-ink">{formatMoney(receipt.estimatedAmount)}</dd>
             </div>
           </dl>
           <div className="mt-6 flex justify-end">

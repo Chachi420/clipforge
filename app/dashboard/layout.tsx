@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
-import Sidebar from "@/components/Sidebar";
-import MobileNav from "@/components/MobileNav";
+import { DashboardShell } from "@/components/DashboardChrome";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile, isLive } from "@/lib/db";
 import { profile as mockProfile } from "@/lib/mock";
@@ -30,16 +29,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
     }
   }
   return (
-    <div className="flex min-h-screen bg-paper">
-      <div className="hidden lg:block">
-        <Sidebar
-          profile={{ displayName: profile.displayName, email: profile.email, avatarUrl: profile.avatarUrl }}
-        />
-      </div>
-      <main className="min-w-0 flex-1">
-        <MobileNav />
-        {children}
-      </main>
-    </div>
+    <DashboardShell
+      profile={{
+        displayName: profile.displayName,
+        avatarUrl: profile.avatarUrl,
+      }}
+    >
+      {children}
+    </DashboardShell>
   );
 }

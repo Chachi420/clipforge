@@ -72,14 +72,14 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
               // eslint-disable-next-line @next/next/no-img-element
               <img src={profile.avatarUrl} alt="" className="h-16 w-16 rounded-full object-cover" />
             ) : (
-              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-electric/25 text-2xl font-bold text-electric-deep">
+              <span className="flex h-16 w-16 items-center justify-center rounded-full bg-ink/10 text-2xl font-bold text-ink">
                 {displayName.slice(0, 1)}
               </span>
             )}
             <div>
               <div className="text-lg font-bold text-ink">{displayName}</div>
               <div className="flex items-center gap-2 text-sm text-ink-faint">
-                <Badge tone="green">{profile.status}</Badge>
+                <Badge tone="success">{profile.status}</Badge>
                 <span>Joined {profile.joinedAt}</span>
                 <span>·</span>
                 <span>{AUTH_PROVIDER_LABELS[profile.provider]} login</span>
@@ -121,7 +121,7 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
                 </div>
               )}
             </div>
-            {error && <p className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
+            {error && <p className="rounded-md bg-status-error/10 px-3 py-2 text-sm text-status-error">{error}</p>}
             <div className="flex justify-end gap-2">
               {editing && (
                 <Button variant="ghost" onClick={() => { setEditing(false); setDisplayName(profile.displayName); setBio(profile.bio ?? ""); }}>
@@ -147,7 +147,7 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
               role="switch"
               aria-checked={publicProfile}
               onClick={togglePublic}
-              className={`relative h-7 w-12 rounded-full transition ${publicProfile ? "bg-electric" : "bg-ink/15"}`}
+              className={`relative h-7 w-12 shrink-0 rounded-full transition ${publicProfile ? "bg-ink" : "bg-ink/15"}`}
             >
               <span className={`absolute top-1 h-5 w-5 rounded-full bg-white transition-all ${publicProfile ? "left-6" : "left-1"}`} />
             </button>
@@ -166,11 +166,13 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
           <h3 className="mb-1 font-bold text-ink">Clip activity</h3>
           <p className="mb-4 text-sm text-ink-faint">Last 12 months</p>
           <div className="mb-5 grid grid-cols-1 gap-4 text-sm sm:grid-cols-3">
-            <div><div className="text-xl font-bold text-ink">{profile.clipsSubmitted.toLocaleString()}</div><div className="text-ink-faint">Clips submitted</div></div>
-            <div><div className="text-xl font-bold text-ink">{profile.avgClipsPerDay}</div><div className="text-ink-faint">Avg clips / day</div></div>
-            <div><div className="text-xl font-bold text-ink">{profile.activeDays}</div><div className="text-ink-faint">Active days</div></div>
+            <div><div className="tnum text-xl font-bold text-ink">{profile.clipsSubmitted.toLocaleString()}</div><div className="text-ink-faint">Clips submitted</div></div>
+            <div><div className="tnum text-xl font-bold text-ink">{profile.avgClipsPerDay}</div><div className="text-ink-faint">Avg clips / day</div></div>
+            <div><div className="tnum text-xl font-bold text-ink">{profile.activeDays}</div><div className="text-ink-faint">Active days</div></div>
           </div>
-          <Heatmap data={activity} />
+          <div className="overflow-x-auto pb-1">
+            <Heatmap data={activity} />
+          </div>
         </Card>
 
         <div className="flex justify-end">
