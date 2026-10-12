@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, Scissors, TrendingUp } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
-import MobileMenu from "@/components/MobileMenu";
+import MarketingNav from "@/components/MarketingNav";
 import StoryNarrative from "@/components/StoryNarrative";
 import Hero from "@/components/Hero";
 import { Faq, MarketingFooter } from "@/components/marketing";
@@ -22,29 +21,7 @@ export default function Landing() {
       <RevealInit />
 
       {/* ---------- Nav ---------- */}
-      <nav className="sticky top-0 z-40 border-b border-line/[0.07] bg-paper/60 backdrop-blur-2xl backdrop-saturate-150">
-        <div className="relative mx-auto flex max-w-6xl items-center justify-between px-5 py-3 md:px-6 md:py-3.5">
-          <Link href="/" className="font-display text-lg font-bold tracking-tight">
-            CLIPFORGE
-          </Link>
-          <div className="hidden items-center gap-8 md:flex">
-            <Link href="/clip" className="micro-label link-under hover:text-ink">Clippers</Link>
-            <Link href="/brands" className="micro-label link-under hover:text-ink">Brands</Link>
-            <Link href="/blog" className="micro-label link-under hover:text-ink">Blog</Link>
-            <Link href="/docs" className="micro-label link-under hover:text-ink">Docs</Link>
-          </div>
-          <div className="flex items-center gap-2 md:gap-3">
-            <ThemeToggle />
-            <Link href="/login" className="hidden text-sm font-semibold text-ink-soft transition-colors hover:text-ink sm:block">
-              Sign in
-            </Link>
-            <Link href="/login" className="pill bg-ink px-5 py-2.5 text-sm font-semibold text-paper shadow-[0_2px_12px_rgb(7_11_20/0.18)] transition-all duration-200 hover:-translate-y-px hover:bg-ink-soft hover:shadow-[0_6px_20px_rgb(7_11_20/0.22)]">
-              Start clipping
-            </Link>
-            <MobileMenu />
-          </div>
-        </div>
-      </nav>
+      <MarketingNav />
 
       <Hero />
 
