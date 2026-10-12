@@ -42,8 +42,12 @@ export const DOCS_NAV: DocsSection[] = [
     ],
   },
   {
+    title: "Rules",
+    articles: [{ slug: "campaign-rules", title: "Campaign rules" }],
+  },
+  {
     title: "Payments",
-    articles: [{ slug: "payouts", title: "Payout methods & cycles" }],
+    articles: [{ slug: "payouts", title: "How payouts work" }],
   },
   {
     title: "Teams",
@@ -316,15 +320,95 @@ export const DOCS_ARTICLES: DocsArticle[] = [
     ),
   },
   {
-    slug: "payouts",
-    section: "Payments",
-    title: "Payout methods & cycles",
+    slug: "campaign-rules",
+    section: "Rules",
+    title: "Campaign rules",
     body: (
       <>
         <p className={p}>
-          Payouts run in cycles. When a cycle closes, your verified earnings are totaled
-          and sent to your payout method after an admin review. Add your payout method
-          early — it&apos;s the most common reason first payouts get delayed.
+          These rules apply to every campaign on ClipForge. Break them and the
+          system enforces itself — most violations are caught automatically,
+          and the rest go to manual review.
+        </p>
+        <h2 className={h2}>Your clips</h2>
+        <ul className={ul}>
+          <li>
+            Every clip URL you submit must come from one of your{" "}
+            <strong className={strong}>Active</strong> accounts, or it&apos;s
+            rejected automatically.
+          </li>
+          <li>
+            Post the clip on the platform first, then paste the link. We read
+            view counts from the platform itself — screenshots and estimates
+            don&apos;t count.
+          </li>
+          <li>
+            Keep submitted posts public until the cycle closes. Views can&apos;t
+            be verified on posts the scanner can&apos;t see, and unverifiable
+            views don&apos;t earn.
+          </li>
+          <li>
+            Only submit clips you made. Re-uploading someone else&apos;s content
+            gets the clip rejected and can get your account banned.
+          </li>
+        </ul>
+        <h2 className={h2}>Your accounts</h2>
+        <ul className={ul}>
+          <li>
+            Each verification code is unique to one account — don&apos;t reuse
+            codes across accounts.
+          </li>
+          <li>
+            Accounts need at least 1,000 followers to hold Active status. If the
+            count drops below that, the account loses Active status until it
+            recovers.
+          </li>
+          <li>
+            You can connect multiple accounts across platforms; verify each one
+            separately.
+          </li>
+        </ul>
+        <h2 className={h2}>Views and earnings</h2>
+        <ul className={ul}>
+          <li>
+            Only genuine, organically served views count. Bought, botted, or
+            otherwise fake engagement is stripped out — and faking it can get
+            your account banned.
+          </li>
+          <li>
+            Campaigns may set a minimum view threshold per clip. A clip starts
+            earning only after it passes that threshold.
+          </li>
+          <li>
+            Earnings are calculated at cycle close from verified views, and
+            every payout goes through admin review before money moves.
+          </li>
+        </ul>
+        <h2 className={h2}>Campaigns</h2>
+        <ul className={ul}>
+          <li>
+            Every brand campaign is reviewed by our team before it goes live.
+            The rate, platforms, and rules you see on a campaign page are the
+            terms you&apos;re paid on.
+          </li>
+          <li>
+            Brands set hard budget caps. When a campaign hits its cap, it stops
+            accruing — your existing verified views are unaffected.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    slug: "payouts",
+    section: "Payments",
+    title: "How payouts work",
+    body: (
+      <>
+        <p className={p}>
+          Payouts run in monthly cycles. When a cycle closes, your verified earnings
+          are totaled and sent to your payout method after an admin review. Add your
+          payout method early — it&apos;s the most common reason first payouts get delayed.
         </p>
         <h2 className={h2}>Supported payout methods</h2>
         <ul className={ul}>

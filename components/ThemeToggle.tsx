@@ -37,7 +37,7 @@ export default function ThemeToggle({ className = "" }: { className?: string }) 
       type="button"
       onClick={toggle}
       aria-label={theme === "dark" ? "Switch to light theme" : "Switch to dark theme"}
-      className={`glass inline-flex h-11 w-11 items-center justify-center rounded-full text-ink-soft transition hover:text-ink md:h-9 md:w-9 ${className}`}
+      className={`inline-flex h-11 w-11 items-center justify-center rounded-full border border-line/15 bg-surface text-ink-soft transition hover:text-ink md:h-9 md:w-9 ${className}`}
     >
       {theme === "dark" ? <Sun size={16} /> : <Moon size={16} />}
     </button>

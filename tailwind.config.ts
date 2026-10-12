@@ -25,6 +25,13 @@ const config: Config = {
           faint: withAlpha("--ink-faint"),
         },
         line: withAlpha("--line"),
+        // Semantic status colors ONLY (brief §13). Never decorative.
+        // Desaturated variants in dark mode via CSS vars (see globals.css).
+        status: {
+          success: withAlpha("--status-success"),
+          warning: withAlpha("--status-warning"),
+          error: withAlpha("--status-error"),
+        },
         // Monochrome accent — remapped from electric blue to ink.
         // Keeps the token names so existing classes (bg-electric, text-electric-deep…)
         // resolve to the monochrome accent without touching every file.
@@ -52,6 +59,26 @@ const config: Config = {
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         sans: ["Satoshi", "system-ui", "sans-serif"],
+      },
+      // Brief §13 type scale: 12/14/16/18/24/30/36/48 come from Tailwind
+      // defaults (text-xs → text-5xl). Display sizes 64+ added here.
+      fontSize: {
+        d64: ["4rem", { lineHeight: "1.02", letterSpacing: "-0.02em" }],
+        d80: ["5rem", { lineHeight: "1", letterSpacing: "-0.02em" }],
+        d96: ["6rem", { lineHeight: "1", letterSpacing: "-0.02em" }],
+      },
+      // Brief §13 radius: 6px small elements, 10px cards, full pills.
+      borderRadius: {
+        sm: "6px",
+        card: "10px",
+      },
+      // Brief §13 motion: 150ms micro, 250ms transitions, ease-out-expo.
+      transitionDuration: {
+        micro: "150ms",
+        DEFAULT: "250ms",
+      },
+      transitionTimingFunction: {
+        smooth: "cubic-bezier(0.25, 1, 0.5, 1)",
       },
       boxShadow: {
         "glow-electric": "0 0 24px rgba(11,14,19,0.10), 0 8px 24px rgba(7,11,20,0.12)",
