@@ -34,7 +34,7 @@ export default function Landing() {
         <HomeMoneyMath />
         <HomeTwoPaths />
 
-        <section aria-labelledby="calculator" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+        <section aria-labelledby="calculator" className="mx-auto max-w-6xl px-6 py-10 md:py-20">
           <Reveal as="p" className="micro-label text-center">
             Do the math
           </Reveal>
@@ -50,7 +50,7 @@ export default function Landing() {
             Move the sliders to see what a posting habit could be worth at a
             campaign&apos;s rate.
           </Reveal>
-          <Reveal delay={200} className="mt-10">
+          <Reveal delay={200} className="mt-8">
             <EarningsCalculator />
           </Reveal>
         </section>

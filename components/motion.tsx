@@ -50,7 +50,17 @@ export function useInView<T extends HTMLElement>(threshold = 0.15) {
       { threshold, rootMargin: "0px 0px -8% 0px" }
     );
     io.observe(el);
-    return () => io.disconnect();
+    // Safety net: if the observer never fires (throttled tab, odd mobile
+    // browser), never leave content permanently invisible — a stuck reveal
+    // reads as a blank gap on the page.
+    const fallback = window.setTimeout(() => {
+      setInView(true);
+      io.disconnect();
+    }, 4000);
+    return () => {
+      io.disconnect();
+      window.clearTimeout(fallback);
+    };
   }, [reduced, threshold]);
 
   return { ref, inView };

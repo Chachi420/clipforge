@@ -11,7 +11,7 @@ import { MoneyFlowDiagram } from "@/components/infographics";
 /* ------------------------------------------------------------------ */
 export function HomeHero() {
   return (
-    <header className="mx-auto flex min-h-[80svh] max-w-6xl flex-col items-center justify-center px-6 py-16 text-center">
+    <header className="mx-auto flex min-h-[68svh] max-w-6xl flex-col items-center justify-center px-6 py-12 text-center md:min-h-[80svh] md:py-16">
       <Reveal as="p" className="micro-label">
         Pay-per-view clipping marketplace
       </Reveal>
@@ -37,7 +37,7 @@ export function HomeHero() {
       </Reveal>
 
       {/* Money equation lockup */}
-      <Reveal delay={320} className="mt-14 w-full max-w-3xl">
+      <Reveal delay={320} className="mt-10 w-full max-w-3xl">
         <div className="flex flex-col items-stretch justify-center gap-3 rounded-card border border-line/10 bg-surface px-6 py-6 sm:flex-row sm:items-center sm:gap-6">
           <span className="display text-2xl sm:text-3xl">100K verified views</span>
           <span className="display text-2xl text-ink-faint" aria-hidden>×</span>
@@ -76,19 +76,19 @@ const STEPS = [
 
 export function HomeHowItWorks() {
   return (
-    <section aria-labelledby="how-it-works" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+    <section aria-labelledby="how-it-works" className="mx-auto max-w-6xl px-6 py-10 md:py-20">
       <Reveal as="p" className="micro-label">
         How it works
       </Reveal>
       <Reveal as="h2" delay={80} id="how-it-works" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
         Three steps. No pitch decks.
       </Reveal>
-      <div className="mt-10">
+      <div className="mt-8">
         {STEPS.map((s, i) => (
           <Reveal
             key={s.n}
             delay={i * 80}
-            className={`border-t border-line/10 py-8 md:py-10 ${
+            className={`border-t border-line/10 py-6 md:py-10 ${
               i === 1 ? "md:ml-24" : i === 2 ? "md:ml-48" : ""
             } ${i === STEPS.length - 1 ? "border-b" : ""}`}
           >
@@ -114,7 +114,7 @@ export function HomeHowItWorks() {
 /* ------------------------------------------------------------------ */
 export function HomeMoneyMath() {
   return (
-    <section aria-labelledby="money-math" className="bg-black py-16 text-white md:py-24">
+    <section aria-labelledby="money-math" className="bg-black py-12 text-white md:py-24">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal as="p" className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
           The business model
@@ -203,14 +203,14 @@ function PathPanel({
 
 export function HomeTwoPaths() {
   return (
-    <section aria-labelledby="two-paths" className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+    <section aria-labelledby="two-paths" className="mx-auto max-w-6xl px-6 py-10 md:py-20">
       <Reveal as="p" className="micro-label">
         Two ways in
       </Reveal>
       <Reveal as="h2" delay={80} id="two-paths" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
         Clippers earn. Brands pay for views.
       </Reveal>
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
+      <div className="mt-8 grid gap-6 md:grid-cols-2">
         <Reveal delay={120}>
           <PathPanel
             kicker="For clippers"
@@ -264,11 +264,11 @@ const FAQ_ITEMS = [
 
 export function HomeFaq() {
   return (
-    <section aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-14 md:py-20">
+    <section aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-10 md:py-20">
       <Reveal as="h2" id="faq" className="display text-center text-[clamp(2rem,5vw,3.5rem)]">
         Questions, answered
       </Reveal>
-      <Reveal delay={100} className="mt-10">
+      <Reveal delay={100} className="mt-8">
         <Faq items={FAQ_ITEMS} />
       </Reveal>
     </section>
@@ -280,7 +280,7 @@ export function HomeFaq() {
 /* ------------------------------------------------------------------ */
 export function HomeFinalCta() {
   return (
-    <section className="bg-black py-20 text-center text-white md:py-28">
+    <section className="bg-black py-14 text-center text-white md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <Reveal as="h2" className="display mx-auto max-w-4xl text-[clamp(2.5rem,7vw,5.5rem)] leading-[1.0] text-white">
           Your clips. Your views. Your money.

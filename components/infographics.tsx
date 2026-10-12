@@ -55,7 +55,7 @@ const FLOW_NODES: Node[] = [
 export function MoneyFlowDiagram() {
   const { ref, inView } = useInView<HTMLDivElement>(0.3);
   return (
-    <div ref={ref} className="relative mt-14">
+    <div ref={ref} className="relative mt-10 md:mt-14">
       {/* Connector — desktop horizontal */}
       <div
         aria-hidden

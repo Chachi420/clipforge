@@ -89,7 +89,7 @@ export default function BrandsLanding() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 py-16 text-center md:py-24">
+        <section className="mx-auto max-w-6xl px-6 py-12 text-center md:py-24">
           <Reveal as="p" className="micro-label">
             For brands
           </Reveal>
@@ -112,7 +112,7 @@ export default function BrandsLanding() {
               />
             </Link>
           </Reveal>
-          <Reveal delay={300} as="ul" className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+          <Reveal delay={300} as="ul" className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
             {TRUST_ROW.map((t) => (
               <li key={t} className="flex items-center gap-2 text-sm text-ink-faint">
                 <Check size={16} className="text-ink" aria-hidden /> {t}
@@ -122,7 +122,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Steps — editorial rows */}
-        <section aria-labelledby="brand-steps" className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <section aria-labelledby="brand-steps" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             How it works
           </Reveal>
@@ -149,7 +149,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Why — editorial list */}
-        <section aria-labelledby="brand-why" className="mx-auto max-w-4xl px-6 py-12 md:py-16">
+        <section aria-labelledby="brand-why" className="mx-auto max-w-4xl px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             Why ClipForge
           </Reveal>
@@ -172,7 +172,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Old way vs ClipForge — one honest comparison */}
-        <section aria-labelledby="brand-compare" className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <section aria-labelledby="brand-compare" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             Why switch
           </Reveal>
@@ -213,7 +213,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* FAQ */}
-        <section aria-labelledby="brand-faq" className="mx-auto max-w-3xl px-6 py-12 md:py-16">
+        <section aria-labelledby="brand-faq" className="mx-auto max-w-3xl px-6 py-10 md:py-16">
           <Reveal as="h2" id="brand-faq" className="display text-center text-[clamp(2rem,5vw,3.5rem)]">
             Questions, answered
           </Reveal>
@@ -223,7 +223,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Final CTA — black */}
-        <section className="bg-black py-20 text-center text-white md:py-28">
+        <section className="bg-black py-14 text-center text-white md:py-28">
           <div className="mx-auto max-w-6xl px-6">
             <Reveal as="h2" className="display mx-auto max-w-3xl text-[clamp(2.5rem,7vw,5rem)] leading-[1.0] text-white">
               Buy reach, not promises.
