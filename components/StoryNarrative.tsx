@@ -34,7 +34,7 @@ const CHAPTERS = [
   {
     n: "04",
     kicker: "The Payout",
-    title: "Views turn into money. Weekly",
+    title: "Views turn into money. Monthly",
     body: "When the cycle closes, your verified views become a payout. Then you pick the next brief and do it again. That's the whole flywheel.",
   },
 ];
