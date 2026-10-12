@@ -51,7 +51,7 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
   return (
     <div className="space-y-4">
       {error && (
-        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
+        <p className="rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
       )}
       <Card className="overflow-hidden">
         <table className="w-full text-left text-sm">

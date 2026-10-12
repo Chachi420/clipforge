@@ -98,10 +98,15 @@ export async function getCampaigns(userId?: string): Promise<Campaign[]> {
   return (data ?? []).map((r) => toCampaign(r, joined));
 }
 
-export async function getCampaign(slug: string, userId?: string): Promise<Campaign | null> {
-  if (!useSupabase) return mock.campaigns.find((c) => c.slug === slug) ?? null;
+export async function getCampaign(slug: string, userId?: string, includePending = false): Promise<Campaign | null> {
+  if (!useSupabase)
+    return mock.campaigns.find((c) => c.slug === slug && (includePending || c.status !== "pending")) ?? null;
   const supabase = await sb();
-  const { data, error } = await supabase.from("campaigns").select("*").eq("slug", slug).single();
+  let q = supabase.from("campaigns").select("*").eq("slug", slug);
+  // Pending (unapproved) briefs must not be reachable by direct slug either,
+  // unless the caller explicitly opts in (brand/admin preview flows).
+  if (!includePending) q = q.neq("status", "pending");
+  const { data, error } = await q.single();
   if (error) console.error("[db] getCampaign failed:", slug, error.message);
   if (!data) return null;
   let joined: Set<string> | undefined;
@@ -218,9 +223,39 @@ export async function getUserClips(userId: string, campaignId?: string): Promise
 // ---------- public profiles ----------
 
 export async function getPublicProfile(userId: string): Promise<ClipperProfile | null> {
-  const p = await getProfile(userId);
-  if (!p || !p.publicProfile) return null;
-  return p;
+  if (!useSupabase) {
+    const p = mock.profile;
+    return p.publicProfile ? p : null;
+  }
+  const supabase = await sb();
+  // PII-safe: read through the public_profiles view (id, display_name,
+  // avatar_url only — emails can never leak through this path). The view
+  // contains only opted-in public profiles, so a miss means 404.
+  const { data, error } = await supabase
+    .from("public_profiles")
+    .select("id, display_name, avatar_url")
+    .eq("id", userId)
+    .maybeSingle();
+  if (error) {
+    console.error("[db] getPublicProfile failed:", userId, error.message);
+    return null;
+  }
+  if (!data) return null;
+  const row = data as any;
+  return {
+    id: row.id,
+    provider: "google",
+    email: "",
+    displayName: row.display_name ?? "Clipper",
+    bio: null,
+    avatarUrl: row.avatar_url ?? "",
+    status: "active",
+    joinedAt: "",
+    publicProfile: true,
+    clipsSubmitted: 0,
+    avgClipsPerDay: 0,
+    activeDays: 0,
+  };
 }
 
 export async function getPublicClips(userId: string): Promise<Clip[]> {

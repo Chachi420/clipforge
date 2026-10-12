@@ -55,7 +55,7 @@ export default function CampaignApprovalQueue({ initial }: { initial: PendingCam
   return (
     <div className="space-y-4">
       {error && (
-        <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
+        <p className="rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
       )}
       <Card className="overflow-hidden">
       <div className="overflow-x-auto">
@@ -108,7 +108,7 @@ export default function CampaignApprovalQueue({ initial }: { initial: PendingCam
                       onClick={() => handleReject(c.id, c.name)}
                       disabled={busy === c.id}
                       variant="outline"
-                      className="!px-3 !py-1.5 text-xs !text-red-600 dark:text-red-300 !border-red-500/30 hover:!bg-red-500/10"
+                      className="!px-3 !py-1.5 text-xs !text-status-error !border-status-error/30 hover:!bg-status-error/10"
                     >
                       <X size={14} /> {busy === c.id ? "…" : "Reject"}
                     </Button>

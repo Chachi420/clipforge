@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
+import {
+  startOfMonth,
+  endOfMonth,
+  roundCents,
+  computePayouts,
+} from "@/lib/payout-math";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -66,20 +72,6 @@ interface CloseResult {
   totalEstimated: number;
   campaigns: CampaignSummary[];
   errors: string[];
-}
-
-function startOfMonth(dateStr: string): string {
-  return dateStr.slice(0, 7) + "-01";
-}
-
-function endOfMonth(dateStr: string): string {
-  const d = new Date(dateStr.slice(0, 7) + "-01T00:00:00Z");
-  d.setUTCMonth(d.getUTCMonth() + 1, 0); // day 0 of next month = last day of this month
-  return d.toISOString().slice(0, 10);
-}
-
-function roundCents(n: number): number {
-  return Math.round(n * 100) / 100;
 }
 
 export async function GET(request: NextRequest) {
@@ -212,26 +204,22 @@ export async function GET(request: NextRequest) {
       }
 
       // Aggregate per clipper. Clips with no snapshots contribute zero views.
-      const byUser = new Map<string, { views: number; clips: number }>();
-      for (const clip of clips ?? []) {
-        const views = latestViews.get(clip.id) ?? 0;
-        const agg = byUser.get(clip.user_id) ?? { views: 0, clips: 0 };
-        agg.views += views;
-        agg.clips += 1;
-        byUser.set(clip.user_id, agg);
-      }
-
-      const payoutRows = [...byUser.entries()]
-        .map(([userId, agg]) => ({
-          cycle_id: liveCycle.id,
-          user_id: userId,
-          role: "clipper",
-          estimated_amount: roundCents((agg.views / 100000) * rate),
-          status: "pending", // admin review required; nothing auto-pays
-          total_views: agg.views,
-          total_clips: agg.clips,
-        }))
-        .filter((r) => r.estimated_amount > 0);
+      // (Pure math lives in lib/payout-math.ts — covered by tests/.)
+      const payoutRows = computePayouts(
+        (clips ?? []).map((c: any) => ({
+          userId: c.user_id as string,
+          views: latestViews.get(c.id) ?? 0,
+        })),
+        rate
+      ).map((r) => ({
+        cycle_id: liveCycle.id,
+        user_id: r.userId,
+        role: "clipper",
+        estimated_amount: r.estimatedAmount,
+        status: "pending", // admin review required; nothing auto-pays
+        total_views: r.views,
+        total_clips: r.clips,
+      }));
 
       if (payoutRows.length > 0) {
         const { error: payError } = await supabase

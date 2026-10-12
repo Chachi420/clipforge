@@ -314,17 +314,32 @@ export async function getCampaignClippers(
   const rate = Number((camp as any).rate_per_100k ?? 0);
   // NOTE: clipper emails are deliberately NOT selected — brands get display
   // names only (PII minimization). Admin handles payouts via the admin panel.
+  // Names resolve through the PII-safe public_profiles view (a direct join
+  // isn't possible: PostgREST can't infer FKs to a view). Clippers who
+  // haven't opted into public profiles fall back to "Clipper".
   const { data: clips, error } = await supabase
     .from("clips")
-    .select("user_id, clip_metric_snapshots(views), profiles!inner(display_name)")
+    .select("user_id, clip_metric_snapshots(views)")
     .eq("campaign_id", campaignId)
     .order("scanned_at", { ascending: false, referencedTable: "clip_metric_snapshots" })
     .limit(1, { referencedTable: "clip_metric_snapshots" });
   if (error) console.error("[brand-db] getCampaignClippers failed:", campaignId, error.message);
+  const userIds = [...new Set((clips ?? []).map((c: any) => c.user_id))];
+  const nameById = new Map<string, string>();
+  if (userIds.length > 0) {
+    const { data: profs, error: profError } = await supabase
+      .from("public_profiles")
+      .select("id, display_name")
+      .in("id", userIds);
+    if (profError) console.error("[brand-db] getCampaignClippers names failed:", campaignId, profError.message);
+    for (const p of (profs ?? []) as any[]) {
+      nameById.set(p.id, p.display_name ?? "Clipper");
+    }
+  }
   const byUser = new Map<string, { name: string; clips: number; views: number }>();
   for (const c of clips ?? []) {
     const u = byUser.get(c.user_id) ?? {
-      name: (c as any).profiles?.display_name ?? "Clipper",
+      name: nameById.get(c.user_id) ?? "Clipper",
       clips: 0,
       views: 0,
     };

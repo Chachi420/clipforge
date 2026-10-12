@@ -22,7 +22,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "test": "node --test \"tests/**/*.test.ts\""
   },
   "version": "0.1.0"
 }

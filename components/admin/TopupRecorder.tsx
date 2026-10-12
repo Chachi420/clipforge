@@ -62,10 +62,10 @@ export default function TopupRecorder({ brands, initial }: { brands: Brands; ini
       <Card className="space-y-4 p-6">
         <h2 className="text-base font-bold text-ink">Record a top-up</h2>
         {error && (
-          <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
+          <p className="rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
         )}
         {success && (
-          <p className="rounded-xl bg-emerald-500/10 px-4 py-2.5 text-sm text-emerald-600 dark:text-emerald-300">
+          <p className="rounded-md bg-status-success/10 px-4 py-2.5 text-sm text-status-success">
             {success}
           </p>
         )}
@@ -144,7 +144,7 @@ export default function TopupRecorder({ brands, initial }: { brands: Brands; ini
                   <tr key={t.id} className="transition hover:bg-ink/[0.03]">
                     <td className="px-4 py-3 text-ink-soft">{t.createdAt}</td>
                     <td className="px-4 py-3 font-medium text-ink">{t.brandName}</td>
-                    <td className="px-4 py-3 text-right font-bold text-emerald-600 dark:text-emerald-400">
+                    <td className="px-4 py-3 text-right font-bold text-status-success">
                       {formatMoney(t.amount)}
                     </td>
                     <td className="px-4 py-3 text-ink">
