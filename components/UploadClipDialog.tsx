@@ -12,6 +12,7 @@ export default function UploadClipDialog({
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [done, setDone] = useState<{ inserted: number; heldForReview: number } | null>(null);
   const router = useRouter();
   const urls = text.split("\n").map((l) => l.trim()).filter(Boolean);
 
@@ -20,16 +21,38 @@ export default function UploadClipDialog({
     setError(null);
     try {
       const { inserted, heldForReview } = await uploadClips(campaignId, urls);
-      onClose();
-      router.refresh();
-      if (heldForReview > 0) {
-        alert(`${inserted} clip${inserted === 1 ? "" : "s"} uploaded. ${heldForReview} could not be matched to a verified account automatically and ${heldForReview === 1 ? "is" : "are"} pending review.`);
-      }
+      setDone({ inserted, heldForReview });
     } catch (e: any) {
       setError(e.message ?? "Upload failed.");
     } finally {
       setSaving(false);
     }
+  }
+
+  function finish() {
+    onClose();
+    router.refresh();
+  }
+
+  if (done) {
+    return (
+      <Dialog title="Upload clips" subtitle={campaignName} onClose={finish}>
+        <div className="rounded-card border border-status-success/25 bg-status-success/10 p-4 text-sm">
+          <p className="font-semibold text-status-success">
+            {done.inserted} clip{done.inserted === 1 ? "" : "s"} uploaded.
+          </p>
+          {done.heldForReview > 0 && (
+            <p className="mt-1 text-ink-soft">
+              {done.heldForReview} could not be matched to a verified account automatically and{" "}
+              {done.heldForReview === 1 ? "is" : "are"} pending review.
+            </p>
+          )}
+        </div>
+        <div className="mt-5 flex justify-end">
+          <Button onClick={finish}>Done</Button>
+        </div>
+      </Dialog>
+    );
   }
 
   return (
@@ -39,10 +62,15 @@ export default function UploadClipDialog({
         value={text}
         onChange={(e) => setText(e.target.value.slice(0, 5000))}
         placeholder={"Paste clip URLs here (one per line, up to 25)..."}
+        aria-label="Clip URLs, one per line"
         className={inputCls}
       />
       <p className="mt-2 text-xs text-ink-faint">Supports TikTok, Instagram, YouTube, X.</p>
-      {error && <p className="mt-3 rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-600 dark:text-red-300">{error}</p>}
+      {error && (
+        <p role="alert" className="mt-3 rounded-card border border-status-error/25 bg-status-error/10 px-3 py-2 text-sm text-status-error">
+          {error}
+        </p>
+      )}
       <div className="mt-5 flex justify-end gap-2">
         <Button variant="ghost" onClick={onClose}>Cancel</Button>
         <Button disabled={urls.length === 0 || saving} onClick={submit}>

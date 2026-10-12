@@ -11,8 +11,8 @@ import NewCampaignButton from "./_components/NewCampaignButton";
 export const dynamic = "force-dynamic";
 
 export default async function BrandOverviewPage() {
-  let brandName = "Demo Brand";
-  let brandId = "demo-brand";
+  let brandName = "Your brand";
+  let brandId = "your-brand";
   if (isLive()) {
     const ctx = await requireBrand();
     brandName = ctx.brand.name;
@@ -28,9 +28,9 @@ export default async function BrandOverviewPage() {
     <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="display text-3xl">{brandName}</h1>
+          <h1 className="display text-3xl">Overview</h1>
           <p className="mt-1 text-sm text-ink-soft">
-            Spend, views and clips across your campaigns.
+            What {brandName} is spending right now — views, spend, and live campaigns.
           </p>
         </div>
         <NewCampaignButton />
@@ -68,7 +68,7 @@ export default async function BrandOverviewPage() {
       {campaigns.length === 0 ? (
         <EmptyState
           title="No campaigns yet"
-          body="Submit your first brief to start getting clips from clippers."
+          body="Submit your first brief and clippers will start posting clips for your brand."
           action={<NewCampaignButton />}
         />
       ) : (
@@ -77,7 +77,7 @@ export default async function BrandOverviewPage() {
             <h2 className="font-display text-lg font-bold text-ink">Campaigns</h2>
             <Link
               href="/brand/campaigns"
-              className="inline-flex items-center gap-1 text-sm font-semibold text-electric-deep hover:text-ink"
+              className="inline-flex items-center gap-1 text-sm font-semibold text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink"
             >
               View all <ArrowRight size={14} />
             </Link>

@@ -59,7 +59,7 @@ export default function BountyManager({
       setBounties((prev) => prev.map((x) => (x.id === b.id ? { ...x, isActive: !x.isActive } : x)));
       refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Could not update bounty.");
+      setError(err instanceof Error ? err.message : "Could not update bounty.");
     }
   }
 
@@ -70,7 +70,7 @@ export default function BountyManager({
       setBounties((prev) => prev.filter((x) => x.id !== b.id));
       refresh();
     } catch (err) {
-      alert(err instanceof Error ? err.message : "Could not delete bounty.");
+      setError(err instanceof Error ? err.message : "Could not delete bounty.");
     }
   }
 
@@ -82,6 +82,12 @@ export default function BountyManager({
           {showForm ? "Cancel" : "New bounty"}
         </Button>
       </div>
+
+      {!showForm && error && (
+        <p role="alert" className="rounded-md bg-status-error/10 px-3 py-2 text-sm text-status-error">
+          {error}
+        </p>
+      )}
 
       {showForm && (
         <Card className="p-6">
@@ -131,7 +137,7 @@ export default function BountyManager({
                 />
               </Field>
             </div>
-            {error && <p className="text-sm text-red-600 dark:text-red-400 sm:col-span-2">{error}</p>}
+            {error && <p className="text-sm text-status-error sm:col-span-2">{error}</p>}
             <div className="sm:col-span-2">
               <Button type="submit" disabled={busy}>
                 {busy ? "Creating…" : "Create bounty"}
@@ -156,7 +162,7 @@ export default function BountyManager({
                     <h3 className="truncate font-semibold text-ink">{b.name}</h3>
                     <span
                       className={`text-[11px] font-semibold uppercase tracking-wide ${
-                        b.isActive ? "text-emerald-600 dark:text-emerald-400" : "text-ink-faint"
+                        b.isActive ? "text-status-success" : "text-ink-faint"
                       }`}
                     >
                       {b.isActive ? "Active" : "Paused"}
@@ -178,13 +184,13 @@ export default function BountyManager({
                     type="checkbox"
                     checked={b.isActive}
                     onChange={() => handleToggle(b)}
-                    className="h-4 w-4 accent-emerald-500"
+                    className="h-4 w-4 accent-ink"
                   />
                   Live
                 </label>
                 <button
                   onClick={() => handleDelete(b)}
-                  className="rounded-lg p-2 text-ink-faint hover:bg-red-500/10 hover:text-red-600 dark:text-red-400"
+                  className="rounded-md p-2 text-ink-faint hover:bg-status-error/10 hover:text-status-error"
                   aria-label={`Delete ${b.name}`}
                 >
                   <Trash2 size={16} />

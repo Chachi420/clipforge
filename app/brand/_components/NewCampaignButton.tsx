@@ -1,14 +1,14 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 
-/** Link styled like the electric pill Button from components/ui. */
+/** Primary link-button — matches the Button primary style from components/ui. */
 export default function NewCampaignButton() {
   return (
     <Link
       href="/brand/campaigns/new"
-      className="pill bg-electric px-4 py-2 text-sm text-white shadow-card transition hover:bg-electric-soft"
+      className="pill min-h-[44px] bg-ink px-5 py-2.5 text-sm font-semibold text-paper transition-colors hover:bg-ink-soft"
     >
-      <Plus size={16} />
+      <Plus size={16} aria-hidden />
       New campaign
     </Link>
   );

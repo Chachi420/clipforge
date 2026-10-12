@@ -61,7 +61,7 @@ export default async function BrandCampaignsPage({
             href={t.key === "all" ? "/brand/campaigns" : `/brand/campaigns?status=${t.key}`}
             className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition ${
               t.key === activeKey
-                ? "bg-electric text-white shadow-card"
+                ? "bg-ink text-paper"
                 : "text-ink-soft hover:bg-ink/5 hover:text-ink"
             }`}
           >
@@ -73,7 +73,7 @@ export default async function BrandCampaignsPage({
       {campaigns.length === 0 ? (
         <EmptyState
           title="No campaigns yet"
-          body="Submit your first brief to start getting clips from clippers."
+          body="Submit your first brief and clippers will start posting clips for your brand."
           action={<NewCampaignButton />}
         />
       ) : filtered.length === 0 ? (

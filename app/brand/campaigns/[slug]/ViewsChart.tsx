@@ -10,8 +10,7 @@ const PAD_L = 8;
 const PAD_R = 8;
 const PAD_T = 12;
 const PAD_B = 24;
-const VIEWS_COLOR = "#14b8a6"; // teal-500 — readable on light and dark glass
-const SPEND_COLOR = "#f59e0b"; // amber-500 — readable on light and dark glass
+const SPEND_DASH = "6 3"; // dashed secondary metric
 
 function shortDate(iso: string): string {
   const [y, m, d] = iso.split("-");
@@ -74,8 +73,8 @@ export default function ViewsChart({ data }: { data: DayPoint[] }) {
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full text-ink" role="img" aria-label="Views and spend over the last 30 days">
         <defs>
           <linearGradient id="viewsFill" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={VIEWS_COLOR} stopOpacity="0.35" />
-            <stop offset="100%" stopColor={VIEWS_COLOR} stopOpacity="0" />
+            <stop offset="0%" stopColor="currentColor" stopOpacity="0.18" />
+            <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
           </linearGradient>
         </defs>
         {/* gridlines */}
@@ -86,16 +85,20 @@ export default function ViewsChart({ data }: { data: DayPoint[] }) {
           })}
         </g>
         {/* views area */}
-        <path d={viewsArea} fill="url(#viewsFill)" />
-        <path d={viewsLine} fill="none" stroke={VIEWS_COLOR} strokeWidth="2" strokeLinejoin="round" />
-        {/* spend line */}
-        <path d={spendLine} fill="none" stroke={SPEND_COLOR} strokeWidth="2" strokeDasharray="6 3" strokeLinejoin="round" />
+        <g className="text-ink">
+          <path d={viewsArea} fill="url(#viewsFill)" />
+          <path d={viewsLine} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+        </g>
+        {/* spend line — dashed faint, secondary metric */}
+        <g className="text-ink-faint">
+          <path d={spendLine} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray={SPEND_DASH} strokeLinejoin="round" />
+        </g>
         {/* y labels */}
         <g className="text-ink-faint" fill="currentColor" fontSize="10">
           <text x={PAD_L + 2} y={PAD_T - 3} opacity="0.9">
             {formatCompact(maxViews)} views
           </text>
-          <text x={W - PAD_R - 2} y={PAD_T - 3} textAnchor="end" fill={SPEND_COLOR} opacity="0.9">
+          <text x={W - PAD_R - 2} y={PAD_T - 3} textAnchor="end" opacity="0.9">
             {formatMoney(maxSpend)}
           </text>
         </g>
@@ -119,10 +122,10 @@ function Legend() {
   return (
     <div className="flex items-center gap-4 text-xs text-ink-soft">
       <span className="flex items-center gap-1.5">
-        <span className="h-2 w-4 rounded-sm" style={{ background: VIEWS_COLOR }} /> Views
+        <span className="h-0.5 w-4 rounded-sm bg-ink" /> Views
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="h-2 w-4 rounded-sm" style={{ background: SPEND_COLOR }} /> Spend
+        <span className="h-0 w-4 border-t-2 border-dashed border-ink-faint" /> Spend
       </span>
     </div>
   );

@@ -10,7 +10,7 @@ export default async function NewCampaignBriefPage() {
       <div>
         <h1 className="display text-3xl">New campaign brief</h1>
         <p className="mt-1 text-sm text-ink-soft">
-          Submit a brief — our team reviews and approves it (usually within 24h).
+          Submit a brief — our team reviews every brief before it goes live.
         </p>
       </div>
       <CampaignBriefForm />

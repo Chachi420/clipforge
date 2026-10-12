@@ -36,7 +36,7 @@ export default function CampaignTable({ campaigns }: { campaigns: BrandCampaign[
                 <td className="px-4 py-3">
                   <Link
                     href={`/brand/campaigns/${c.slug}`}
-                    className="font-semibold text-ink hover:text-electric-deep"
+                    className="font-semibold text-ink hover:underline"
                   >
                     {c.name}
                   </Link>

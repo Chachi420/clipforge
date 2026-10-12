@@ -127,7 +127,7 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
                   type="checkbox"
                   checked={platforms.includes(p)}
                   onChange={() => togglePlatform(p)}
-                  className="h-4 w-4 accent-emerald-500"
+                  className="h-4 w-4 accent-ink"
                 />
                 {PLATFORM_LABELS[p]}
               </label>
@@ -146,7 +146,7 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
           </Field>
         </div>
         {message && (
-          <p className={`text-sm sm:col-span-2 ${message.tone === "ok" ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}>
+          <p className={`text-sm sm:col-span-2 ${message.tone === "ok" ? "text-status-success" : "text-status-error"}`}>
             {message.text}
           </p>
         )}
