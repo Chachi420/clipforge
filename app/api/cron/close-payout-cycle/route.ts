@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 300;
 
 /**
- * GET /api/cron/close-payout-cycle — weekly payout cycle closer.
+ * GET /api/cron/close-payout-cycle — monthly payout cycle closer.
  *
  * Closes each active campaign's finished `live` payout cycle, computes
  * per-clipper earnings from the LATEST metric snapshot per clip, inserts
@@ -14,9 +14,9 @@ export const maxDuration = 300;
  * via the existing markPayoutPaid action after sending funds manually.
  *
  * PRODUCT ASSUMPTIONS (founder to review):
- *  1. Weekly cycles: 7-day periods (period_start..period_end inclusive),
- *     chained from the previous cycle. A campaign's first cycle is
- *     bootstrapped starting today.
+ *  1. Monthly cycles: calendar-month periods (1st → last day of month),
+ *     one cycle per campaign per month. A campaign's first cycle is
+ *     bootstrapped for the current calendar month.
  *  2. Earnings = (latest snapshot views per clip, CUMULATIVE — not period
  *     deltas) / 100,000 * campaign.rate_per_100k, summed per clipper,
  *     rounded to cents.
@@ -68,9 +68,13 @@ interface CloseResult {
   errors: string[];
 }
 
-function addDays(dateStr: string, n: number): string {
-  const d = new Date(dateStr + "T00:00:00Z");
-  d.setUTCDate(d.getUTCDate() + n);
+function startOfMonth(dateStr: string): string {
+  return dateStr.slice(0, 7) + "-01";
+}
+
+function endOfMonth(dateStr: string): string {
+  const d = new Date(dateStr.slice(0, 7) + "-01T00:00:00Z");
+  d.setUTCMonth(d.getUTCMonth() + 1, 0); // day 0 of next month = last day of this month
   return d.toISOString().slice(0, 10);
 }
 
@@ -145,15 +149,24 @@ export async function GET(request: NextRequest) {
       // --- Case 1: no live cycle → bootstrap the cadence, don't close. ---
       if (!liveCycle) {
         const nextNumber = (latestCycle?.cycle_number ?? 0) + 1;
-        let start = latestCycle ? addDays(latestCycle.period_end, 1) : today;
-        if (start > today) start = today; // defensive; shouldn't happen
+        // Snap to the calendar-month grid: the month after the last known
+        // cycle's period_end (recovery path), else the current month.
+        let start: string;
+        if (latestCycle) {
+          const d = new Date(latestCycle.period_end + "T00:00:00Z");
+          d.setUTCDate(d.getUTCDate() + 1);
+          start = startOfMonth(d.toISOString().slice(0, 10));
+        } else {
+          start = startOfMonth(today);
+        }
+        if (start > today) start = startOfMonth(today); // defensive; shouldn't happen
         const { error: insError } = await supabase
           .from("payout_cycles")
           .insert({
             campaign_id: campaign.id,
             cycle_number: nextNumber,
             period_start: start,
-            period_end: addDays(start, 6),
+            period_end: endOfMonth(start),
             status: "live",
           });
         if (insError) throw new Error(`bootstrap cycle failed: ${insError.message}`);
@@ -234,12 +247,14 @@ export async function GET(request: NextRequest) {
       if (closeError) throw new Error(`cycle close failed: ${closeError.message}`);
 
       const nextNumber = liveCycle.cycle_number + 1;
-      const nextStart = addDays(liveCycle.period_end, 1);
+      const d = new Date(liveCycle.period_end + "T00:00:00Z");
+      d.setUTCDate(d.getUTCDate() + 1);
+      const nextStart = startOfMonth(d.toISOString().slice(0, 10));
       const { error: nextError } = await supabase.from("payout_cycles").insert({
         campaign_id: campaign.id,
         cycle_number: nextNumber,
         period_start: nextStart,
-        period_end: addDays(nextStart, 6),
+        period_end: endOfMonth(nextStart),
         status: "live",
       });
       if (nextError) throw new Error(`next cycle open failed: ${nextError.message}`);
