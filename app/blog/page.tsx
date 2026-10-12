@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Clock } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import MarketingNav from "@/components/MarketingNav";
 import { Card, Badge } from "@/components/ui";
 import { BLOG_POSTS, BLOG_CATEGORIES } from "@/lib/blog-posts";
 
@@ -14,28 +14,7 @@ export default function BlogIndex() {
 
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="font-display text-xl font-bold tracking-tight">
-            CLIPFORGE
-          </Link>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link
-              href="/docs"
-              className="text-sm font-semibold text-ink-soft hover:text-ink"
-            >
-              Docs
-            </Link>
-            <Link
-              href="/login"
-              className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft"
-            >
-              Start clipping
-            </Link>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav />
 
       <main className="mx-auto max-w-6xl px-6 pb-20">
         <header className="py-12">

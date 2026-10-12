@@ -42,7 +42,7 @@ export function EarningsCalculator() {
         </div>
         <div>
           <label className="flex items-center justify-between text-sm font-bold text-ink">
-            Campaign rate <span className="text-electric-deep">${ratePer100k} / 100K views</span>
+            Example rate <span className="text-electric-deep">${ratePer100k} / 100K views</span>
           </label>
           <input
             type="range"
@@ -98,7 +98,7 @@ export function EarningsCalculator() {
 
       <div className="glass-dark glow-electric mt-8 rounded-3xl p-6 text-center text-white">
         <div className="text-sm font-semibold uppercase tracking-widest text-white/50">Estimated monthly earnings</div>
-        <div className="mt-2 font-display text-5xl font-bold tracking-tight text-electric-soft">
+        <div className="mt-2 font-display text-5xl font-bold tracking-tight text-electric-deep">
           ${earnings.toLocaleString("en-US", { maximumFractionDigits: 0 })}
         </div>
         <div className="mt-2 text-sm text-white/55">

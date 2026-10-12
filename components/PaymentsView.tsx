@@ -31,6 +31,28 @@ export default function PaymentsView({
   const awaiting = cycles.filter((c) => c.status === "awaiting_mark_paid");
   const awaitingTotal = awaiting.reduce((s, c) => s + c.estimatedAmount, 0);
   const live = cycles.find((c) => c.status === "live");
+  const history = cycles.filter((c) => c.status !== "live");
+
+  function handleExport() {
+    const header = ["Cycle", "Status", "Period", "Verified views", "Clips", "Amount (USD)"];
+    const lines = history.map((c) => [
+      `${c.campaignName} #${c.cycleNumber}`,
+      STATUS_LABEL[c.status],
+      c.snapshotAt ? `Snapshotted ${c.snapshotAt}` : `${c.periodStart} to ${c.periodEnd}`,
+      String(c.totalViews),
+      String(c.totalClips),
+      c.estimatedAmount.toFixed(2),
+    ]);
+    const csv = [header, ...lines]
+      .map((r) => r.map((v) => `"${v.replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "clipforge-payout-history.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 
   async function handleAdd() {
     setSaving(true);
@@ -122,8 +144,8 @@ export default function PaymentsView({
         <Card className="p-6">
           <div className="mb-4 flex items-center justify-between">
             <h3 className="font-bold text-ink">Payout history</h3>
-            <Button variant="ghost" onClick={() => alert("Export coming soon.")}>
-              <Download size={15} /> Export .xlsx
+            <Button variant="ghost" onClick={handleExport} disabled={history.length === 0}>
+              <Download size={15} /> Export CSV
             </Button>
           </div>
           {awaitingTotal > 0 && (
@@ -132,7 +154,7 @@ export default function PaymentsView({
               <span className="text-ink-soft"> awaiting payout — {awaiting.length} cycle{awaiting.length === 1 ? "" : "s"} awaiting Mark Paid</span>
             </div>
           )}
-          {cycles.filter((c) => c.status !== "live").length === 0 ? (
+          {history.length === 0 ? (
             <p className="py-8 text-center text-sm text-ink-faint">
               No payouts yet. Submit clips to a campaign and your earnings will appear here after each cycle closes.
             </p>
@@ -148,7 +170,7 @@ export default function PaymentsView({
                   </tr>
                 </thead>
                 <tbody>
-                  {cycles.filter((c) => c.status !== "live").map((c) => (
+                  {history.map((c) => (
                     <tr key={c.id} onClick={() => setReceiptId(c.id)}
                       className="cursor-pointer border-b border-line/10 transition last:border-0 hover:bg-ink/[0.03]">
                       <td className="px-4 py-3 font-medium text-ink">{c.campaignName} #{c.cycleNumber}</td>

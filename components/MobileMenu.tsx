@@ -11,7 +11,7 @@ const LINKS = [
   { href: "/docs", label: "Docs" },
 ];
 
-export default function MobileMenu() {
+export default function MobileMenu({ signInHref = "/login" }: { signInHref?: string }) {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -64,7 +64,7 @@ export default function MobileMenu() {
             </Link>
           ))}
           <Link
-            href="/login"
+            href={signInHref}
             onClick={() => setOpen(false)}
             className="mt-2 flex items-center justify-center rounded-full bg-ink py-4 text-base font-semibold text-paper"
           >

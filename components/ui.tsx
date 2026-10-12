@@ -21,7 +21,7 @@ export function Badge({ children, tone = "default" }: { children: ReactNode; ton
     green: "bg-emerald-500/15 text-emerald-700",
     amber: "bg-amber-500/15 text-amber-700",
     red: "bg-red-500/12 text-red-600",
-    blue: "bg-sky-500/12 text-sky-700",
+    blue: "bg-ink/10 text-ink-soft",
     electric: "bg-electric text-white",
   };
   return (

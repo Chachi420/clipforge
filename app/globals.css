@@ -5,34 +5,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---------- Vectr-inspired theme tokens (light default, .dark override) ---------- */
+/* ---------- Monochrome theme tokens (light default, .dark override) ---------- */
 
 :root {
   color-scheme: light;
-  --paper: 216 229 237;        /* pale ice-blue #D8E5ED */
-  --surface: 241 246 250;      /* ice-tinted cards */
-  --surface-deep: 203 219 231; /* sunken wells, code blocks */
+  --paper: 255 255 255;        /* white */
+  --surface: 245 245 247;      /* Apple gray #F5F5F7 — cards */
+  --surface-deep: 229 229 234; /* sunken wells, code blocks */
   --ink: 11 14 19;             /* near-black #0B0E13 */
   --ink-soft: 52 63 78;        /* secondary text */
-  --ink-faint: 108 124 141;    /* tertiary text */
+  --ink-faint: 95 107 122;     /* tertiary text — 5.4:1 on white (WCAG AA) */
   --line: 11 14 19;            /* borders — always used at low alpha */
-  --electric-deep: 32 71 255;  /* electric blue, readable on light */
+  --electric-deep: 11 14 19;   /* monochrome accent = ink, readable on light */
   --glass-hi: 255 255 255;     /* specular highlight tint */
   --scrollbar: 11 14 19;
 }
 
 .dark {
   color-scheme: dark;
-  --paper: 10 16 34;            /* rich navy #0A1022 */
-  --surface: 15 23 42;         /* navy cards */
-  --surface-deep: 12 19 36;    /* sunken wells */
-  --ink: 222 232 242;          /* ice-blue text */
-  --ink-soft: 172 190 208;     /* secondary text */
-  --ink-faint: 122 140 162;     /* tertiary text */
-  --line: 222 232 242;         /* borders flip to ice at low alpha */
-  --electric-deep: 124 154 255; /* brightened electric for dark */
+  --paper: 0 0 0;               /* true black */
+  --surface: 28 28 30;         /* #1C1C1E cards */
+  --surface-deep: 44 44 46;     /* sunken wells */
+  --ink: 245 245 247;          /* near-white text */
+  --ink-soft: 161 161 166;      /* secondary text */
+  --ink-faint: 142 142 147;     /* tertiary text — 6.4:1 on black (WCAG AA) */
+  --line: 245 245 247;         /* borders flip to near-white at low alpha */
+  --electric-deep: 245 245 247; /* monochrome accent = near-white, readable on dark */
   --glass-hi: 255 255 255;
-  --scrollbar: 222 232 242;
+  --scrollbar: 245 245 247;
 }
 
 body {
@@ -40,7 +40,7 @@ body {
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
-/* ---------- Liquid glass utilities (ice-blue tinted) ---------- */
+/* ---------- Liquid glass utilities ---------- */
 
 @layer components {
   /* Frosted glass panel — theme-aware */
@@ -55,13 +55,13 @@ body {
     background: rgb(var(--surface) / 0.55);
     box-shadow: 0 8px 32px rgb(0 0 0 / 0.4), inset 0 1px 0 rgb(var(--glass-hi) / 0.08);
   }
-  /* Dark navy glass — contrast cards, dark in both themes (Vectr footer finale) */
+  /* Dark glass — contrast cards, dark in both themes */
   .glass-dark {
-    background: rgb(10 16 34 / 0.9);
+    background: rgb(0 0 0 / 0.92);
     backdrop-filter: blur(22px) saturate(1.2);
     -webkit-backdrop-filter: blur(22px) saturate(1.2);
-    border: 1px solid rgb(216 229 237 / 0.12);
-    box-shadow: 0 18px 60px rgb(7 11 20 / 0.28), inset 0 1px 0 rgb(216 229 237 / 0.1);
+    border: 1px solid rgb(255 255 255 / 0.12);
+    box-shadow: 0 18px 60px rgb(7 11 20 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.1);
   }
   /* Specular top highlight for glass surfaces */
   .glass-sheen {
@@ -75,15 +75,15 @@ body {
     pointer-events: none;
     background: linear-gradient(180deg, rgb(var(--glass-hi) / 0.28) 0%, rgb(var(--glass-hi) / 0) 32%);
   }
-  /* Electric glow for feature cards */
+  /* Soft monochrome glow for feature cards */
   .glow-electric {
-    box-shadow: 0 0 44px rgb(32 71 255 / 0.28), 0 10px 36px rgb(7 11 20 / 0.16);
+    box-shadow: 0 0 44px rgb(11 14 19 / 0.10), 0 10px 36px rgb(7 11 20 / 0.16);
   }
   /* Pill button base */
   .pill {
     @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold transition;
   }
-  /* Massive Vectr-style display headline */
+  /* Massive display headline */
   .display {
     @apply font-display font-medium tracking-tight text-ink;
     letter-spacing: -0.02em;
@@ -91,7 +91,7 @@ body {
     /* Fraunces optical character */
     font-variation-settings: "opsz" 144, "SOFT" 50, "WONK" 1;
   }
-  /* Small uppercase micro-label with wide tracking (Vectr nav/section labels) */
+  /* Small uppercase micro-label with wide tracking (nav/section labels) */
   .micro-label {
     @apply font-sans text-[11px] font-semibold uppercase text-ink-faint;
     letter-spacing: 0.24em;
@@ -141,22 +141,22 @@ body {
 
 /* ---------- Industry-level micro-details ---------- */
 
-/* electric selection */
+/* ink selection */
 ::selection {
-  background: rgb(32 71 255 / 0.22);
+  background: rgb(11 14 19 / 0.14);
 }
 .dark ::selection {
-  background: rgb(124 154 255 / 0.32);
+  background: rgb(245 245 247 / 0.28);
 }
 
 /* refined focus rings */
 :focus-visible {
-  outline: 2px solid rgb(32 71 255 / 0.6);
+  outline: 2px solid rgb(11 14 19 / 0.55);
   outline-offset: 3px;
   border-radius: 6px;
 }
 .dark :focus-visible {
-  outline-color: rgb(124 154 255 / 0.7);
+  outline-color: rgb(245 245 247 / 0.65);
 }
 
 /* background depth — subtle radial glows (Linear/Stripe technique) */
@@ -169,13 +169,13 @@ body {
   inset: 0;
   pointer-events: none;
   background:
-    radial-gradient(42% 32% at 50% 0%, rgb(32 71 255 / 0.07), transparent 70%),
-    radial-gradient(36% 28% at 85% 100%, rgb(32 71 255 / 0.05), transparent 70%);
+    radial-gradient(42% 32% at 50% 0%, rgb(11 14 19 / 0.05), transparent 70%),
+    radial-gradient(36% 28% at 85% 100%, rgb(11 14 19 / 0.04), transparent 70%);
 }
 .dark .bg-glow::before {
   background:
-    radial-gradient(42% 32% at 50% 0%, rgb(32 71 255 / 0.14), transparent 70%),
-    radial-gradient(36% 28% at 85% 100%, rgb(124 154 255 / 0.08), transparent 70%);
+    radial-gradient(42% 32% at 50% 0%, rgb(245 245 247 / 0.07), transparent 70%),
+    radial-gradient(36% 28% at 85% 100%, rgb(245 245 247 / 0.05), transparent 70%);
 }
 
 /* premium link underline animation */

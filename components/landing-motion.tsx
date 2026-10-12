@@ -113,7 +113,7 @@ export function PinnedProcess({ steps, kicker = "How it works", title = "Three s
                   i === active ? "opacity-100" : i < active ? "opacity-60" : "opacity-30"
                 }`}
               >
-                <div className={`font-display text-lg font-bold tracking-tight ${i <= active ? "text-electric" : "text-ink-faint"}`}>
+                <div className={`font-display text-lg font-bold tracking-tight ${i <= active ? "text-electric-deep" : "text-ink-faint"}`}>
                   {s.n}
                 </div>
                 <div className="font-display text-2xl font-bold tracking-tight text-ink md:text-3xl">{s.title}</div>
