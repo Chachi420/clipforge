@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Check, ShieldCheck, Sparkles, Trophy, Wallet } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import MarketingNav from "@/components/MarketingNav";
 import { Faq, MarketingFooter } from "@/components/marketing";
 import { EarningsCalculator } from "./calculator";
+
+export const metadata: Metadata = {
+  title: "ClipForge for Clippers — Get Paid Per View",
+  description:
+    "Post clips for real brand campaigns and earn per verified view. No follower minimums, no sign-up fee — payouts via PayPal or crypto.",
+  alternates: { canonical: "/clip" },
+};
 
 const STEPS = [
   { n: "01", title: "Pick a campaign", body: "Browse campaigns from real brands. The rate, platforms, and bounties are shown up front." },
@@ -31,16 +39,7 @@ const FAQ_ITEMS = [
 export default function ClipLanding() {
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="font-display text-xl font-bold tracking-tight">CLIPFORGE</Link>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link href="/login" className="text-sm font-semibold text-ink-soft hover:text-ink">Sign in</Link>
-            <Link href="/login" className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft">Start clipping</Link>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav />
 
       <main className="mx-auto max-w-6xl px-6">
         <section className="py-20 text-center">

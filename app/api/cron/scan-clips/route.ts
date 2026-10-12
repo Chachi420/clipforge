@@ -13,19 +13,20 @@ interface ScanResult {
 }
 
 export async function GET(request: NextRequest) {
-  // Auth: CRON_SECRET via Bearer header when set. Vercel Cron cannot send
-  // custom headers, so its own user-agent (vercel-cron/1.0) is also accepted —
-  // obscurity-level protection, acceptable because the job only appends
-  // idempotent metric snapshots (no destructive or financial effects).
+  // Fail closed: without CRON_SECRET there is no way to authenticate the
+  // caller, so refuse to run. Vercel Cron sends
+  // `Authorization: Bearer <CRON_SECRET>` automatically when the env var is
+  // set — no User-Agent sniffing (anyone can forge a User-Agent header).
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const header = request.headers.get("authorization") ?? "";
-    const ua = request.headers.get("user-agent") ?? "";
-    const viaSecret = header === `Bearer ${secret}`;
-    const viaVercelCron = ua.toLowerCase().startsWith("vercel-cron/");
-    if (!viaSecret && !viaVercelCron) {
-      return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    }
+  if (!secret) {
+    return NextResponse.json(
+      { error: "Cron is not configured (CRON_SECRET missing)" },
+      { status: 503 }
+    );
+  }
+  const header = request.headers.get("authorization") ?? "";
+  if (header !== `Bearer ${secret}`) {
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const supabase = createServiceClient();

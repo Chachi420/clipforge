@@ -10,8 +10,34 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "ClipForge — Clip. Post. Get Paid.",
-  description: "The clipping network: brands run pay-per-view campaigns, clippers earn per verified view.",
+  metadataBase: new URL("https://clipforge-2wkpqkqxx-chachi420s-projects.vercel.app"),
+  title: "ClipForge — The Pay-Per-View Clipping Marketplace",
+  description:
+    "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view. Real rates up front, hard budget caps, no follower minimums.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "ClipForge — The Pay-Per-View Clipping Marketplace",
+    description:
+      "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view.",
+    url: "/",
+    siteName: "ClipForge",
+    type: "website",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "ClipForge — Clip. Post. Get Paid.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ClipForge — The Pay-Per-View Clipping Marketplace",
+    description:
+      "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view.",
+    images: ["/opengraph-image"],
+  },
 };
 
 /**

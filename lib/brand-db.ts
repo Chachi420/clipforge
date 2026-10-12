@@ -47,7 +47,8 @@ function toTopup(row: any): BrandTopup {
 export async function getBrand(userId: string): Promise<Brand | null> {
   if (!isLive()) return DEMO_BRAND;
   const supabase = await sb();
-  const { data } = await supabase.from("brands").select("*").eq("owner_id", userId).single();
+  const { data, error } = await supabase.from("brands").select("*").eq("owner_id", userId).single();
+  if (error) console.error("[brand-db] getBrand failed:", userId, error.message);
   return data ? toBrand(data) : null;
 }
 
@@ -55,7 +56,8 @@ export async function getBrand(userId: string): Promise<Brand | null> {
 export async function getUserRole(userId: string): Promise<string> {
   if (!isLive()) return "brand";
   const supabase = await sb();
-  const { data } = await supabase.from("profiles").select("role").eq("id", userId).single();
+  const { data, error } = await supabase.from("profiles").select("role").eq("id", userId).single();
+  if (error) console.error("[brand-db] getUserRole failed:", userId, error.message);
   return (data as any)?.role ?? "clipper";
 }
 
@@ -74,10 +76,15 @@ async function campaignAggs(
   const out = new Map<string, CampaignAgg>();
   if (campaignIds.length === 0) return out;
   // Latest snapshot per clip (views), clip counts, distinct clippers.
-  const { data: clips } = await supabase
+  const { data: clips, error } = await supabase
     .from("clips")
     .select("id, campaign_id, user_id, clip_metric_snapshots(views)")
-    .in("campaign_id", campaignIds);
+    .in("campaign_id", campaignIds)
+    // Embedded to-many selects have no guaranteed order: pin the latest
+    // snapshot explicitly before reading [0].
+    .order("scanned_at", { ascending: false, referencedTable: "clip_metric_snapshots" })
+    .limit(1, { referencedTable: "clip_metric_snapshots" });
+  if (error) console.error("[brand-db] campaignAggs failed:", error.message);
   const byCampaign = new Map<string, any[]>();
   for (const c of clips ?? []) {
     const arr = byCampaign.get(c.campaign_id) ?? [];
@@ -140,11 +147,12 @@ function toBrandCampaign(row: any, agg?: CampaignAgg): BrandCampaign {
 export async function getBrandCampaigns(brandId: string): Promise<BrandCampaign[]> {
   if (!isLive()) return [];
   const supabase = await sb();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("campaigns")
     .select("*")
     .eq("brand_id", brandId)
     .order("created_at", { ascending: false });
+  if (error) console.error("[brand-db] getBrandCampaigns failed:", brandId, error.message);
   const rows = data ?? [];
   const rateById = new Map(rows.map((r: any) => [r.id, Number(r.rate_per_100k ?? 0)]));
   const aggs = await campaignAggs(supabase, rows.map((r: any) => r.id), rateById);
@@ -158,12 +166,13 @@ export async function getBrandCampaign(
 ): Promise<BrandCampaign | null> {
   if (!isLive()) return null;
   const supabase = await sb();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("campaigns")
     .select("*")
     .eq("brand_id", brandId)
     .eq("slug", slug)
     .single();
+  if (error) console.error("[brand-db] getBrandCampaign failed:", slug, error.message);
   if (!data) return null;
   const aggs = await campaignAggs(
     supabase,
@@ -188,20 +197,22 @@ export async function getBrandKpis(brandId: string): Promise<BrandKpis> {
   if (ids.length > 0) {
     // Views gained this month = latest snapshot views − earliest snapshot views
     // within the month window, per clip.
-    const { data: clips } = await supabase
+    const { data: clips, error: clipsError } = await supabase
       .from("clips")
       .select("id, campaign_id")
       .in("campaign_id", ids);
+    if (clipsError) console.error("[brand-db] getBrandKpis clips failed:", brandId, clipsError.message);
     const clipIds = (clips ?? []).map((c: any) => c.id);
     const campaignByClip = new Map((clips ?? []).map((c: any) => [c.id, c.campaign_id]));
     const rateById = new Map(campaigns.map((c) => [c.id, c.ratePer100k]));
     if (clipIds.length > 0) {
-      const { data: snaps } = await supabase
+      const { data: snaps, error: snapsError } = await supabase
         .from("clip_metric_snapshots")
         .select("clip_id, views, scanned_at")
         .in("clip_id", clipIds)
         .gte("scanned_at", monthStart.toISOString())
         .order("scanned_at", { ascending: true });
+      if (snapsError) console.error("[brand-db] getBrandKpis snapshots failed:", brandId, snapsError.message);
       const byClip = new Map<string, number[]>();
       for (const s of snaps ?? []) {
         const arr = byClip.get(s.clip_id) ?? [];
@@ -246,14 +257,18 @@ export async function getCampaignClips(
     .eq("brand_id", brandId)
     .single();
   if (!camp) return [];
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("clips")
     .select(
       "id, campaign_id, bounty_id, platform, post_url, account_handle, streamer_name, tracking_status, submitted_at, clip_metric_snapshots(views, likes, comments)"
     )
     .eq("campaign_id", campaignId)
     .order("submitted_at", { ascending: false })
-    .limit(limit * 2);
+    .limit(limit * 2)
+    // Pin the latest snapshot explicitly: embedded to-many order is not guaranteed.
+    .order("scanned_at", { ascending: false, referencedTable: "clip_metric_snapshots" })
+    .limit(1, { referencedTable: "clip_metric_snapshots" });
+  if (error) console.error("[brand-db] getCampaignClips failed:", campaignId, error.message);
   const rows = (data ?? []).map((r: any) => {
     const s = Array.isArray(r.clip_metric_snapshots)
       ? r.clip_metric_snapshots[0]
@@ -297,15 +312,19 @@ export async function getCampaignClippers(
     .single();
   if (!camp) return [];
   const rate = Number((camp as any).rate_per_100k ?? 0);
-  const { data: clips } = await supabase
+  // NOTE: clipper emails are deliberately NOT selected — brands get display
+  // names only (PII minimization). Admin handles payouts via the admin panel.
+  const { data: clips, error } = await supabase
     .from("clips")
-    .select("user_id, clip_metric_snapshots(views), profiles!inner(display_name, email)")
-    .eq("campaign_id", campaignId);
-  const byUser = new Map<string, { name: string; email: string; clips: number; views: number }>();
+    .select("user_id, clip_metric_snapshots(views), profiles!inner(display_name)")
+    .eq("campaign_id", campaignId)
+    .order("scanned_at", { ascending: false, referencedTable: "clip_metric_snapshots" })
+    .limit(1, { referencedTable: "clip_metric_snapshots" });
+  if (error) console.error("[brand-db] getCampaignClippers failed:", campaignId, error.message);
+  const byUser = new Map<string, { name: string; clips: number; views: number }>();
   for (const c of clips ?? []) {
     const u = byUser.get(c.user_id) ?? {
       name: (c as any).profiles?.display_name ?? "Clipper",
-      email: (c as any).profiles?.email ?? "",
       clips: 0,
       views: 0,
     };
@@ -320,7 +339,7 @@ export async function getCampaignClippers(
     .map(([userId, u]) => ({
       userId,
       displayName: u.name,
-      email: u.email,
+      email: "",
       clips: u.clips,
       views: u.views,
       earnings: (u.views / 100000) * rate,
@@ -359,18 +378,20 @@ export async function getViewsTimeseries(
   const rate = Number((camp as any).rate_per_100k ?? 0);
   const since = new Date(today);
   since.setDate(since.getDate() - days);
-  const { data: clips } = await supabase
+  const { data: clips, error: clipsError } = await supabase
     .from("clips")
     .select("id")
     .eq("campaign_id", campaignId);
+  if (clipsError) console.error("[brand-db] getViewsTimeseries clips failed:", campaignId, clipsError.message);
   const clipIds = (clips ?? []).map((c: any) => c.id);
   if (clipIds.length === 0) return out;
-  const { data: snaps } = await supabase
+  const { data: snaps, error: snapsError } = await supabase
     .from("clip_metric_snapshots")
     .select("clip_id, views, scanned_at")
     .in("clip_id", clipIds)
     .gte("scanned_at", since.toISOString())
     .order("scanned_at", { ascending: true });
+  if (snapsError) console.error("[brand-db] getViewsTimeseries snapshots failed:", campaignId, snapsError.message);
   // Per clip per day: max views that day; daily gain = max(today) − max(yesterday).
   const maxByClipDay = new Map<string, number>();
   for (const s of snaps ?? []) {
@@ -399,11 +420,12 @@ export async function getViewsTimeseries(
 export async function getBrandTopups(brandId: string): Promise<BrandTopup[]> {
   if (!isLive()) return [];
   const supabase = await sb();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("brand_topups")
     .select("*")
     .eq("brand_id", brandId)
     .order("created_at", { ascending: false });
+  if (error) console.error("[brand-db] getBrandTopups failed:", brandId, error.message);
   return (data ?? []).map(toTopup);
 }
 

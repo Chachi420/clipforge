@@ -87,7 +87,9 @@ async function sb() {
 export async function getCampaigns(userId?: string): Promise<Campaign[]> {
   if (!useSupabase) return mock.campaigns;
   const supabase = await sb();
-  const { data } = await supabase.from("campaigns").select("*").order("created_at", { ascending: false });
+  // Pending (unapproved) briefs must not appear in the public explorer.
+  const { data, error } = await supabase.from("campaigns").select("*").neq("status", "pending").order("created_at", { ascending: false });
+  if (error) console.error("[db] getCampaigns failed:", error.message);
   let joined: Set<string> | undefined;
   if (userId) {
     const { data: m } = await supabase.from("campaign_members").select("campaign_id").eq("user_id", userId);
@@ -99,7 +101,8 @@ export async function getCampaigns(userId?: string): Promise<Campaign[]> {
 export async function getCampaign(slug: string, userId?: string): Promise<Campaign | null> {
   if (!useSupabase) return mock.campaigns.find((c) => c.slug === slug) ?? null;
   const supabase = await sb();
-  const { data } = await supabase.from("campaigns").select("*").eq("slug", slug).single();
+  const { data, error } = await supabase.from("campaigns").select("*").eq("slug", slug).single();
+  if (error) console.error("[db] getCampaign failed:", slug, error.message);
   if (!data) return null;
   let joined: Set<string> | undefined;
   if (userId) {
@@ -112,7 +115,8 @@ export async function getCampaign(slug: string, userId?: string): Promise<Campai
 export async function getBounties(campaignId: string): Promise<Bounty[]> {
   if (!useSupabase) return mock.bounties.filter((b) => b.campaignId === campaignId);
   const supabase = await sb();
-  const { data } = await supabase.from("bounties").select("*").eq("campaign_id", campaignId);
+  const { data, error } = await supabase.from("bounties").select("*").eq("campaign_id", campaignId);
+  if (error) console.error("[db] getBounties failed:", campaignId, error.message);
   return (data ?? []).map(toBounty);
 }
 
@@ -138,10 +142,11 @@ export async function getClipActivity(userId: string): Promise<ClipActivity> {
     submittedAt = mock.clips.map((c) => c.submittedAt);
   } else {
     const supabase = await sb();
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("clips")
       .select("submitted_at")
       .eq("user_id", userId);
+    if (error) console.error("[db] getClipActivity failed:", userId, error.message);
     submittedAt = (data ?? []).map((r: any) => r.submitted_at);
   }
   const today = new Date();
@@ -173,10 +178,12 @@ export async function getClipActivity(userId: string): Promise<ClipActivity> {
 export async function getProfile(userId: string): Promise<ClipperProfile | null> {
   if (!useSupabase) return mock.profile;
   const supabase = await sb();
-  const { data } = await supabase.from("profiles").select("*").eq("id", userId).single();
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+  if (error) console.error("[db] getProfile failed:", userId, error.message);
   if (!data) return null;
   const profile = toProfile(data);
-  const { count } = await supabase.from("clips").select("id", { count: "exact", head: true }).eq("user_id", userId);
+  const { count, error: countError } = await supabase.from("clips").select("id", { count: "exact", head: true }).eq("user_id", userId);
+  if (countError) console.error("[db] getProfile clip count failed:", userId, countError.message);
   profile.clipsSubmitted = count ?? 0;
   const activity = await getClipActivity(userId);
   profile.activeDays = activity.activeDays;
@@ -197,9 +204,14 @@ export async function getUserClips(userId: string, campaignId?: string): Promise
     return campaignId ? mock.clips.filter((c) => c.campaignId === campaignId) : mock.clips;
   const supabase = await sb();
   let q = supabase.from("clips").select(CLIP_SELECT).eq("user_id", userId)
+    // Embedded to-many selects have no guaranteed order: pin the latest
+    // snapshot explicitly so latestMetrics() reads [0] correctly.
+    .order("scanned_at", { ascending: false, referencedTable: "clip_metric_snapshots" })
+    .limit(1, { referencedTable: "clip_metric_snapshots" })
     .order("submitted_at", { ascending: false });
   if (campaignId) q = q.eq("campaign_id", campaignId);
-  const { data } = await q;
+  const { data, error } = await q;
+  if (error) console.error("[db] getUserClips failed:", userId, error.message);
   return (data ?? []).map(toClip);
 }
 
@@ -220,11 +232,12 @@ export async function getPublicClips(userId: string): Promise<Clip[]> {
 export async function getUserPayouts(userId: string): Promise<PayoutCycle[]> {
   if (!useSupabase) return mock.payoutCycles;
   const supabase = await sb();
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from("payouts")
     .select("estimated_amount, status, payout_cycles!inner(id, cycle_number, period_start, period_end, snapshot_at, status, campaigns!inner(id, name))")
     .eq("user_id", userId)
     .order("created_at", { ascending: false });
+  if (error) console.error("[db] getUserPayouts failed:", userId, error.message);
   return (data ?? []).map((r: any) => {
     const c = r.payout_cycles;
     return {
@@ -246,7 +259,8 @@ export async function getUserPayouts(userId: string): Promise<PayoutCycle[]> {
 export async function getUserPaymentMethods(userId: string): Promise<PaymentMethodRow[]> {
   if (!useSupabase) return mock.paymentMethods;
   const supabase = await sb();
-  const { data } = await supabase.from("payment_methods").select("*").eq("user_id", userId).order("created_at");
+  const { data, error } = await supabase.from("payment_methods").select("*").eq("user_id", userId).order("created_at");
+  if (error) console.error("[db] getUserPaymentMethods failed:", userId, error.message);
   return (data ?? []).map((r: any) => ({
     id: r.id, type: r.type, label: r.type,
     masked: maskIdentifier(r.identifier), isDefault: r.is_default,
@@ -267,7 +281,8 @@ function maskIdentifier(id: string): string {
 export async function getUserSocialAccounts(userId: string): Promise<SocialAccount[]> {
   if (!useSupabase) return mock.socialAccounts;
   const supabase = await sb();
-  const { data } = await supabase.from("social_accounts").select("*").eq("user_id", userId).order("connected_at");
+  const { data, error } = await supabase.from("social_accounts").select("*").eq("user_id", userId).order("connected_at");
+  if (error) console.error("[db] getUserSocialAccounts failed:", userId, error.message);
   return (data ?? []).map((r: any) => ({
     id: r.id, platform: r.platform, handle: r.handle, verified: r.verified,
     verificationCode: r.verification_code ?? "",
@@ -281,7 +296,8 @@ export async function getUserSocialAccounts(userId: string): Promise<SocialAccou
 export async function getUserTeams(userId: string): Promise<Team[]> {
   if (!useSupabase) return mock.teams;
   const supabase = await sb();
-  const { data } = await supabase.from("teams").select("id, name, referral_code").eq("owner_id", userId);
+  const { data, error } = await supabase.from("teams").select("id, name, referral_code").eq("owner_id", userId);
+  if (error) console.error("[db] getUserTeams failed:", userId, error.message);
   return (data ?? []).map((r: any) => ({
     id: r.id, name: r.name, referralCode: r.referral_code, members: 0, commissionEarned: 0,
   }));

@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BarChart3, Check, Gauge, HandCoins, Users } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
+import MarketingNav from "@/components/MarketingNav";
 import { Faq, MarketingFooter } from "@/components/marketing";
+
+export const metadata: Metadata = {
+  title: "ClipForge for Brands — Pay Per Verified View",
+  description:
+    "Run clipping campaigns and pay only for verified views. Set your rate, cap your budget, and track every clip on a live dashboard.",
+  alternates: { canonical: "/brands" },
+};
 
 const STEPS = [
   {
@@ -37,16 +45,12 @@ const FAQ_ITEMS = [
 export default function BrandsLanding() {
   return (
     <div className="min-h-screen bg-paper text-ink">
-      <nav className="sticky top-0 z-40 border-b border-line/10 bg-paper/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="font-display text-xl font-bold tracking-tight">CLIPFORGE</Link>
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link href="/brand/login" className="text-sm font-semibold text-ink-soft hover:text-ink">Brand sign in</Link>
-            <Link href="/brand/request" className="pill bg-electric px-5 py-2.5 text-sm font-bold text-white hover:bg-electric-soft">Start a campaign</Link>
-          </div>
-        </div>
-      </nav>
+      <MarketingNav
+        ctaHref="/brand/request"
+        ctaLabel="Start a campaign"
+        signInHref="/brand/login"
+        signInLabel="Brand sign in"
+      />
 
       <main className="mx-auto max-w-6xl px-6">
         <section className="py-20 text-center">

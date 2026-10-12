@@ -49,6 +49,18 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   const clean = Array.from(new Set(urls.map((u) => u.trim()).filter(Boolean))).slice(0, 25);
   if (clean.length === 0) throw new Error("No URLs provided.");
 
+  // The server action is the trust boundary: never trust the client-supplied
+  // campaignId. Campaigns are publicly readable, so this check is cheap.
+  const { data: campaign, error: campaignError } = await supabase
+    .from("campaigns")
+    .select("id, status")
+    .eq("id", campaignId)
+    .single();
+  if (campaignError || !campaign) throw new Error("Campaign not found.");
+  if ((campaign as any).status !== "active") {
+    throw new Error("This campaign is not accepting clips right now.");
+  }
+
   const { data: accounts } = await supabase
     .from("social_accounts")
     .select("platform, handle, platform_user_id")
