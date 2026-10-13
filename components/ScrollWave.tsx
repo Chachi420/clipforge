@@ -42,10 +42,37 @@ export function ScrollWave({ className = "" }: { className?: string }) {
     resize();
     window.addEventListener("resize", resize);
 
+    const drawBars = (amplitude: number, alpha: number, phase: number) => {
+      const n = Math.max(24, Math.floor(W / 14));
+      const gap = W / n;
+      const bw = Math.max(2, gap * 0.42);
+      const mid = H / 2;
+      for (let i = 0; i < n; i++) {
+        const p = (i / n) * Math.PI * 4 + phase;
+        const wobble =
+          Math.sin(p) * 0.5 +
+          Math.sin(p * 2.7 + 1.3) * 0.3 +
+          Math.sin(p * 0.6) * 0.2;
+        const h = Math.max(2, Math.min(H - 4, 2 + amplitude * (0.35 + 0.65 * Math.abs(wobble))));
+        const x = i * gap + (gap - bw) / 2;
+        ctx.fillStyle = `rgb(var(--ink) / ${alpha.toFixed(3)})`;
+        ctx.beginPath();
+        if (typeof ctx.roundRect === "function") {
+          ctx.roundRect(x, mid - h / 2, bw, h, bw / 2);
+        } else {
+          ctx.rect(x, mid - h / 2, bw, h);
+        }
+        ctx.fill();
+      }
+    };
+
     const drawResting = () => {
       ctx.clearRect(0, 0, W, H);
+      const mid = H / 2;
       ctx.fillStyle = "rgb(var(--ink) / 0.14)";
-      ctx.fillRect(0, H / 2 - 0.5, W, 1);
+      ctx.fillRect(0, mid - 0.5, W, 1);
+      // Quiet static waveform so the strip reads as "there" even at rest.
+      drawBars(7, 0.16, 0.8);
     };
 
     const frame = () => {
@@ -61,33 +88,12 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       }
 
       ctx.clearRect(0, 0, W, H);
-      const n = Math.max(24, Math.floor(W / 14));
-      const gap = W / n;
-      const bw = Math.max(2, gap * 0.42);
       const mid = H / 2;
 
       ctx.fillStyle = "rgb(var(--ink) / 0.14)";
       ctx.fillRect(0, mid - 0.5, W, 1);
 
-      for (let i = 0; i < n; i++) {
-        const phase = (i / n) * Math.PI * 4 + t * 0.09;
-        const wobble =
-          Math.sin(phase) * 0.5 +
-          Math.sin(phase * 2.7 + 1.3) * 0.3 +
-          Math.sin(phase * 0.6 - t * 0.03) * 0.2;
-        const amp =
-          2 + energy * H * 0.42 * (0.35 + 0.65 * Math.abs(wobble));
-        const h = Math.max(2, Math.min(H - 4, amp));
-        const x = i * gap + (gap - bw) / 2;
-        ctx.fillStyle = `rgb(var(--ink) / ${(0.1 + energy * 0.24).toFixed(3)})`;
-        ctx.beginPath();
-        if (typeof ctx.roundRect === "function") {
-          ctx.roundRect(x, mid - h / 2, bw, h, bw / 2);
-        } else {
-          ctx.rect(x, mid - h / 2, bw, h);
-        }
-        ctx.fill();
-      }
+      drawBars(energy * H * 0.42, 0.1 + energy * 0.24, t * 0.09);
 
       raf = requestAnimationFrame(frame);
     };
