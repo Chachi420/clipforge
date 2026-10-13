@@ -26,7 +26,7 @@ export function HomeHero() {
       <Reveal delay={240} className="mt-10">
         <Link
           href="/login"
-          className="group pill min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+          className="group pill btn-liquid min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
         >
           Start clipping{" "}
           <ArrowRight
@@ -192,7 +192,7 @@ function PathPanel({
       <div className="mt-8">
         <Link
           href={ctaHref}
-          className="group pill min-h-[44px] bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+          className="group pill btn-liquid min-h-[44px] bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
         >
           {ctaLabel}{" "}
           <ArrowRight
@@ -341,7 +341,7 @@ export function HomeFinalCta() {
         <Reveal delay={120} className="mt-10">
           <Link
             href="/login"
-            className="group pill min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
+            className="group pill btn-liquid min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
           >
             Start clipping{" "}
             <ArrowRight
