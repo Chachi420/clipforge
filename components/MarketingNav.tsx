@@ -83,7 +83,7 @@ export default function MarketingNav({
           </Link>
           <Link
             href={effCtaHref}
-            className="pill hidden min-h-[44px] whitespace-nowrap bg-ink px-4 py-2 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft min-[500px]:inline-flex sm:px-5 sm:py-2.5"
+            className="pill btn-liquid hidden min-h-[44px] whitespace-nowrap bg-ink px-4 py-2 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft min-[500px]:inline-flex sm:px-5 sm:py-2.5"
           >
             {effCtaLabel}
           </Link>

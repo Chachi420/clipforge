@@ -102,7 +102,7 @@ export default function BrandsLanding() {
           <Reveal delay={240} className="mt-10">
             <Link
               href="/brand/request"
-              className="group pill min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+              className="group pill btn-liquid min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
             >
               Start a campaign{" "}
               <ArrowRight
@@ -239,7 +239,7 @@ export default function BrandsLanding() {
             <Reveal delay={180} className="mt-10">
               <Link
                 href="/brand/request"
-                className="group pill min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
+                className="group pill btn-liquid min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
               >
                 Start a campaign{" "}
                 <ArrowRight
