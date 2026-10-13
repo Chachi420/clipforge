@@ -3,6 +3,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { Faq } from "@/components/marketing";
 import { CountUp, Reveal } from "@/components/motion";
 import { MoneyFlowDiagram } from "@/components/infographics";
+import { EarningsCalculator } from "@/app/clip/calculator";
 
 /* ------------------------------------------------------------------ */
 /* Hero (brief §10.2) — white. Kicker, massive H1, one-line subline,    */
@@ -266,15 +267,47 @@ const FAQ_ITEMS = [
   },
 ];
 
-export function HomeFaq() {
+/* ------------------------------------------------------------------ */
+/* Calculator + FAQ (brief §10.6/10.7) — side by side on desktop:      */
+/* the interactive math next to the doubts it resolves. Stacked on     */
+/* mobile, calculator first.                                           */
+/* ------------------------------------------------------------------ */
+export function HomeCalculatorFaq() {
   return (
-    <section aria-labelledby="faq" className="mx-auto max-w-3xl px-6 py-10 md:py-20">
-      <Reveal as="h2" id="faq" className="display text-center text-[clamp(2rem,5vw,3.5rem)]">
-        Questions, answered
-      </Reveal>
-      <Reveal delay={100} className="mt-8">
-        <Faq items={FAQ_ITEMS} />
-      </Reveal>
+    <section aria-labelledby="calculator" className="mx-auto max-w-6xl px-6 py-10 md:py-20">
+      <div className="grid gap-12 md:grid-cols-2 md:gap-10 lg:gap-16">
+        <div>
+          <Reveal as="p" className="micro-label">
+            Do the math
+          </Reveal>
+          <Reveal
+            as="h2"
+            delay={80}
+            id="calculator"
+            className="display mt-4 text-[clamp(1.75rem,4vw,2.75rem)]"
+          >
+            What could your clips earn?
+          </Reveal>
+          <Reveal as="p" delay={140} className="mt-4 max-w-md leading-relaxed text-ink-soft">
+            Move the sliders to see what a posting habit could be worth at a
+            campaign&apos;s rate.
+          </Reveal>
+          <Reveal delay={200} className="mt-8">
+            <EarningsCalculator />
+          </Reveal>
+        </div>
+        <div>
+          <Reveal as="p" className="micro-label">
+            Doubts
+          </Reveal>
+          <Reveal as="h2" delay={80} className="display mt-4 text-[clamp(1.75rem,4vw,2.75rem)]">
+            Questions, answered
+          </Reveal>
+          <Reveal delay={140} className="mt-8">
+            <Faq items={FAQ_ITEMS} />
+          </Reveal>
+        </div>
+      </div>
     </section>
   );
 }
