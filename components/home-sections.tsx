@@ -265,6 +265,22 @@ const FAQ_ITEMS = [
     q: "What does it cost brands?",
     a: "Brands set their own budget and per-view rate — priced per 100K verified views — with a hard cap. There is no fixed pricing: you spend exactly what you approve, nothing more.",
   },
+  {
+    q: "How do my social accounts get verified?",
+    a: "When you add an account, we give you a unique code to put in that account's bio. Our system checks the bio for the code and confirms the account has at least 1,000 followers before it goes Active. Only clips from your Active accounts earn.",
+  },
+  {
+    q: "Which platforms can I post clips to?",
+    a: "TikTok, Instagram Reels, YouTube Shorts, and X. Every clip link you submit has to come from one of your verified accounts — a link from anywhere else gets rejected.",
+  },
+  {
+    q: "Can I join more than one campaign at a time?",
+    a: "Yes. Browse as many live briefs as you want — each clip you submit is tied to one campaign, and its views accrue at that campaign's rate.",
+  },
+  {
+    q: "What happens when a campaign's budget runs out?",
+    a: "Every campaign has a hard budget cap, so it stops taking new views once the budget is allocated. Views are logged as they happen, so everything verified up to that point is already on your ledger for the monthly payout.",
+  },
 ];
 
 /* ------------------------------------------------------------------ */
