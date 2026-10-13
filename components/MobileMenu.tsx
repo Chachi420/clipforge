@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -97,15 +98,16 @@ export default function MobileMenu({
         <Menu size={22} aria-hidden />
       </button>
 
-      {open && (
-        <div
-          id="mobile-menu-overlay"
-          ref={panelRef}
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menu"
-          className="fixed inset-0 z-[60] flex flex-col bg-paper"
-        >
+      {open &&
+        createPortal(
+          <div
+            id="mobile-menu-overlay"
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            className="fixed inset-0 z-[60] flex flex-col bg-white dark:bg-black"
+          >
           <div className="flex items-center justify-between px-5 py-3">
             <span className="font-display text-lg font-bold tracking-tight text-ink">
               CLIPFORGE
@@ -158,8 +160,9 @@ export default function MobileMenu({
               </Link>
             </div>
           </nav>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
     </div>
   );
 }

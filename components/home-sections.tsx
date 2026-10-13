@@ -77,32 +77,36 @@ const STEPS = [
 export function HomeHowItWorks() {
   return (
     <section aria-labelledby="how-it-works" className="mx-auto max-w-6xl px-6 py-10 md:py-20">
-      <Reveal as="p" className="micro-label">
-        How it works
-      </Reveal>
-      <Reveal as="h2" delay={80} id="how-it-works" className="display mt-4 max-w-2xl text-[clamp(2rem,5vw,3.5rem)]">
-        Three steps. No pitch decks.
-      </Reveal>
-      <div className="mt-8">
-        {STEPS.map((s, i) => (
-          <Reveal
-            key={s.n}
-            delay={i * 80}
-            className={`border-t border-line/10 py-6 md:py-10 ${
-              i === 1 ? "md:ml-24" : i === 2 ? "md:ml-48" : ""
-            } ${i === STEPS.length - 1 ? "border-b" : ""}`}
-          >
-            <div className="flex flex-col gap-3 md:flex-row md:items-baseline md:gap-10">
-              <span className="display text-5xl text-ink-faint md:text-6xl" aria-hidden>
-                {s.n}
-              </span>
-              <div className="max-w-xl">
-                <h3 className="display text-2xl md:text-3xl">{s.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink-soft">{s.body}</p>
-              </div>
-            </div>
+      <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
+        <div className="md:sticky md:top-24 md:self-start">
+          <Reveal as="p" className="micro-label">
+            How it works
           </Reveal>
-        ))}
+          <Reveal as="h2" delay={80} id="how-it-works" className="display mt-4 text-[clamp(2rem,5vw,3.5rem)]">
+            Three steps. No pitch decks.
+          </Reveal>
+        </div>
+        <div>
+          {STEPS.map((s, i) => (
+            <Reveal
+              key={s.n}
+              delay={i * 80}
+              className={`border-t border-line/10 py-6 md:py-8 ${
+                i === STEPS.length - 1 ? "border-b" : ""
+              }`}
+            >
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:gap-8">
+                <span className="display text-5xl text-ink-faint" aria-hidden>
+                  {s.n}
+                </span>
+                <div className="max-w-xl">
+                  <h3 className="display text-2xl">{s.title}</h3>
+                  <p className="mt-3 leading-relaxed text-ink-soft">{s.body}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );

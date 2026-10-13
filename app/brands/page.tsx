@@ -123,28 +123,32 @@ export default function BrandsLanding() {
 
         {/* Steps — editorial rows */}
         <section aria-labelledby="brand-steps" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
-          <Reveal as="p" className="micro-label">
-            How it works
-          </Reveal>
-          <Reveal as="h2" delay={80} id="brand-steps" className="display mt-4 text-[clamp(2rem,5vw,3.5rem)]">
-            You brief. We run it. You track.
-          </Reveal>
-          <div className="mt-10 border-t border-line/10">
-            {STEPS.map((s, i) => (
-              <Reveal
-                key={s.n}
-                delay={i * 70}
-                className="grid gap-4 border-b border-line/10 py-7 md:grid-cols-[80px_1fr] md:gap-10 md:py-9"
-              >
-                <span className="display text-4xl text-ink-faint md:text-5xl" aria-hidden>
-                  {s.n}
-                </span>
-                <div className="max-w-2xl">
-                  <h3 className="display text-2xl">{s.title}</h3>
-                  <p className="mt-2 leading-relaxed text-ink-soft">{s.body}</p>
-                </div>
+          <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
+            <div className="md:sticky md:top-24 md:self-start">
+              <Reveal as="p" className="micro-label">
+                How it works
               </Reveal>
-            ))}
+              <Reveal as="h2" delay={80} id="brand-steps" className="display mt-4 text-[clamp(2rem,5vw,3.5rem)]">
+                You brief. We run it. You track.
+              </Reveal>
+            </div>
+            <div className="border-t border-line/10">
+              {STEPS.map((s, i) => (
+                <Reveal
+                  key={s.n}
+                  delay={i * 70}
+                  className="grid gap-4 border-b border-line/10 py-6 sm:grid-cols-[64px_1fr] sm:gap-8 md:py-8"
+                >
+                  <span className="display text-4xl text-ink-faint" aria-hidden>
+                    {s.n}
+                  </span>
+                  <div className="max-w-2xl">
+                    <h3 className="display text-2xl">{s.title}</h3>
+                    <p className="mt-2 leading-relaxed text-ink-soft">{s.body}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
           </div>
         </section>
 
