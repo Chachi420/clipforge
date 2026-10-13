@@ -53,6 +53,46 @@ body {
   .pill {
     @apply inline-flex items-center justify-center gap-2 rounded-full font-semibold transition;
   }
+  /* Chunky monochrome range slider — track fill comes from an inline
+     gradient on the element; the thumb is theme-aware via --paper/--ink. */
+  input[type="range"].slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 8px;
+    border-radius: 9999px;
+    outline-offset: 6px;
+    cursor: pointer;
+  }
+  input[type="range"].slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 26px;
+    height: 26px;
+    border-radius: 9999px;
+    background: rgb(var(--paper));
+    border: 2px solid rgb(var(--ink));
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.28);
+    cursor: grab;
+    transition: transform 150ms ease;
+  }
+  input[type="range"].slider::-webkit-slider-thumb:active {
+    cursor: grabbing;
+    transform: scale(1.12);
+  }
+  input[type="range"].slider::-moz-range-thumb {
+    width: 22px;
+    height: 22px;
+    border-radius: 9999px;
+    background: rgb(var(--paper));
+    border: 2px solid rgb(var(--ink));
+    box-shadow: 0 1px 5px rgb(0 0 0 / 0.28);
+    cursor: grab;
+  }
+  input[type="range"].slider::-moz-range-track {
+    height: 8px;
+    border-radius: 9999px;
+    background: transparent;
+  }
   /* Massive display headline */
   .display {
     @apply font-display font-medium tracking-tight text-ink;

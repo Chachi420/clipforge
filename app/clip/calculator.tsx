@@ -18,103 +18,137 @@ function fmt(n: number) {
 }
 
 /**
+ * Full-width slider with a filled track. `fillPct` is 0–100 and drives the
+ * monochrome fill via an inline gradient (theme-aware through --ink).
+ */
+function Slider({
+  label,
+  display,
+  min,
+  max,
+  step,
+  value,
+  minLabel,
+  maxLabel,
+  onChange,
+  ariaLabel,
+}: {
+  label: string;
+  display: string;
+  min: number;
+  max: number;
+  step: number;
+  value: number;
+  minLabel: string;
+  maxLabel: string;
+  onChange: (v: number) => void;
+  ariaLabel: string;
+}) {
+  const pct = Math.max(0, Math.min(100, ((value - min) / (max - min)) * 100));
+  return (
+    <div>
+      <div className="flex items-baseline justify-between gap-4">
+        <span className="text-sm font-semibold text-ink">{label}</span>
+        <span className="display shrink-0 text-xl text-ink tnum">{display}</span>
+      </div>
+      <input
+        type="range"
+        min={min}
+        max={max}
+        step={step}
+        value={value}
+        onChange={(e) => onChange(Number(e.target.value))}
+        className="slider mt-4 w-full"
+        style={{
+          background: `linear-gradient(to right, rgb(var(--ink)) 0%, rgb(var(--ink)) ${pct}%, rgb(var(--ink) / 0.14) ${pct}%, rgb(var(--ink) / 0.14) 100%)`,
+        }}
+        aria-label={ariaLabel}
+      />
+      <div className="mt-2 flex justify-between text-xs text-ink-faint tnum">
+        <span>{minLabel}</span>
+        <span>{maxLabel}</span>
+      </div>
+    </div>
+  );
+}
+
+/**
  * Earnings calculator — monochrome reskin. Same math, same sliders.
  * The rate is explicitly an example; the result is explicitly an estimate.
+ * Views slider is logarithmic (1K–1M) so the whole track stays useful.
  */
 export function EarningsCalculator() {
   const [platform, setPlatform] = useState(PLATFORMS[0]);
   const [ratePer100k, setRatePer100k] = useState(50);
-  const [viewsPerClip, setViewsPerClip] = useState(25_000);
+  // log10 of views: 3 → 1K, 6 → 1M
+  const [viewsExp, setViewsExp] = useState(Math.log10(25_000));
   const [clipsPerMonth, setClipsPerMonth] = useState(20);
 
+  const viewsPerClip = Math.round(Math.pow(10, viewsExp) / 1000) * 1000;
   const earnings = (viewsPerClip / 100_000) * ratePer100k * clipsPerMonth;
   const perClip = (viewsPerClip / 100_000) * ratePer100k;
 
-  const sliderCls =
-    "mt-3 w-full accent-ink";
-  const valueCls = "font-semibold text-ink tnum";
-
   return (
-    <Card className="mx-auto max-w-3xl p-6 md:p-10">
-      <div className="grid gap-8 md:grid-cols-2">
-        <div>
-          <span className="text-sm font-semibold text-ink" id="calc-platform">
-            Platform
-          </span>
-          <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="calc-platform">
-            {PLATFORMS.map((p) => (
-              <button
-                key={p}
-                onClick={() => setPlatform(p)}
-                aria-pressed={platform === p}
-                className={`min-h-[44px] rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-micro ${
-                  platform === p
-                    ? "bg-ink text-paper"
-                    : "border border-line/15 text-ink-soft hover:bg-ink/5 hover:text-ink"
-                }`}
-              >
-                {p}
-              </button>
-            ))}
-          </div>
+    <Card className="p-6 md:p-8">
+      <div>
+        <span className="text-sm font-semibold text-ink" id="calc-platform">
+          Platform
+        </span>
+        <div className="mt-3 flex flex-wrap gap-2" role="group" aria-labelledby="calc-platform">
+          {PLATFORMS.map((p) => (
+            <button
+              key={p}
+              onClick={() => setPlatform(p)}
+              aria-pressed={platform === p}
+              className={`min-h-[44px] rounded-full px-4 py-2 text-sm font-semibold transition-colors duration-micro ${
+                platform === p
+                  ? "bg-ink text-paper"
+                  : "border border-line/15 text-ink-soft hover:bg-ink/5 hover:text-ink"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
         </div>
-        <div>
-          <label className="flex items-center justify-between text-sm font-semibold text-ink">
-            Example rate <span className={valueCls}>${ratePer100k} / 100K views</span>
-          </label>
-          <input
-            type="range"
-            min={10}
-            max={300}
-            step={5}
-            value={ratePer100k}
-            onChange={(e) => setRatePer100k(Number(e.target.value))}
-            className={sliderCls}
-            aria-label="Example rate per 100K views"
-          />
-          <div className="mt-1 flex justify-between text-xs text-ink-faint">
-            <span>$10</span>
-            <span>$300</span>
-          </div>
-        </div>
-        <div>
-          <label className="flex items-center justify-between text-sm font-semibold text-ink">
-            Avg. views per clip <span className={valueCls}>{fmt(viewsPerClip)}</span>
-          </label>
-          <input
-            type="range"
-            min={1_000}
-            max={1_000_000}
-            step={1_000}
-            value={viewsPerClip}
-            onChange={(e) => setViewsPerClip(Number(e.target.value))}
-            className={sliderCls}
-            aria-label="Average views per clip"
-          />
-          <div className="mt-1 flex justify-between text-xs text-ink-faint">
-            <span>1K</span>
-            <span>1M</span>
-          </div>
-        </div>
-        <div>
-          <label className="flex items-center justify-between text-sm font-semibold text-ink">
-            Clips per month <span className={valueCls}>{clipsPerMonth}</span>
-          </label>
-          <input
-            type="range"
-            min={1}
-            max={100}
-            step={1}
-            value={clipsPerMonth}
-            onChange={(e) => setClipsPerMonth(Number(e.target.value))}
-            className={sliderCls}
-            aria-label="Clips per month"
-          />
-          <div className="mt-1 flex justify-between text-xs text-ink-faint">
-            <span>1</span>
-            <span>100</span>
-          </div>
-        </div>
+      </div>
+
+      <div className="mt-8 space-y-7">
+        <Slider
+          label="Example rate"
+          display={`$${ratePer100k} / 100K views`}
+          min={10}
+          max={300}
+          step={5}
+          value={ratePer100k}
+          minLabel="$10"
+          maxLabel="$300"
+          onChange={setRatePer100k}
+          ariaLabel="Example rate per 100K views"
+        />
+        <Slider
+          label="Avg. views per clip"
+          display={fmt(viewsPerClip)}
+          min={3}
+          max={6}
+          step={0.01}
+          value={viewsExp}
+          minLabel="1K"
+          maxLabel="1M"
+          onChange={setViewsExp}
+          ariaLabel="Average views per clip"
+        />
+        <Slider
+          label="Clips per month"
+          display={`${clipsPerMonth}`}
+          min={1}
+          max={100}
+          step={1}
+          value={clipsPerMonth}
+          minLabel="1"
+          maxLabel="100"
+          onChange={setClipsPerMonth}
+          ariaLabel="Clips per month"
+        />
       </div>
 
       <div className="mt-8 rounded-card border border-white/10 bg-black p-6 text-center text-white md:p-8">
