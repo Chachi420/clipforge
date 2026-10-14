@@ -138,22 +138,32 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       const mid = H / 2;
       ctx.clearRect(0, 0, W, H);
 
-      // Unplayed: full-width waveform, faint shade of the theme.
-      // The unfilled alpha adapts per theme — 13% white on black is
-      // nearly invisible, so dark mode gets a stronger unfilled shade.
+      // Multi-shade fill: vertical gradient — darkest at the center line,
+      // lighter toward the edges — so the wave carries several greys,
+      // not one flat tone. The unfilled alpha adapts per theme (13% white
+      // on black is nearly invisible, so dark mode gets a stronger shade).
       const inkLight = (ink[0] + ink[1] + ink[2]) / 3 > 128;
+      const shade = (base: number) => {
+        const g = ctx.createLinearGradient(0, 0, 0, H);
+        g.addColorStop(0, rgba(base * 0.45));
+        g.addColorStop(0.5, rgba(base));
+        g.addColorStop(1, rgba(base * 0.45));
+        return g;
+      };
+
+      // Unplayed: full-width waveform, faint shades of the theme.
       buildPath(ampScale, phase);
-      ctx.fillStyle = rgba(inkLight ? 0.3 : 0.18);
+      ctx.fillStyle = shade(inkLight ? 0.3 : 0.18);
       ctx.fill();
 
-      // Played: clipped to scroll progress, stronger shade.
+      // Played: clipped to scroll progress, stronger shades.
       if (p > 0.004) {
         ctx.save();
         ctx.beginPath();
         ctx.rect(0, 0, p * W, H);
         ctx.clip();
         buildPath(ampScale, phase);
-        ctx.fillStyle = rgba(inkLight ? 0.65 : 0.55);
+        ctx.fillStyle = shade(inkLight ? 0.65 : 0.55);
         ctx.fill();
         ctx.restore();
 
@@ -211,9 +221,9 @@ export function ScrollWave({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none fixed inset-x-0 top-[68px] z-40 select-none bg-gradient-to-b from-paper/80 via-paper/30 to-transparent ${className}`}
+      className={`pointer-events-none fixed inset-x-0 top-[68px] z-40 select-none border-b border-line/[0.08] bg-paper/70 backdrop-blur-2xl backdrop-saturate-150 ${className}`}
     >
-      <canvas ref={canvasRef} className="block h-16 w-full" />
+      <canvas ref={canvasRef} className="block h-11 w-full" />
     </div>
   );
 }
