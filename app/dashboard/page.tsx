@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import Header from "@/components/Header";
 import CampaignCard from "@/components/CampaignCard";
 import OnboardingBanner from "@/components/OnboardingBanner";
@@ -30,6 +31,8 @@ export default async function DashboardHome() {
     userId = user?.id;
     if (userId) {
       const p = await getProfile(userId);
+      // Wondeed-style role routing: admins land on the admin side.
+      if (p?.role === "admin") redirect("/admin");
       if (p) name = p.displayName;
     }
   }
