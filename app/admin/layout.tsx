@@ -17,6 +17,10 @@ function isAdminEmail(email: string | undefined | null): boolean {
 const NAV = [
   { href: "/admin", label: "Overview" },
   { href: "/admin/campaigns", label: "Campaigns" },
+  { href: "/admin/clips", label: "Clips" },
+  { href: "/admin/clippers", label: "Clippers" },
+  { href: "/admin/brands", label: "Brands" },
+  { href: "/admin/users", label: "Users" },
   { href: "/admin/verifications", label: "Verifications" },
   { href: "/admin/payouts", label: "Payouts" },
   { href: "/admin/requests", label: "Requests" },
@@ -30,7 +34,15 @@ const NAV = [
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
-  if (!isAdminEmail(user?.email)) redirect("/dashboard");
+  // Admin = profiles.role='admin' (Wondeed model) or email in ADMIN_EMAILS.
+  let isAdmin = isAdminEmail(user?.email);
+  if (!isAdmin && user?.id) {
+    const { createClient } = await import("@/lib/supabase/server");
+    const supabase = await createClient();
+    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+    isAdmin = (data as any)?.role === "admin";
+  }
+  if (!isAdmin) redirect("/dashboard");
 
   return (
     <div className="min-h-screen bg-paper">

@@ -13,6 +13,7 @@ export const profile: ClipperProfile = {
   bio: null,
   avatarUrl: "",
   status: "active",
+  role: "clipper",
   joinedAt: "2026-03-12",
   publicProfile: false,
   clipsSubmitted: 1057,

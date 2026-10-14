@@ -1,0 +1,50 @@
+import Link from "next/link";
+import { getAdminClips } from "@/lib/admin-actions";
+import ClipReviewQueue from "@/components/admin/ClipReviewQueue";
+
+export const dynamic = "force-dynamic";
+
+const FILTERS = [
+  { key: "pending_review", label: "Awaiting review" },
+  { key: "tracking", label: "Tracking" },
+  { key: "flagged", label: "Flagged" },
+  { key: "not_tracking", label: "Rejected" },
+  { key: "all", label: "All clips" },
+];
+
+export default async function AdminClipsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>;
+}) {
+  const { status } = await searchParams;
+  const filter = FILTERS.some((f) => f.key === status) ? status! : "pending_review";
+  const clips = await getAdminClips(filter);
+
+  return (
+    <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
+      <div>
+        <h1 className="display text-3xl">Clips</h1>
+        <p className="mt-1 text-sm text-ink-soft">
+          Every clip waits here until you approve it. {clips.length} clip{clips.length === 1 ? "" : "s"} in this view.
+        </p>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {FILTERS.map((f) => (
+          <Link
+            key={f.key}
+            href={`/admin/clips?status=${f.key}`}
+            className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
+              filter === f.key
+                ? "border-ink bg-ink text-paper"
+                : "border-line text-ink-soft hover:border-ink/40 hover:text-ink"
+            }`}
+          >
+            {f.label}
+          </Link>
+        ))}
+      </div>
+      <ClipReviewQueue initial={clips} />
+    </div>
+  );
+}

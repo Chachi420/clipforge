@@ -10,9 +10,13 @@ export default async function AdminHome() {
   const o = await getAdminOverview();
 
   const queues = [
-    { label: "Verifications", desc: "Accounts awaiting review", href: "/admin/verifications" },
-    { label: "Payouts", desc: "Review and mark paid", href: "/admin/payouts" },
-    { label: "Campaigns", desc: "Approve brand briefs", href: "/admin/campaigns" },
+    { label: "Clips", desc: `${o.pendingClipReviews} awaiting review`, href: "/admin/clips" },
+    { label: "Campaigns", desc: `${o.pendingCampaigns} briefs awaiting approval`, href: "/admin/campaigns" },
+    { label: "Verifications", desc: `${o.pendingVerifications} accounts awaiting review`, href: "/admin/verifications" },
+    { label: "Payouts", desc: `${o.pendingPayouts} awaiting review`, href: "/admin/payouts" },
+    { label: "Clippers", desc: `${o.clippers} on the platform`, href: "/admin/clippers" },
+    { label: "Brands", desc: `${o.brands} on the platform`, href: "/admin/brands" },
+    { label: "Users", desc: "Roles and access", href: "/admin/users" },
     { label: "Billing", desc: "Record brand top-ups", href: "/admin/billing" },
   ];
 
@@ -28,9 +32,15 @@ export default async function AdminHome() {
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
           <Stat
             dark
-            label="Pending verifications"
-            value={String(o.pendingVerifications)}
-            sub="Accounts awaiting review"
+            label="Clips awaiting review"
+            value={String(o.pendingClipReviews)}
+            sub="Approve to start tracking"
+          />
+          <Stat
+            dark
+            label="Campaigns awaiting approval"
+            value={String(o.pendingCampaigns)}
+            sub={`${o.liveCampaigns} live now`}
           />
           <Stat
             dark
@@ -40,16 +50,14 @@ export default async function AdminHome() {
           />
           <Stat
             dark
-            label="Campaigns"
-            value={String(o.campaigns)}
-            sub="All statuses"
+            label="Pending verifications"
+            value={String(o.pendingVerifications)}
+            sub="Accounts awaiting review"
           />
-          <Stat
-            dark
-            label="Total users"
-            value={String(o.users)}
-            sub="Registered profiles"
-          />
+          <Stat dark label="Clippers" value={String(o.clippers)} sub="Registered clippers" />
+          <Stat dark label="Brands" value={String(o.brands)} sub="On the platform" />
+          <Stat dark label="Clips" value={String(o.clips)} sub="All statuses" />
+          <Stat dark label="Total users" value={String(o.users)} sub="Registered profiles" />
         </div>
       </NightCard>
 
