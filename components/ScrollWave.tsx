@@ -45,7 +45,13 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       }
     };
     readInk();
-    const inkObserver = new MutationObserver(readInk);
+    // Repaint on theme change — otherwise the canvas keeps showing
+    // pixels drawn with the previous theme's ink until the next scroll.
+    let kick: () => void = () => {};
+    const inkObserver = new MutationObserver(() => {
+      readInk();
+      kick();
+    });
     inkObserver.observe(document.documentElement, {
       attributes: true,
       attributeFilter: ["class"],
@@ -170,12 +176,13 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       }
     };
 
-    const kick = () => {
+    const kickFn = () => {
       if (!running) {
         running = true;
         raf = requestAnimationFrame(frame);
       }
     };
+    kick = kickFn;
 
     const onScroll = () => {
       const y = window.scrollY;
