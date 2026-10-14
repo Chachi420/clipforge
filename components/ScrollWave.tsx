@@ -4,8 +4,8 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/motion";
 
 /**
- * Fixed bottom "now playing" waveform — Android music-player style,
- * rendered in shades of the theme itself.
+ * "Now playing" waveform — Android music-player style, rendered in
+ * shades of the theme itself, pinned directly below the menu bar.
  *
  * - Fill level = page scroll progress (played vs unplayed, like the
  *   player's seek bar), with a playhead dot.
@@ -14,6 +14,11 @@ import { usePrefersReducedMotion } from "@/components/motion";
  * - The rAF loop only runs while there is motion; otherwise idle at
  *   zero cost. pointer-events-none so it never blocks touches/clicks.
  * - Renders nothing under prefers-reduced-motion.
+ *
+ * NOTE: canvas fillStyle does NOT resolve CSS var() — so the theme ink
+ * is read via getComputedStyle into real RGB numbers (and re-read when
+ * the theme class changes). That is what makes the wave visible in
+ * dark mode instead of falling back to invisible black.
  */
 export function ScrollWave({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -25,6 +30,37 @@ export function ScrollWave({ className = "" }: { className?: string }) {
     if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const wrapper = canvas.parentElement;
+    if (!wrapper) return;
+
+    // Theme ink as real RGB numbers — canvas cannot read var().
+    let ink: [number, number, number] = [0, 0, 0];
+    const readInk = () => {
+      const v = getComputedStyle(document.documentElement)
+        .getPropertyValue("--ink")
+        .trim();
+      const parts = v.split(/[\s,]+/).map(Number);
+      if (parts.length === 3 && parts.every(Number.isFinite)) {
+        ink = [parts[0], parts[1], parts[2]];
+      }
+    };
+    readInk();
+    const inkObserver = new MutationObserver(readInk);
+    inkObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+    const rgba = (a: number) => `rgba(${ink[0]},${ink[1]},${ink[2]},${a})`;
+
+    // Park the strip directly below the menu bar (nav height is
+    // content-driven, so measure it rather than guessing).
+    const place = () => {
+      const nav = document.querySelector('nav[aria-label="Primary"]');
+      if (nav) {
+        wrapper.style.top = `${Math.round(nav.getBoundingClientRect().height)}px`;
+      }
+    };
+    place();
 
     let raf = 0;
     let running = false;
@@ -43,6 +79,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       canvas.width = Math.max(1, Math.round(W * dpr));
       canvas.height = Math.max(1, Math.round(H * dpr));
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      place();
     };
     resize();
     window.addEventListener("resize", resize);
@@ -97,7 +134,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
 
       // Unplayed: full-width waveform, faint shade of the theme.
       buildPath(ampScale, phase);
-      ctx.fillStyle = "rgb(var(--ink) / 0.13)";
+      ctx.fillStyle = rgba(0.13);
       ctx.fill();
 
       // Played: clipped to scroll progress, stronger shade.
@@ -107,14 +144,14 @@ export function ScrollWave({ className = "" }: { className?: string }) {
         ctx.rect(0, 0, p * W, H);
         ctx.clip();
         buildPath(ampScale, phase);
-        ctx.fillStyle = "rgb(var(--ink) / 0.55)";
+        ctx.fillStyle = rgba(0.55);
         ctx.fill();
         ctx.restore();
 
         // Playhead dot, like the player's thumb.
         ctx.beginPath();
         ctx.arc(Math.min(W - 6, Math.max(6, p * W)), mid, 5, 0, Math.PI * 2);
-        ctx.fillStyle = "rgb(var(--ink) / 0.9)";
+        ctx.fillStyle = rgba(0.9);
         ctx.fill();
       }
     };
@@ -153,6 +190,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
+      inkObserver.disconnect();
       cancelAnimationFrame(raf);
       running = false;
     };
@@ -163,7 +201,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 select-none bg-gradient-to-t from-paper/80 via-paper/30 to-transparent ${className}`}
+      className={`pointer-events-none fixed inset-x-0 top-[68px] z-40 select-none bg-gradient-to-b from-paper/80 via-paper/30 to-transparent ${className}`}
     >
       <canvas ref={canvasRef} className="block h-16 w-full" />
     </div>
