@@ -110,6 +110,7 @@ export interface ClipperProfile {
   bio: string | null;
   avatarUrl: string;
   status: "active" | "suspended";
+  role: string;
   joinedAt: string;
   publicProfile: boolean;
   clipsSubmitted: number;

@@ -43,11 +43,23 @@ function makeVerificationCode(): string {
 const norm = (h: string) => h.replace(/^@/, "").toLowerCase();
 
 /** Submit clip URLs to a campaign. Every link must come from one of the
- *  user's verified accounts for that platform. Returns { inserted } or throws. */
+ *  user's verified accounts for that platform, and every clip waits in
+ *  `pending_review` until an admin approves it (Wondeed model: approval
+ *  for everything). Returns { inserted } or throws. */
 export async function uploadClips(campaignId: string, urls: string[]) {
   const { supabase, userId } = await authed();
   const clean = Array.from(new Set(urls.map((u) => u.trim()).filter(Boolean))).slice(0, 25);
   if (clean.length === 0) throw new Error("No URLs provided.");
+
+  // Suspended clippers cannot upload.
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("status")
+    .eq("id", userId)
+    .single();
+  if ((profile as any)?.status === "suspended") {
+    throw new Error("Your account is suspended. You cannot upload new clips while suspended.");
+  }
 
   // The server action is the trust boundary: never trust the client-supplied
   // campaignId. Campaigns are publicly readable, so this check is cheap.
@@ -90,14 +102,14 @@ export async function uploadClips(campaignId: string, urls: string[]) {
           `This TikTok link is from @${handle}, which is not one of your verified accounts.`
         );
       }
-      prepared.push({ url, platform, handle: `@${handle}`, status: "tracking" });
+      prepared.push({ url, platform, handle: `@${handle}`, status: "pending_review" });
     } else if (platform === "x") {
       const handle = extractXHandle(url);
       if (!handle) throw new Error(`Could not read the author of this X link: ${url}`);
       if (!mine.some((a: any) => norm(a.handle) === handle)) {
         throw new Error(`This X link is from @${handle}, which is not one of your verified accounts.`);
       }
-      prepared.push({ url, platform, handle: `@${handle}`, status: "tracking" });
+      prepared.push({ url, platform, handle: `@${handle}`, status: "pending_review" });
     } else if (platform === "youtube") {
       const videoId = extractYouTubeVideoId(url);
       if (!videoId) throw new Error(`Could not parse this YouTube link: ${url}`);
@@ -109,7 +121,7 @@ export async function uploadClips(campaignId: string, urls: string[]) {
         throw new Error("This YouTube video is not from one of your verified channels.");
       } else {
         const acct = mine.find((a: any) => a.platform_user_id === channelId);
-        prepared.push({ url, platform, handle: (acct as any).handle, status: "tracking" });
+        prepared.push({ url, platform, handle: (acct as any).handle, status: "pending_review" });
       }
     } else {
       // Instagram: the reel URL carries no author info and resolving it needs a

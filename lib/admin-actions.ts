@@ -11,11 +11,20 @@ function adminEmails(): string[] {
     .filter(Boolean);
 }
 
-/** Throws unless the caller is signed in with an email in ADMIN_EMAILS. */
+/** Throws unless the caller is an admin: profiles.role='admin' (Wondeed model)
+ *  or email in ADMIN_EMAILS (backwards compat for existing admins). */
 async function requireAdmin() {
   const user = await getSessionUser();
   const email = (user?.email || "").toLowerCase();
-  if (!user || !adminEmails().includes(email)) {
+  if (!user) throw new Error("Not authorized");
+  if (adminEmails().includes(email)) return user;
+  const db = adminDb();
+  const { data: profile } = await db
+    .from("profiles")
+    .select("role")
+    .eq("id", user.id)
+    .single();
+  if ((profile as any)?.role !== "admin") {
     throw new Error("Not authorized");
   }
   return user;
@@ -134,13 +143,13 @@ export async function getPendingPayouts(): Promise<PendingPayout[]> {
   });
 }
 
-/** Mark a payout as paid: status='paid', final_amount=estimated_amount. */
+/** Mark a payout as paid: status='paid', final_amount=estimated_amount. Notifies the clipper. */
 export async function markPayoutPaid(id: string) {
   await requireAdmin();
   const db = adminDb();
   const { data: row, error: readError } = await db
     .from("payouts")
-    .select("estimated_amount")
+    .select("estimated_amount, user_id")
     .eq("id", id)
     .single();
   if (readError) throw new Error(readError.message);
@@ -149,6 +158,14 @@ export async function markPayoutPaid(id: string) {
     .update({ status: "paid", final_amount: Number(row?.estimated_amount ?? 0) })
     .eq("id", id);
   if (error) throw new Error(error.message);
+  if ((row as any)?.user_id) {
+    await notifyUser(
+      (row as any).user_id,
+      "payout_settled",
+      "Payout settled!",
+      `Your payout of $${Number(row?.estimated_amount ?? 0).toFixed(2)} has been marked as paid.`
+    );
+  }
   revalidatePath("/admin/payouts");
 }
 
@@ -195,11 +212,11 @@ export async function getPendingCampaigns(): Promise<PendingCampaign[]> {
 
 /** Approve a pending campaign brief → status='active'. */
 export async function approveCampaign(id: string) {
-  await requireAdmin();
+  const user = await requireAdmin();
   const db = adminDb();
   const { error } = await db
     .from("campaigns")
-    .update({ status: "active" })
+    .update({ status: "active", reviewed_by: user.id, reviewed_at: new Date().toISOString() })
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw new Error(error.message);
@@ -310,21 +327,40 @@ export interface AdminOverview {
   pendingPayoutAmount: number;
   campaigns: number;
   users: number;
+  pendingClipReviews: number;
+  pendingCampaigns: number;
+  liveCampaigns: number;
+  clippers: number;
+  brands: number;
+  clips: number;
 }
 
 export async function getAdminOverview(): Promise<AdminOverview> {
   await requireAdmin();
   const db = adminDb();
-  const [verifs, payouts, campaigns, users] = await Promise.all([
-    db.from("social_accounts").select("id", { count: "exact", head: true }).eq("verified", false),
-    db.from("payouts").select("estimated_amount").eq("status", "pending"),
-    db.from("campaigns").select("id", { count: "exact", head: true }),
-    db.from("profiles").select("id", { count: "exact", head: true }),
-  ]);
+  const [verifs, payouts, campaigns, users, clipReviews, pendingCamps, liveCamps, clippers, brands, clips] =
+    await Promise.all([
+      db.from("social_accounts").select("id", { count: "exact", head: true }).eq("verified", false),
+      db.from("payouts").select("estimated_amount").eq("status", "pending"),
+      db.from("campaigns").select("id", { count: "exact", head: true }),
+      db.from("profiles").select("id", { count: "exact", head: true }),
+      db.from("clips").select("id", { count: "exact", head: true }).eq("tracking_status", "pending_review"),
+      db.from("campaigns").select("id", { count: "exact", head: true }).eq("status", "pending"),
+      db.from("campaigns").select("id", { count: "exact", head: true }).eq("status", "active"),
+      db.from("profiles").select("id", { count: "exact", head: true }).eq("role", "clipper"),
+      db.from("brands").select("id", { count: "exact", head: true }),
+      db.from("clips").select("id", { count: "exact", head: true }),
+    ]);
   if (verifs.error) throw new Error(verifs.error.message);
   if (payouts.error) throw new Error(payouts.error.message);
   if (campaigns.error) throw new Error(campaigns.error.message);
   if (users.error) throw new Error(users.error.message);
+  if (clipReviews.error) throw new Error(clipReviews.error.message);
+  if (pendingCamps.error) throw new Error(pendingCamps.error.message);
+  if (liveCamps.error) throw new Error(liveCamps.error.message);
+  if (clippers.error) throw new Error(clippers.error.message);
+  if (brands.error) throw new Error(brands.error.message);
+  if (clips.error) throw new Error(clips.error.message);
   return {
     pendingVerifications: verifs.count ?? 0,
     pendingPayouts: (payouts.data ?? []).length,
@@ -334,6 +370,12 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     ),
     campaigns: campaigns.count ?? 0,
     users: users.count ?? 0,
+    pendingClipReviews: clipReviews.count ?? 0,
+    pendingCampaigns: pendingCamps.count ?? 0,
+    liveCampaigns: liveCamps.count ?? 0,
+    clippers: clippers.count ?? 0,
+    brands: brands.count ?? 0,
+    clips: clips.count ?? 0,
   };
 }
 
@@ -414,4 +456,502 @@ export async function rejectBrandRequest(id: string) {
     .eq("status", "pending");
   if (error) throw new Error(error.message);
   revalidatePath("/admin");
+}
+
+// ─────────────────────────────────────────────────────────────
+// Admin 3rd side — Clips, Clippers, Brands, Users, full Campaigns.
+// Model ported from Wondeed (WondeedSupafire): every clip goes
+// through admin approval, clippers can be suspended/reactivated,
+// every decision notifies the affected user.
+// ─────────────────────────────────────────────────────────────
+
+async function notifyUser(userId: string, type: string, title: string, body: string) {
+  const db = adminDb();
+  await db.from("notifications").insert({ user_id: userId, type, title, body });
+}
+
+// ── Clips ────────────────────────────────────────────────────
+
+export interface AdminClip {
+  id: string;
+  postUrl: string;
+  platform: string;
+  handle: string;
+  status: string;
+  submittedAt: string;
+  clipperId: string;
+  clipperName: string;
+  clipperEmail: string;
+  campaignId: string;
+  campaignName: string;
+  views: number;
+}
+
+/** Latest view count per clip from snapshots (one query, grouped in JS). */
+async function latestViewsByClip(clipIds: string[]): Promise<Record<string, number>> {
+  if (clipIds.length === 0) return {};
+  const db = adminDb();
+  const { data } = await db
+    .from("clip_metric_snapshots")
+    .select("clip_id, views, scanned_at")
+    .in("clip_id", clipIds)
+    .order("scanned_at", { ascending: false });
+  const out: Record<string, number> = {};
+  for (const r of (data ?? []) as any[]) {
+    if (out[r.clip_id] == null) out[r.clip_id] = Number(r.views ?? 0);
+  }
+  return out;
+}
+
+/** All clips, optionally filtered by tracking_status. Newest first. */
+export async function getAdminClips(statusFilter?: string): Promise<AdminClip[]> {
+  await requireAdmin();
+  const db = adminDb();
+  let q = db
+    .from("clips")
+    .select(
+      "id, post_url, platform, account_handle, tracking_status, submitted_at, user_id, campaign_id, profiles!inner(display_name, email), campaigns!inner(name)"
+    )
+    .order("submitted_at", { ascending: false })
+    .limit(500);
+  if (statusFilter && statusFilter !== "all") q = q.eq("tracking_status", statusFilter);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  const views = await latestViewsByClip((data ?? []).map((r: any) => r.id));
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    postUrl: r.post_url,
+    platform: r.platform,
+    handle: r.account_handle ?? "",
+    status: r.tracking_status,
+    submittedAt: (r.submitted_at ?? "").slice(0, 16).replace("T", " "),
+    clipperId: r.user_id,
+    clipperName: r.profiles?.display_name ?? "—",
+    clipperEmail: r.profiles?.email ?? "",
+    campaignId: r.campaign_id,
+    campaignName: r.campaigns?.name ?? "—",
+    views: views[r.id] ?? 0,
+  }));
+}
+
+/**
+ * Review a clip. approve: pending_review → tracking (starts earning).
+ * reject: pending_review → not_tracking. flag: → flagged (hidden from
+ * earnings until reviewed). unflag: flagged → tracking. Every decision
+ * notifies the clipper.
+ */
+export async function reviewClip(
+  id: string,
+  action: "approve" | "reject" | "flag" | "unflag",
+  note?: string
+) {
+  const user = await requireAdmin();
+  const db = adminDb();
+  const { data: clip } = await db
+    .from("clips")
+    .select("id, user_id, tracking_status, campaigns!inner(name)")
+    .eq("id", id)
+    .single();
+  if (!clip) throw new Error("Clip not found.");
+  const cur = (clip as any).tracking_status;
+  const now = new Date().toISOString();
+  const cleanNote = note?.trim() || null;
+
+  if (action === "approve") {
+    if (cur !== "pending_review") throw new Error("Only clips awaiting review can be approved.");
+    const { error } = await db
+      .from("clips")
+      .update({ tracking_status: "tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    await notifyUser(
+      (clip as any).user_id,
+      "clip_approved",
+      "Clip approved",
+      `Your clip for "${(clip as any).campaigns?.name ?? "the campaign"}" was approved and is now tracking views.`
+    );
+  } else if (action === "reject") {
+    if (cur !== "pending_review") throw new Error("Only clips awaiting review can be rejected.");
+    const { error } = await db
+      .from("clips")
+      .update({ tracking_status: "not_tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    await notifyUser(
+      (clip as any).user_id,
+      "clip_rejected",
+      "Clip not approved",
+      cleanNote
+        ? `Your clip for "${(clip as any).campaigns?.name ?? "the campaign"}" was not approved: ${cleanNote}`
+        : `Your clip for "${(clip as any).campaigns?.name ?? "the campaign"}" was not approved.`
+    );
+  } else if (action === "flag") {
+    if (cur === "flagged") throw new Error("Clip is already flagged.");
+    const { error } = await db
+      .from("clips")
+      .update({ tracking_status: "flagged", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    await notifyUser(
+      (clip as any).user_id,
+      "clip_flagged",
+      "Clip flagged for review",
+      `Your clip for "${(clip as any).campaigns?.name ?? "the campaign"}" was flagged and is paused while we review it.`
+    );
+  } else {
+    if (cur !== "flagged") throw new Error("Only flagged clips can be unflagged.");
+    const { error } = await db
+      .from("clips")
+      .update({ tracking_status: "tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
+      .eq("id", id);
+    if (error) throw new Error(error.message);
+    await notifyUser(
+      (clip as any).user_id,
+      "clip_approved",
+      "Clip back on track",
+      `Your clip for "${(clip as any).campaigns?.name ?? "the campaign"}" passed review and is tracking views again.`
+    );
+  }
+  revalidatePath("/admin/clips");
+  revalidatePath("/admin");
+  revalidatePath("/dashboard", "layout");
+}
+
+// ── Clippers ─────────────────────────────────────────────────
+
+export interface AdminClipper {
+  id: string;
+  displayName: string;
+  email: string;
+  status: string;
+  joinedAt: string;
+  clipCount: number;
+  verifiedAccounts: number;
+  totalEarned: number;
+  pendingPayout: number;
+}
+
+export async function getAdminClippers(): Promise<AdminClipper[]> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data: profiles, error } = await db
+    .from("profiles")
+    .select("id, display_name, email, status, created_at")
+    .eq("role", "clipper")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  const ids = (profiles ?? []).map((p: any) => p.id);
+  const [clips, accounts, payouts] = await Promise.all([
+    db.from("clips").select("user_id").in("user_id", ids),
+    db.from("social_accounts").select("user_id").in("user_id", ids).eq("verified", true),
+    db.from("payouts").select("user_id, estimated_amount, final_amount, status").in("user_id", ids),
+  ]);
+  const clipCount: Record<string, number> = {};
+  for (const c of (clips.data ?? []) as any[]) clipCount[c.user_id] = (clipCount[c.user_id] ?? 0) + 1;
+  const acctCount: Record<string, number> = {};
+  for (const a of (accounts.data ?? []) as any[]) acctCount[a.user_id] = (acctCount[a.user_id] ?? 0) + 1;
+  const earned: Record<string, number> = {};
+  const pending: Record<string, number> = {};
+  for (const p of (payouts.data ?? []) as any[]) {
+    const amt = Number(p.final_amount ?? p.estimated_amount ?? 0);
+    earned[p.user_id] = (earned[p.user_id] ?? 0) + amt;
+    if (p.status === "pending") pending[p.user_id] = (pending[p.user_id] ?? 0) + amt;
+  }
+  return (profiles ?? []).map((p: any) => ({
+    id: p.id,
+    displayName: p.display_name ?? "—",
+    email: p.email ?? "",
+    status: p.status ?? "active",
+    joinedAt: (p.created_at ?? "").slice(0, 10),
+    clipCount: clipCount[p.id] ?? 0,
+    verifiedAccounts: acctCount[p.id] ?? 0,
+    totalEarned: earned[p.id] ?? 0,
+    pendingPayout: pending[p.id] ?? 0,
+  }));
+}
+
+export interface AdminClipperDetail {
+  id: string;
+  displayName: string;
+  email: string;
+  status: string;
+  bio: string | null;
+  joinedAt: string;
+  accounts: { id: string; platform: string; handle: string; verified: boolean; followerCount: number }[];
+  clips: AdminClip[];
+  payouts: { id: string; campaignName: string; amount: number; status: string; totalViews: number; createdAt: string }[];
+  totalEarned: number;
+}
+
+export async function getAdminClipperDetail(id: string): Promise<AdminClipperDetail | null> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data: profile } = await db
+    .from("profiles")
+    .select("id, display_name, email, status, bio, created_at")
+    .eq("id", id)
+    .single();
+  if (!profile) return null;
+  const [accounts, clips, payouts] = await Promise.all([
+    db.from("social_accounts").select("id, platform, handle, verified, follower_count").eq("user_id", id),
+    db
+      .from("clips")
+      .select("id, post_url, platform, account_handle, tracking_status, submitted_at, campaign_id, campaigns!inner(name)")
+      .eq("user_id", id)
+      .order("submitted_at", { ascending: false }),
+    db
+      .from("payouts")
+      .select("id, estimated_amount, final_amount, status, total_views, created_at, payout_cycles!inner(campaigns!inner(name))")
+      .eq("user_id", id)
+      .order("created_at", { ascending: false }),
+  ]);
+  const views = await latestViewsByClip((clips.data ?? []).map((r: any) => r.id));
+  const totalEarned = ((payouts.data ?? []) as any[]).reduce(
+    (s, p) => s + Number(p.final_amount ?? p.estimated_amount ?? 0),
+    0
+  );
+  return {
+    id: (profile as any).id,
+    displayName: (profile as any).display_name ?? "—",
+    email: (profile as any).email ?? "",
+    status: (profile as any).status ?? "active",
+    bio: (profile as any).bio ?? null,
+    joinedAt: ((profile as any).created_at ?? "").slice(0, 10),
+    accounts: ((accounts.data ?? []) as any[]).map((a) => ({
+      id: a.id,
+      platform: a.platform,
+      handle: a.handle,
+      verified: !!a.verified,
+      followerCount: a.follower_count ?? 0,
+    })),
+    clips: ((clips.data ?? []) as any[]).map((r) => ({
+      id: r.id,
+      postUrl: r.post_url,
+      platform: r.platform,
+      handle: r.account_handle ?? "",
+      status: r.tracking_status,
+      submittedAt: (r.submitted_at ?? "").slice(0, 16).replace("T", " "),
+      clipperId: id,
+      clipperName: (profile as any).display_name ?? "—",
+      clipperEmail: (profile as any).email ?? "",
+      campaignId: r.campaign_id,
+      campaignName: r.campaigns?.name ?? "—",
+      views: views[r.id] ?? 0,
+    })),
+    payouts: ((payouts.data ?? []) as any[]).map((p) => ({
+      id: p.id,
+      campaignName: p.payout_cycles?.campaigns?.name ?? "—",
+      amount: Number(p.final_amount ?? p.estimated_amount ?? 0),
+      status: p.status,
+      totalViews: p.total_views ?? 0,
+      createdAt: (p.created_at ?? "").slice(0, 10),
+    })),
+    totalEarned,
+  };
+}
+
+/** Suspend or reactivate a clipper. Suspended clippers cannot upload new
+ *  clips; already-approved clips keep tracking until individually flagged. */
+export async function setClipperStatus(id: string, status: "active" | "suspended") {
+  await requireAdmin();
+  const db = adminDb();
+  const { error } = await db.from("profiles").update({ status }).eq("id", id).eq("role", "clipper");
+  if (error) throw new Error(error.message);
+  await notifyUser(
+    id,
+    status === "suspended" ? "account_suspended" : "account_reactivated",
+    status === "suspended" ? "Your account is suspended" : "Your account is active again",
+    status === "suspended"
+      ? "Your ClipForge account has been suspended. You cannot upload new clips while suspended. Contact support if you think this is a mistake."
+      : "Your ClipForge account has been reactivated. You can upload clips again."
+  );
+  revalidatePath("/admin/clippers");
+  revalidatePath("/admin");
+  revalidatePath("/dashboard", "layout");
+}
+
+// ── Brands ───────────────────────────────────────────────────
+
+export interface AdminBrand {
+  id: string;
+  name: string;
+  contactEmail: string;
+  ownerName: string;
+  ownerEmail: string;
+  status: string;
+  campaignCount: number;
+  liveCampaigns: number;
+  totalTopups: number;
+  createdAt: string;
+}
+
+export async function getAdminBrands(): Promise<AdminBrand[]> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data: brands, error } = await db
+    .from("brands")
+    .select("id, name, contact_email, owner_id, status, created_at, profiles!inner(display_name, email)")
+    .order("created_at", { ascending: false });
+  if (error) throw new Error(error.message);
+  const ids = (brands ?? []).map((b: any) => b.id);
+  const [campaigns, topups] = await Promise.all([
+    db.from("campaigns").select("brand_id, status").in("brand_id", ids),
+    db.from("brand_topups").select("brand_id, amount").in("brand_id", ids),
+  ]);
+  const campCount: Record<string, number> = {};
+  const liveCount: Record<string, number> = {};
+  for (const c of (campaigns.data ?? []) as any[]) {
+    campCount[c.brand_id] = (campCount[c.brand_id] ?? 0) + 1;
+    if (c.status === "active") liveCount[c.brand_id] = (liveCount[c.brand_id] ?? 0) + 1;
+  }
+  const topupSum: Record<string, number> = {};
+  for (const t of (topups.data ?? []) as any[]) topupSum[t.brand_id] = (topupSum[t.brand_id] ?? 0) + Number(t.amount ?? 0);
+  return (brands ?? []).map((b: any) => ({
+    id: b.id,
+    name: b.name,
+    contactEmail: b.contact_email ?? "",
+    ownerName: b.profiles?.display_name ?? "—",
+    ownerEmail: b.profiles?.email ?? "",
+    status: b.status ?? "active",
+    campaignCount: campCount[b.id] ?? 0,
+    liveCampaigns: liveCount[b.id] ?? 0,
+    totalTopups: topupSum[b.id] ?? 0,
+    createdAt: (b.created_at ?? "").slice(0, 10),
+  }));
+}
+
+/** Suspend or reactivate a brand. Suspending also pauses its live campaigns
+ *  so no new clips come in; reactivating leaves campaigns paused for the
+ *  admin to re-activate individually. */
+export async function setBrandStatus(id: string, status: "active" | "suspended", reason?: string) {
+  await requireAdmin();
+  const db = adminDb();
+  const { data: brand } = await db.from("brands").select("id, owner_id, name").eq("id", id).single();
+  if (!brand) throw new Error("Brand not found.");
+  const { error } = await db
+    .from("brands")
+    .update({ status, suspended_reason: status === "suspended" ? reason?.trim() || null : null })
+    .eq("id", id);
+  if (error) throw new Error(error.message);
+  if (status === "suspended") {
+    await db.from("campaigns").update({ status: "paused" }).eq("brand_id", id).eq("status", "active");
+  }
+  await notifyUser(
+    (brand as any).owner_id,
+    status === "suspended" ? "brand_suspended" : "brand_reactivated",
+    status === "suspended" ? `Brand suspended: ${(brand as any).name}` : `Brand active again: ${(brand as any).name}`,
+    status === "suspended"
+      ? `Your brand was suspended${reason?.trim() ? `: ${reason.trim()}` : "."} Its live campaigns are paused. Contact support to appeal.`
+      : "Your brand is active again. Your campaigns stay paused — ask an admin to re-activate them."
+  );
+  revalidatePath("/admin/brands");
+  revalidatePath("/admin");
+  revalidatePath("/brand", "layout");
+}
+
+// ── Users ────────────────────────────────────────────────────
+
+export interface AdminUser {
+  id: string;
+  displayName: string;
+  email: string;
+  role: string;
+  status: string;
+  joinedAt: string;
+}
+
+export async function getAdminUsers(): Promise<AdminUser[]> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data, error } = await db
+    .from("profiles")
+    .select("id, display_name, email, role, status, created_at")
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    displayName: r.display_name ?? "—",
+    email: r.email ?? "",
+    role: r.role ?? "clipper",
+    status: r.status ?? "active",
+    joinedAt: (r.created_at ?? "").slice(0, 10),
+  }));
+}
+
+/** Change a user's role. Admins cannot change their own role (lockout guard). */
+export async function updateUserRole(id: string, role: string) {
+  const user = await requireAdmin();
+  if (!["clipper", "brand", "admin"].includes(role)) throw new Error("Invalid role.");
+  if (id === user.id) throw new Error("You cannot change your own role.");
+  const db = adminDb();
+  const { error } = await db.from("profiles").update({ role }).eq("id", id);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/users");
+  revalidatePath("/admin");
+}
+
+// ── Campaigns (full list) ───────────────────────────────────
+
+export interface AdminCampaign {
+  id: string;
+  slug: string;
+  name: string;
+  type: string;
+  category: string;
+  status: string;
+  ratePer100k: number;
+  budgetCap: number | null;
+  platforms: string[];
+  brandName: string;
+  clipCount: number;
+  createdAt: string;
+}
+
+export async function getAdminCampaigns(statusFilter?: string): Promise<AdminCampaign[]> {
+  await requireAdmin();
+  const db = adminDb();
+  let q = db
+    .from("campaigns")
+    .select("id, slug, name, type, category, status, rate_per_100k, budget_cap, platforms, created_at, brands(name)")
+    .order("created_at", { ascending: false })
+    .limit(500);
+  if (statusFilter && statusFilter !== "all") q = q.eq("status", statusFilter);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  const ids = (data ?? []).map((r: any) => r.id);
+  const { data: clips } = await db.from("clips").select("campaign_id").in("campaign_id", ids);
+  const clipCount: Record<string, number> = {};
+  for (const c of (clips ?? []) as any[]) clipCount[c.campaign_id] = (clipCount[c.campaign_id] ?? 0) + 1;
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    slug: r.slug,
+    name: r.name,
+    type: r.type,
+    category: r.category,
+    status: r.status,
+    ratePer100k: Number(r.rate_per_100k ?? 0),
+    budgetCap: r.budget_cap != null ? Number(r.budget_cap) : null,
+    platforms: r.platforms ?? [],
+    brandName: r.brands?.name ?? "—",
+    clipCount: clipCount[r.id] ?? 0,
+    createdAt: (r.created_at ?? "").slice(0, 10),
+  }));
+}
+
+/** Change the pay rate on a live/paused/pending campaign (Wondeed's CPM editor). */
+export async function updateCampaignRate(id: string, ratePer100k: number) {
+  await requireAdmin();
+  const rate = Number(ratePer100k);
+  if (!(rate >= 0)) throw new Error("Rate must be zero or positive.");
+  const db = adminDb();
+  const { error } = await db
+    .from("campaigns")
+    .update({ rate_per_100k: rate })
+    .eq("id", id)
+    .in("status", ["active", "paused", "pending"]);
+  if (error) throw new Error(error.message);
+  revalidatePath("/admin/campaigns");
+  revalidatePath("/admin");
+  revalidatePath("/brand", "layout");
 }
