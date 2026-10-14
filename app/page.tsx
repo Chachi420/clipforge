@@ -29,7 +29,6 @@ export default function Landing() {
       <MarketingNav />
       <main>
         <HomeHero />
-        <ScrollWave />
         <HomeHowItWorks />
         <HomeMoneyMath />
         <HomeTwoPaths />
@@ -37,6 +36,7 @@ export default function Landing() {
         <HomeFinalCta />
       </main>
       <MarketingFooter />
+      <ScrollWave />
     </div>
   );
 }

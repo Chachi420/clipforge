@@ -4,11 +4,16 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/motion";
 
 /**
- * Scroll-driven waveform divider — a nod to the Android music visualizer.
- * Bar energy follows scroll velocity: it dances while you scroll and
- * settles back to a hairline within a beat of stopping. The rAF loop only
- * runs while there is motion to draw, so it idles at zero cost otherwise.
- * Renders nothing under prefers-reduced-motion.
+ * Fixed bottom "now playing" waveform — Android music-player style,
+ * rendered in shades of the theme itself.
+ *
+ * - Fill level = page scroll progress (played vs unplayed, like the
+ *   player's seek bar), with a playhead dot.
+ * - Amplitude = scroll velocity: the wave dances while you scroll and
+ *   settles to a quiet static waveform when you stop.
+ * - The rAF loop only runs while there is motion; otherwise idle at
+ *   zero cost. pointer-events-none so it never blocks touches/clicks.
+ * - Renders nothing under prefers-reduced-motion.
  */
 export function ScrollWave({ className = "" }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,60 +47,90 @@ export function ScrollWave({ className = "" }: { className?: string }) {
     resize();
     window.addEventListener("resize", resize);
 
-    const drawBars = (amplitude: number, alpha: number, phase: number) => {
-      const n = Math.max(24, Math.floor(W / 14));
-      const gap = W / n;
-      const bw = Math.max(2, gap * 0.42);
+    const progress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      if (max <= 0) return 0;
+      return Math.min(1, Math.max(0, window.scrollY / max));
+    };
+
+    // Static envelope — gives the waveform its audio-like density variation.
+    const envelope = (x: number) =>
+      Math.max(
+        0.12,
+        0.42 +
+          0.28 * Math.sin(x * 0.008 + 1.7) +
+          0.18 * Math.sin(x * 0.021 + 0.4) +
+          0.12 * Math.sin(x * 0.047 + 2.9)
+      );
+
+    const ampAt = (x: number, ampScale: number, phase: number) => {
+      const osc =
+        0.45 +
+        0.55 *
+          Math.abs(
+            Math.sin(x * 0.045 + phase) * 0.6 +
+              Math.sin(x * 0.012 - phase * 0.6) * 0.4
+          );
+      return Math.max(1.5, ampScale * envelope(x) * osc);
+    };
+
+    const buildPath = (ampScale: number, phase: number) => {
       const mid = H / 2;
-      for (let i = 0; i < n; i++) {
-        const p = (i / n) * Math.PI * 4 + phase;
-        const wobble =
-          Math.sin(p) * 0.5 +
-          Math.sin(p * 2.7 + 1.3) * 0.3 +
-          Math.sin(p * 0.6) * 0.2;
-        const h = Math.max(2, Math.min(H - 4, 2 + amplitude * (0.35 + 0.65 * Math.abs(wobble))));
-        const x = i * gap + (gap - bw) / 2;
-        ctx.fillStyle = `rgb(var(--ink) / ${alpha.toFixed(3)})`;
+      const cap = mid - 3;
+      const step = 3;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x += step) {
+        const y = mid - Math.min(cap, ampAt(x, ampScale, phase));
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      for (let x = W; x >= 0; x -= step) {
+        ctx.lineTo(x, mid + Math.min(cap, ampAt(x, ampScale, phase)));
+      }
+      ctx.closePath();
+    };
+
+    const draw = (ampScale: number, phase: number) => {
+      const p = progress();
+      const mid = H / 2;
+      ctx.clearRect(0, 0, W, H);
+
+      // Unplayed: full-width waveform, faint shade of the theme.
+      buildPath(ampScale, phase);
+      ctx.fillStyle = "rgb(var(--ink) / 0.13)";
+      ctx.fill();
+
+      // Played: clipped to scroll progress, stronger shade.
+      if (p > 0.004) {
+        ctx.save();
         ctx.beginPath();
-        if (typeof ctx.roundRect === "function") {
-          ctx.roundRect(x, mid - h / 2, bw, h, bw / 2);
-        } else {
-          ctx.rect(x, mid - h / 2, bw, h);
-        }
+        ctx.rect(0, 0, p * W, H);
+        ctx.clip();
+        buildPath(ampScale, phase);
+        ctx.fillStyle = "rgb(var(--ink) / 0.55)";
+        ctx.fill();
+        ctx.restore();
+
+        // Playhead dot, like the player's thumb.
+        ctx.beginPath();
+        ctx.arc(Math.min(W - 6, Math.max(6, p * W)), mid, 5, 0, Math.PI * 2);
+        ctx.fillStyle = "rgb(var(--ink) / 0.9)";
         ctx.fill();
       }
     };
 
-    const drawResting = () => {
-      ctx.clearRect(0, 0, W, H);
-      const mid = H / 2;
-      ctx.fillStyle = "rgb(var(--ink) / 0.14)";
-      ctx.fillRect(0, mid - 0.5, W, 1);
-      // Quiet static waveform so the strip reads as "there" even at rest.
-      drawBars(7, 0.16, 0.8);
-    };
-
     const frame = () => {
       t += 1;
-      const target = Math.min(1, Math.abs(vel) / 28);
-      energy += (target - energy) * 0.14;
+      const target = Math.min(1, Math.abs(vel) / 30);
+      energy += (target - energy) * 0.12;
       vel *= 0.9;
-
-      if (energy < 0.004 && Math.abs(vel) < 0.4) {
+      draw(4 + energy * H * 0.38, t * 0.06);
+      if (energy > 0.004 || Math.abs(vel) > 0.4) {
+        raf = requestAnimationFrame(frame);
+      } else {
         running = false;
-        drawResting();
-        return;
+        draw(4, 0.8); // settle to a quiet static wave
       }
-
-      ctx.clearRect(0, 0, W, H);
-      const mid = H / 2;
-
-      ctx.fillStyle = "rgb(var(--ink) / 0.14)";
-      ctx.fillRect(0, mid - 0.5, W, 1);
-
-      drawBars(energy * H * 0.42, 0.1 + energy * 0.24, t * 0.09);
-
-      raf = requestAnimationFrame(frame);
     };
 
     const kick = () => {
@@ -113,7 +148,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    drawResting();
+    draw(4, 0.8);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -126,8 +161,11 @@ export function ScrollWave({ className = "" }: { className?: string }) {
   if (reduced) return null;
 
   return (
-    <div aria-hidden className={`pointer-events-none w-full select-none ${className}`}>
-      <canvas ref={canvasRef} className="block h-[72px] w-full" />
+    <div
+      aria-hidden
+      className={`pointer-events-none fixed inset-x-0 bottom-0 z-40 select-none bg-gradient-to-t from-paper/80 via-paper/30 to-transparent ${className}`}
+    >
+      <canvas ref={canvasRef} className="block h-16 w-full" />
     </div>
   );
 }
