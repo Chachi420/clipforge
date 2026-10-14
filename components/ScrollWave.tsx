@@ -114,7 +114,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
             Math.sin(x * 0.045 + phase) * 0.6 +
               Math.sin(x * 0.012 - phase * 0.6) * 0.4
           );
-      return Math.max(1.5, ampScale * envelope(x) * osc);
+      return Math.max(3, ampScale * envelope(x) * osc);
     };
 
     const buildPath = (ampScale: number, phase: number) => {
@@ -180,12 +180,12 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       const target = Math.min(1, Math.abs(vel) / 30);
       energy += (target - energy) * 0.12;
       vel *= 0.9;
-      draw(4 + energy * H * 0.38, t * 0.06);
+      draw(26 + energy * H * 0.38, t * 0.06);
       if (energy > 0.004 || Math.abs(vel) > 0.4) {
         raf = requestAnimationFrame(frame);
       } else {
         running = false;
-        draw(4, 0.8); // settle to a quiet static wave
+        draw(26, 0.8); // settle to a full-size static wave, starting at the nav
       }
     };
 
@@ -205,7 +205,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
-    draw(4, 0.8);
+    draw(26, 0.8);
 
     return () => {
       window.removeEventListener("scroll", onScroll);
@@ -223,7 +223,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       aria-hidden
       className={`pointer-events-none fixed inset-x-0 top-[68px] z-40 select-none border-b border-line/[0.08] bg-paper/70 backdrop-blur-2xl backdrop-saturate-150 ${className}`}
     >
-      <canvas ref={canvasRef} className="block h-11 w-full" />
+      <canvas ref={canvasRef} className="block h-10 w-full" />
     </div>
   );
 }
