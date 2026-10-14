@@ -4,7 +4,6 @@ import { ArrowRight, BarChart3, Check, Gauge, HandCoins, Users } from "lucide-re
 import MarketingNav from "@/components/MarketingNav";
 import { Faq, MarketingFooter } from "@/components/marketing";
 import { Reveal } from "@/components/motion";
-import { ScrollWave } from "@/components/ScrollWave";
 
 export const metadata: Metadata = {
   title: "ClipForge for Brands — Pay Per Verified View",
@@ -255,7 +254,6 @@ export default function BrandsLanding() {
       </main>
 
       <MarketingFooter />
-      <ScrollWave />
     </div>
   );
 }

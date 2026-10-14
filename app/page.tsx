@@ -9,7 +9,6 @@ import {
   HomeCalculatorFaq,
   HomeFinalCta,
 } from "@/components/home-sections";
-import { ScrollWave } from "@/components/ScrollWave";
 
 export const metadata: Metadata = {
   title: "ClipForge — Get Paid for Every View Your Clips Earn",
@@ -36,7 +35,6 @@ export default function Landing() {
         <HomeFinalCta />
       </main>
       <MarketingFooter />
-      <ScrollWave />
     </div>
   );
 }
