@@ -139,8 +139,11 @@ export function ScrollWave({ className = "" }: { className?: string }) {
       ctx.clearRect(0, 0, W, H);
 
       // Unplayed: full-width waveform, faint shade of the theme.
+      // The unfilled alpha adapts per theme — 13% white on black is
+      // nearly invisible, so dark mode gets a stronger unfilled shade.
+      const inkLight = (ink[0] + ink[1] + ink[2]) / 3 > 128;
       buildPath(ampScale, phase);
-      ctx.fillStyle = rgba(0.13);
+      ctx.fillStyle = rgba(inkLight ? 0.3 : 0.18);
       ctx.fill();
 
       // Played: clipped to scroll progress, stronger shade.
@@ -150,7 +153,7 @@ export function ScrollWave({ className = "" }: { className?: string }) {
         ctx.rect(0, 0, p * W, H);
         ctx.clip();
         buildPath(ampScale, phase);
-        ctx.fillStyle = rgba(0.55);
+        ctx.fillStyle = rgba(inkLight ? 0.65 : 0.55);
         ctx.fill();
         ctx.restore();
 
