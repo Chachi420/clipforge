@@ -43,8 +43,8 @@ export default function UploadClipDialog({
           </p>
           {done.heldForReview > 0 && (
             <p className="mt-1 text-ink-soft">
-              {done.heldForReview} could not be matched to a verified account automatically and{" "}
-              {done.heldForReview === 1 ? "is" : "are"} pending review.
+              {done.heldForReview} {done.heldForReview === 1 ? "is" : "are"} awaiting admin approval. Views start
+              tracking once approved.
             </p>
           )}
         </div>
