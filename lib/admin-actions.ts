@@ -3,7 +3,10 @@
 import { adminDb } from "./admin-db";
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "./auth";
-import { isAdminUser } from "./admin";
+import { isAdminUser, ADMIN_EMAIL } from "./admin";
+
+/** Actor label for panel actions — the gate guarantees this is the admin. */
+const PANEL_ACTOR = ADMIN_EMAIL;
 
 /** Throws unless the caller is the admin: signed in with the single
  *  authorized Google account (see lib/admin.ts). No role-based backdoor. */
@@ -51,6 +54,11 @@ export async function getPendingVerifications(): Promise<PendingVerification[]> 
 export async function approveAccount(id: string, followerCount: number) {
   await requireAdmin();
   const db = adminDb();
+  const { data: acct } = await db
+    .from("social_accounts")
+    .select("platform, handle, user_id")
+    .eq("id", id)
+    .single();
   const { error } = await db
     .from("social_accounts")
     .update({
@@ -60,6 +68,14 @@ export async function approveAccount(id: string, followerCount: number) {
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "account.approve",
+    targetType: "social_account",
+    targetId: id,
+    summary: `Verified ${(acct as any)?.platform ?? ""} account ${(acct as any)?.handle ?? id}`,
+    metadata: { followerCount: Math.max(0, Math.floor(Number(followerCount) || 0)) },
+  });
   revalidatePath("/admin/verifications");
 }
 
@@ -67,8 +83,20 @@ export async function approveAccount(id: string, followerCount: number) {
 export async function rejectAccount(id: string) {
   await requireAdmin();
   const db = adminDb();
+  const { data: acct } = await db
+    .from("social_accounts")
+    .select("platform, handle")
+    .eq("id", id)
+    .single();
   const { error } = await db.from("social_accounts").delete().eq("id", id);
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "account.reject",
+    targetType: "social_account",
+    targetId: id,
+    summary: `Rejected ${(acct as any)?.platform ?? ""} account ${(acct as any)?.handle ?? id} (removed)`,
+  });
   revalidatePath("/admin/verifications");
 }
 
@@ -128,6 +156,14 @@ export async function markPayoutPaid(id: string) {
     .update({ status: "paid", final_amount: Number(row?.estimated_amount ?? 0) })
     .eq("id", id);
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "payout.mark_paid",
+    targetType: "payout",
+    targetId: id,
+    summary: `Marked payout $${Number(row?.estimated_amount ?? 0).toFixed(2)} as paid`,
+    metadata: { amount: Number(row?.estimated_amount ?? 0) },
+  });
   if ((row as any)?.user_id) {
     await notifyUser(
       (row as any).user_id,
@@ -209,7 +245,7 @@ export async function approveCampaign(id: string) {
   const db = adminDb();
   const { data: camp } = await db
     .from("campaigns")
-    .select("id, brand_id, status")
+    .select("id, brand_id, status, name")
     .eq("id", id)
     .eq("status", "pending")
     .single();
@@ -224,6 +260,13 @@ export async function approveCampaign(id: string) {
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "campaign.approve",
+    targetType: "campaign",
+    targetId: id,
+    summary: `Approved campaign “${(camp as any).name ?? id}” (now live)`,
+  });
   revalidatePath("/admin");
   revalidatePath("/brand", "layout");
 }
@@ -242,6 +285,14 @@ export async function rejectCampaign(id: string, reason: string) {
   if (!row) throw new Error("Pending campaign not found.");
   const { error } = await db.from("campaigns").delete().eq("id", id);
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "campaign.reject",
+    targetType: "campaign",
+    targetId: id,
+    summary: `Rejected campaign brief “${(row as any).name ?? id}” (removed)`,
+    metadata: { reason: reason.trim() || null },
+  });
   // Notify the brand owner.
   const { data: brand } = await db
     .from("brands")
@@ -291,6 +342,14 @@ export async function recordTopup(input: {
     recorded_by: user.id,
   });
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "topup.record",
+    targetType: "brand",
+    targetId: input.brandId,
+    summary: `Recorded $${amount.toFixed(2)} top-up${input.reference?.trim() ? ` (ref: ${input.reference.trim()})` : ""}`,
+    metadata: { amount, method: input.method?.trim() || null, reference: input.reference?.trim() || null },
+  });
   revalidatePath("/admin");
   revalidatePath("/brand", "layout");
 }
@@ -337,12 +396,13 @@ export interface AdminOverview {
   clippers: number;
   brands: number;
   clips: number;
+  flaggedClips: number;
 }
 
 export async function getAdminOverview(): Promise<AdminOverview> {
   await requireAdmin();
   const db = adminDb();
-  const [verifs, payouts, campaigns, users, clipReviews, pendingCamps, liveCamps, clippers, brands, clips] =
+  const [verifs, payouts, campaigns, users, clipReviews, pendingCamps, liveCamps, clippers, brands, clips, flagged] =
     await Promise.all([
       db.from("social_accounts").select("id", { count: "exact", head: true }).eq("verified", false),
       db.from("payouts").select("estimated_amount").eq("status", "pending"),
@@ -354,6 +414,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
       db.from("profiles").select("id", { count: "exact", head: true }).eq("role", "clipper"),
       db.from("brands").select("id", { count: "exact", head: true }),
       db.from("clips").select("id", { count: "exact", head: true }),
+      db.from("clips").select("id", { count: "exact", head: true }).eq("tracking_status", "flagged"),
     ]);
   if (verifs.error) throw new Error(verifs.error.message);
   if (payouts.error) throw new Error(payouts.error.message);
@@ -365,6 +426,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
   if (clippers.error) throw new Error(clippers.error.message);
   if (brands.error) throw new Error(brands.error.message);
   if (clips.error) throw new Error(clips.error.message);
+  if (flagged.error) throw new Error(flagged.error.message);
   return {
     pendingVerifications: verifs.count ?? 0,
     pendingPayouts: (payouts.data ?? []).length,
@@ -380,6 +442,7 @@ export async function getAdminOverview(): Promise<AdminOverview> {
     clippers: clippers.count ?? 0,
     brands: brands.count ?? 0,
     clips: clips.count ?? 0,
+    flaggedClips: flagged.count ?? 0,
   };
 }
 
@@ -447,18 +510,39 @@ export async function approveBrandRequest(id: string) {
     .eq("id", id);
   if (reqErr) throw new Error(reqErr.message);
 
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "brand_request.approve",
+    targetType: "brand_request",
+    targetId: id,
+    summary: `Approved brand request from “${(row as any).company_name ?? id}”`,
+  });
+
   revalidatePath("/admin");
 }
 
 export async function rejectBrandRequest(id: string) {
   await requireAdmin();
   const db = adminDb();
+  const { data: row } = await db
+    .from("brand_requests")
+    .select("company_name")
+    .eq("id", id)
+    .eq("status", "pending")
+    .single();
   const { error } = await db
     .from("brand_requests")
     .update({ status: "rejected", reviewed_at: new Date().toISOString() })
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "brand_request.reject",
+    targetType: "brand_request",
+    targetId: id,
+    summary: `Rejected brand request from “${(row as any)?.company_name ?? id}”`,
+  });
   revalidatePath("/admin");
 }
 
@@ -483,6 +567,61 @@ export async function notifyUser(userId: string, type: string, title: string, bo
 export async function insertNotification(userId: string, type: string, title: string, body: string) {
   const db = adminDb();
   await db.from("notifications").insert({ user_id: userId, type, title, body });
+}
+
+export interface AuditEntry {
+  id: string;
+  createdAt: string;
+  actor: string;
+  action: string;
+  targetType: string;
+  targetId: string;
+  summary: string;
+}
+
+/**
+ * Record an admin decision in the audit log. Unguarded by design — callers
+ * are server actions (already past requireAdmin) or the signed email-action
+ * route (HMAC token IS the authorization). Import only from server code.
+ */
+export async function logAdminAction(input: {
+  actor: string;
+  action: string;
+  targetType: string;
+  targetId: string;
+  summary: string;
+  metadata?: Record<string, unknown>;
+}) {
+  const db = adminDb();
+  await db.from("admin_audit_log").insert({
+    actor: input.actor,
+    action: input.action,
+    target_type: input.targetType,
+    target_id: input.targetId,
+    summary: input.summary,
+    metadata: input.metadata ?? {},
+  });
+}
+
+/** Latest audit entries for the admin activity viewer. */
+export async function getAuditLog(limit = 100): Promise<AuditEntry[]> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data, error } = await db
+    .from("admin_audit_log")
+    .select("id, created_at, actor, action, target_type, target_id, summary")
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    createdAt: (r.created_at ?? "").slice(0, 16).replace("T", " "),
+    actor: r.actor,
+    action: r.action,
+    targetType: r.target_type,
+    targetId: r.target_id,
+    summary: r.summary,
+  }));
 }
 
 // ── Clips ────────────────────────────────────────────────────
@@ -579,6 +718,14 @@ export async function reviewClip(
       .update({ tracking_status: "tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
+    await logAdminAction({
+      actor: PANEL_ACTOR,
+      action: "clip.approve",
+      targetType: "clip",
+      targetId: id,
+      summary: `Approved clip for “${(clip as any).campaigns?.name ?? "the campaign"}” (now tracking)`,
+      metadata: { note: cleanNote },
+    });
     await notifyUser(
       (clip as any).user_id,
       "clip_approved",
@@ -592,6 +739,14 @@ export async function reviewClip(
       .update({ tracking_status: "not_tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
+    await logAdminAction({
+      actor: PANEL_ACTOR,
+      action: "clip.reject",
+      targetType: "clip",
+      targetId: id,
+      summary: `Rejected clip for “${(clip as any).campaigns?.name ?? "the campaign"}”`,
+      metadata: { note: cleanNote },
+    });
     await notifyUser(
       (clip as any).user_id,
       "clip_rejected",
@@ -607,6 +762,14 @@ export async function reviewClip(
       .update({ tracking_status: "flagged", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
+    await logAdminAction({
+      actor: PANEL_ACTOR,
+      action: "clip.flag",
+      targetType: "clip",
+      targetId: id,
+      summary: `Flagged clip for “${(clip as any).campaigns?.name ?? "the campaign"}” (paused)`,
+      metadata: { note: cleanNote },
+    });
     await notifyUser(
       (clip as any).user_id,
       "clip_flagged",
@@ -620,6 +783,14 @@ export async function reviewClip(
       .update({ tracking_status: "tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
+    await logAdminAction({
+      actor: PANEL_ACTOR,
+      action: "clip.unflag",
+      targetType: "clip",
+      targetId: id,
+      summary: `Unflagged clip for “${(clip as any).campaigns?.name ?? "the campaign"}” (tracking again)`,
+      metadata: { note: cleanNote },
+    });
     await notifyUser(
       (clip as any).user_id,
       "clip_approved",
@@ -627,9 +798,70 @@ export async function reviewClip(
       `Your clip for "${(clip as any).campaigns?.name ?? "the campaign"}" passed review and is tracking views again.`
     );
   }
+}
+
+/**
+ * Bulk review: approve or reject many clips at once. Only clips still in
+ * pending_review are touched; anything already handled is skipped and
+ * reported. One shared note is attached to rejections (the clipper sees it).
+ */
+export async function reviewClipsBulk(
+  ids: string[],
+  action: "approve" | "reject",
+  note?: string
+): Promise<{ handled: number; skipped: number }> {
+  await requireAdmin();
+  const cleanIds = [...new Set(ids)].filter((id) => typeof id === "string" && id.length > 0);
+  if (cleanIds.length === 0) throw new Error("No clips selected.");
+  if (cleanIds.length > 100) throw new Error("Select at most 100 clips at a time.");
+  const db = adminDb();
+  const now = new Date().toISOString();
+  const cleanNote = note?.trim() || null;
+  const next = action === "approve" ? "tracking" : "not_tracking";
+  const { data: clips, error: readError } = await db
+    .from("clips")
+    .select("id, user_id, tracking_status, campaigns(name)")
+    .in("id", cleanIds)
+    .eq("tracking_status", "pending_review");
+  if (readError) throw new Error(readError.message);
+  const eligible = (clips ?? []) as any[];
+  const skipped = cleanIds.length - eligible.length;
+  if (eligible.length === 0) return { handled: 0, skipped };
+  const { data: me } = await db.from("profiles").select("id").eq("email", ADMIN_EMAIL).maybeSingle();
+  const reviewer = (me as any)?.id ?? null;
+  const { error } = await db
+    .from("clips")
+    .update({ tracking_status: next, reviewed_by: reviewer, reviewed_at: now, review_note: cleanNote })
+    .in("id", eligible.map((c) => c.id));
+  if (error) throw new Error(error.message);
+  // One audit row per bulk run (not per clip — keeps the log readable).
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: action === "approve" ? "clip.bulk_approve" : "clip.bulk_reject",
+    targetType: "clip",
+    targetId: eligible.map((c) => c.id).join(","),
+    summary: `${action === "approve" ? "Approved" : "Rejected"} ${eligible.length} clips in bulk${skipped > 0 ? ` (${skipped} already handled, skipped)` : ""}`,
+    metadata: { count: eligible.length, skipped, note: cleanNote },
+  });
+  // Notify each affected clipper.
+  await Promise.all(
+    eligible.map((c) =>
+      notifyUser(
+        c.user_id,
+        action === "approve" ? "clip_approved" : "clip_rejected",
+        action === "approve" ? "Clip approved" : "Clip not approved",
+        action === "approve"
+          ? `Your clip for “${c.campaigns?.name ?? "the campaign"}” was approved and is now tracking views.`
+          : cleanNote
+            ? `Your clip for “${c.campaigns?.name ?? "the campaign"}” was not approved: ${cleanNote}`
+            : `Your clip for “${c.campaigns?.name ?? "the campaign"}” was not approved.`
+      )
+    )
+  );
   revalidatePath("/admin/clips");
   revalidatePath("/admin");
   revalidatePath("/dashboard", "layout");
+  return { handled: eligible.length, skipped };
 }
 
 // ── Clippers ─────────────────────────────────────────────────
@@ -770,8 +1002,16 @@ export async function getAdminClipperDetail(id: string): Promise<AdminClipperDet
 export async function setClipperStatus(id: string, status: "active" | "suspended") {
   await requireAdmin();
   const db = adminDb();
+  const { data: profile } = await db.from("profiles").select("display_name").eq("id", id).single();
   const { error } = await db.from("profiles").update({ status }).eq("id", id).eq("role", "clipper");
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: status === "suspended" ? "clipper.suspend" : "clipper.reactivate",
+    targetType: "clipper",
+    targetId: id,
+    summary: `${status === "suspended" ? "Suspended" : "Reactivated"} clipper ${(profile as any)?.display_name ?? id}`,
+  });
   await notifyUser(
     id,
     status === "suspended" ? "account_suspended" : "account_reactivated",
@@ -851,6 +1091,14 @@ export async function setBrandStatus(id: string, status: "active" | "suspended",
   if (status === "suspended") {
     await db.from("campaigns").update({ status: "paused" }).eq("brand_id", id).eq("status", "active");
   }
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: status === "suspended" ? "brand.suspend" : "brand.reactivate",
+    targetType: "brand",
+    targetId: id,
+    summary: `${status === "suspended" ? "Suspended" : "Reactivated"} brand “${(brand as any).name ?? id}”`,
+    metadata: { reason: status === "suspended" ? reason?.trim() || null : null },
+  });
   await notifyUser(
     (brand as any).owner_id,
     status === "suspended" ? "brand_suspended" : "brand_reactivated",
@@ -900,8 +1148,17 @@ export async function updateUserRole(id: string, role: string) {
   if (!["clipper", "brand"].includes(role)) throw new Error("Invalid role.");
   if (id === user.id) throw new Error("You cannot change your own role.");
   const db = adminDb();
+  const { data: profile } = await db.from("profiles").select("display_name, role").eq("id", id).single();
   const { error } = await db.from("profiles").update({ role }).eq("id", id);
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "user.role_change",
+    targetType: "user",
+    targetId: id,
+    summary: `Changed ${(profile as any)?.display_name ?? id} role: ${(profile as any)?.role ?? "?"} → ${role}`,
+    metadata: { from: (profile as any)?.role ?? null, to: role },
+  });
   revalidatePath("/admin/users");
   revalidatePath("/admin");
 }
@@ -960,12 +1217,21 @@ export async function updateCampaignRate(id: string, ratePer100k: number) {
   const rate = Number(ratePer100k);
   if (!(rate >= 0)) throw new Error("Rate must be zero or positive.");
   const db = adminDb();
+  const { data: camp } = await db.from("campaigns").select("name, rate_per_100k").eq("id", id).single();
   const { error } = await db
     .from("campaigns")
     .update({ rate_per_100k: rate })
     .eq("id", id)
     .in("status", ["active", "paused", "pending"]);
   if (error) throw new Error(error.message);
+  await logAdminAction({
+    actor: PANEL_ACTOR,
+    action: "campaign.rate_change",
+    targetType: "campaign",
+    targetId: id,
+    summary: `Changed rate on “${(camp as any)?.name ?? id}”: $${Number((camp as any)?.rate_per_100k ?? 0)} → $${rate} / 100k`,
+    metadata: { from: Number((camp as any)?.rate_per_100k ?? 0), to: rate },
+  });
   revalidatePath("/admin/campaigns");
   revalidatePath("/admin");
   revalidatePath("/brand", "layout");

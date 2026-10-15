@@ -22,9 +22,13 @@ import {
   type AdminAction,
 } from "@/lib/admin-email";
 import { adminDb } from "@/lib/admin-db";
-import { insertNotification } from "@/lib/admin-actions";
+import { insertNotification, logAdminAction } from "@/lib/admin-actions";
 
 export const dynamic = "force-dynamic";
+
+/** Actor label for email-link actions — the signed link only ever goes to
+ *  the admin's own inbox, so this is the admin acting without a session. */
+const EMAIL_ACTOR = `${ADMIN_EMAIL} (email link)`;
 
 /** HTML-escape for the confirmation/result pages (P0-4 XSS fix). */
 function escHtml(s: string): string {
@@ -132,6 +136,13 @@ async function doClip(
     .eq("id", id);
   if (error) return { ok: false, message: `Database error: ${error.message}` };
   const campaignName = (clip as any).campaigns?.name ?? "the campaign";
+  await logAdminAction({
+    actor: EMAIL_ACTOR,
+    action: action === "approve_clip" ? "clip.approve" : "clip.reject",
+    targetType: "clip",
+    targetId: id,
+    summary: `${action === "approve_clip" ? "Approved" : "Rejected"} clip for “${campaignName}” via email link`,
+  });
   await insertNotification(
     (clip as any).user_id,
     action === "approve_clip" ? "clip_approved" : "clip_rejected",
@@ -171,6 +182,13 @@ async function doAccount(
       .update({ verified: true, verified_at: new Date().toISOString() })
       .eq("id", id);
     if (error) return { ok: false, message: `Database error: ${error.message}` };
+    await logAdminAction({
+      actor: EMAIL_ACTOR,
+      action: "account.approve",
+      targetType: "social_account",
+      targetId: id,
+      summary: `Verified ${(acct as any).platform} account ${(acct as any).handle} via email link`,
+    });
     await insertNotification(
       (acct as any).user_id,
       "account_verified",
@@ -181,6 +199,13 @@ async function doAccount(
   }
   const { error } = await db.from("social_accounts").delete().eq("id", id);
   if (error) return { ok: false, message: `Database error: ${error.message}` };
+  await logAdminAction({
+    actor: EMAIL_ACTOR,
+    action: "account.reject",
+    targetType: "social_account",
+    targetId: id,
+    summary: `Rejected account request via email link (removed)`,
+  });
   return { ok: true, message: `Account request rejected and removed. The clipper can re-add it.` };
 }
 
@@ -202,6 +227,13 @@ async function doBrandRequest(
       .from("brand_requests")
       .update({ status: "rejected", reviewed_at: new Date().toISOString() })
       .eq("id", id);
+    await logAdminAction({
+      actor: EMAIL_ACTOR,
+      action: "brand_request.reject",
+      targetType: "brand_request",
+      targetId: id,
+      summary: `Rejected brand request from “${(row as any).company_name}” via email link`,
+    });
     return { ok: true, message: `Brand request from ${(row as any).company_name} rejected.` };
   }
   const { error: roleErr } = await db
@@ -219,6 +251,13 @@ async function doBrandRequest(
     .from("brand_requests")
     .update({ status: "approved", reviewed_at: new Date().toISOString() })
     .eq("id", id);
+  await logAdminAction({
+    actor: EMAIL_ACTOR,
+    action: "brand_request.approve",
+    targetType: "brand_request",
+    targetId: id,
+    summary: `Approved brand request from “${(row as any).company_name}” via email link`,
+  });
   await insertNotification(
     (row as any).user_id,
     "brand_approved",
@@ -279,6 +318,13 @@ async function doCampaign(
       .eq("id", id)
       .eq("status", "pending");
     if (error) return { ok: false, message: `Database error: ${error.message}` };
+    await logAdminAction({
+      actor: EMAIL_ACTOR,
+      action: "campaign.approve",
+      targetType: "campaign",
+      targetId: id,
+      summary: `Approved campaign “${(row as any).name}” via email link (now live)`,
+    });
     return { ok: true, message: `Campaign “${(row as any).name}” is now live.` };
   }
   // Reject deletes the brief so the brand can resubmit (same as /admin).
@@ -288,6 +334,13 @@ async function doCampaign(
     .eq("id", (row as any).brand_id)
     .single();
   await db.from("campaigns").delete().eq("id", id);
+  await logAdminAction({
+    actor: EMAIL_ACTOR,
+    action: "campaign.reject",
+    targetType: "campaign",
+    targetId: id,
+    summary: `Rejected campaign “${(row as any).name}” via email link (removed)`,
+  });
   if ((brand as any)?.owner_id) {
     await insertNotification(
       (brand as any).owner_id,
@@ -354,6 +407,14 @@ async function doTopup(
     reference,
   });
   if (error) return { ok: false, message: `Database error: ${error.message}` };
+  await logAdminAction({
+    actor: EMAIL_ACTOR,
+    action: "topup.record",
+    targetType: "brand",
+    targetId: brandId,
+    summary: `Recorded ${formatUsd(amount)} top-up for “${brandName}” via email link`,
+    metadata: { amount, reference },
+  });
   return {
     ok: true,
     message: `Top-up recorded: ${formatUsd(amount)} for “${brandName}”${reference ? ` (ref: ${reference})` : ""}.`,
@@ -379,6 +440,14 @@ async function doMarkPaid(
     .eq("id", id)
     .eq("status", "pending");
   if (error) return { ok: false, message: `Database error: ${error.message}` };
+  await logAdminAction({
+    actor: EMAIL_ACTOR,
+    action: "payout.mark_paid",
+    targetType: "payout",
+    targetId: id,
+    summary: `Marked payout ${formatUsd(amount)} as paid via email link`,
+    metadata: { amount },
+  });
   if ((row as any).user_id) {
     await insertNotification(
       (row as any).user_id,
