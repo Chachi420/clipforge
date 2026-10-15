@@ -24,12 +24,38 @@ async function authed() {
   return { supabase, userId: user.id };
 }
 
-function detectPlatform(url: string): Platform {
+function detectPlatform(url: string): Platform | null {
   const h = url.toLowerCase();
   if (h.includes("tiktok.com")) return "tiktok";
   if (h.includes("instagram.com")) return "instagram";
   if (h.includes("youtu")) return "youtube";
-  return "x";
+  if (h.includes("x.com") || h.includes("twitter.com")) return "x";
+  // Unknown — never default to a platform; the caller rejects with a
+  // clear error instead of mislabeling rubbish as an X link.
+  return null;
+}
+
+/** How long after a verification code is issued before the automated bio
+ *  check may run. Gives the clipper time to add the code to their bio and
+ *  bounds Apify spend on instant re-clicks. */
+const BIO_CHECK_WAIT_MS = 3 * 60 * 1000;
+
+/** Reject malformed URLs before they reach platform-specific parsing. */
+function assertValidClipUrl(url: string): void {
+  let u: URL;
+  try {
+    u = new URL(url);
+  } catch {
+    throw new Error(`That doesn't look like a link: "${url}". Paste the full URL of your post.`);
+  }
+  if (u.protocol !== "http:" && u.protocol !== "https:") {
+    throw new Error(`That doesn't look like a link: "${url}". Paste the full URL of your post.`);
+  }
+  if (!detectPlatform(url)) {
+    throw new Error(
+      `We can't use this link: "${url}". Paste a TikTok, Instagram, YouTube, or X post URL.`
+    );
+  }
 }
 
 const CODE_ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
@@ -110,7 +136,8 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   type Prepared = { url: string; platform: Platform; handle: string; status: string };
   const prepared: Prepared[] = [];
   for (const url of clean) {
-    const platform = detectPlatform(url);
+    assertValidClipUrl(url);
+    const platform = detectPlatform(url)!;
     const mine = byPlatform(platform);
     if (mine.length === 0) {
       throw new Error(
@@ -247,7 +274,15 @@ export async function connectSocialAccount(platform: Platform, handle: string) {
   }
   const code = makeVerificationCode();
   const { data: acct, error } = await supabase.from("social_accounts").upsert(
-    { user_id: userId, platform, handle: `@${h}`, verified: false, verification_code: code },
+    {
+      user_id: userId,
+      platform,
+      handle: `@${h}`,
+      verified: false,
+      verification_code: code,
+      // (Re)starts the 3-minute gate for the automated bio check.
+      verification_requested_at: new Date().toISOString(),
+    },
     { onConflict: "user_id,platform,handle" }
   ).select("id").single();
   if (error) throw new Error(error.message);
@@ -275,31 +310,39 @@ export async function connectSocialAccount(platform: Platform, handle: string) {
   return { verificationCode: code };
 }
 
-export type VerifyResult = { ok: true } | { ok: false; reason: string; manual?: boolean };
+export type VerifyResult =
+  | { ok: true }
+  | { ok: false; reason: string; manual?: boolean; waiting?: boolean; waitSeconds?: number };
 
 /**
  * Verify a social account with the bio-code bot.
  * YouTube is checked live via the YouTube Data API (bio must contain the code,
- * channel needs >= MIN_FOLLOWERS subscribers). TikTok / Instagram / X have no
- * free official API for reading bios, so those stay pending for manual review.
+ * channel needs >= MIN_FOLLOWERS subscribers). Instagram is checked via an
+ * Apify bio scrape once the code has been issued for 3+ minutes (same bar:
+ * code in bio + >= MIN_FOLLOWERS followers). TikTok / X have no automated
+ * bio source, so those stay pending for manual review.
  */
 export async function verifySocialAccount(id: string): Promise<VerifyResult> {
   const { supabase, userId } = await authed();
   const { data: acct } = await supabase
     .from("social_accounts")
-    .select("id, platform, handle, verification_code, verified")
+    .select("id, platform, handle, verification_code, verified, verification_requested_at")
     .eq("id", id)
     .eq("user_id", userId)
     .single();
   if (!acct) return { ok: false, reason: "Account not found." };
   if (acct.verified) return { ok: true };
 
+  if (acct.platform === "instagram") {
+    return verifyInstagramAccount(supabase, userId, id, acct as any);
+  }
+
   if (acct.platform !== "youtube") {
     return {
       ok: false,
       manual: true,
       reason:
-        "Automated bio checks are only available for YouTube right now — TikTok, Instagram and X don't offer a free API to read bios. Add the code to your bio; accounts on these platforms are verified by manual review.",
+        "Automated bio checks are only available for YouTube and Instagram right now — TikTok and X don't offer a way to read bios automatically. Add the code to your bio; accounts on these platforms are verified by manual review.",
     };
   }
 
@@ -313,6 +356,70 @@ export async function verifySocialAccount(id: string): Promise<VerifyResult> {
       verified_at: new Date().toISOString(),
       follower_count: result.channel.subscribers,
       platform_user_id: result.channel.channelId,
+    })
+    .eq("id", id)
+    .eq("user_id", userId);
+  if (error) return { ok: false, reason: error.message };
+  revalidatePath("/dashboard/accounts");
+  return { ok: true };
+}
+
+/**
+ * Instagram bio-code verification via Apify.
+ * The check only runs once the code has been issued for BIO_CHECK_WAIT_MS —
+ * the clipper needs time to actually add it to their bio, and the gate
+ * bounds Apify spend on instant re-clicks.
+ */
+async function verifyInstagramAccount(
+  supabase: any,
+  userId: string,
+  id: string,
+  acct: { handle: string; verification_code: string; verification_requested_at: string | null }
+): Promise<VerifyResult> {
+  const requestedAt = acct.verification_requested_at
+    ? new Date(acct.verification_requested_at).getTime()
+    : 0;
+  const elapsed = Date.now() - requestedAt;
+  if (elapsed < BIO_CHECK_WAIT_MS) {
+    const waitSeconds = Math.ceil((BIO_CHECK_WAIT_MS - elapsed) / 1000);
+    return {
+      ok: false,
+      waiting: true,
+      waitSeconds,
+      reason: `The automatic bio check unlocks in about ${Math.max(1, Math.ceil(waitSeconds / 60))} minute(s). Make sure ${acct.verification_code} is in your Instagram bio.`,
+    };
+  }
+
+  const { fetchInstagramProfile } = await import("./apify");
+  const profile = await fetchInstagramProfile(acct.handle);
+  if (!profile || profile.bio === null) {
+    return {
+      ok: false,
+      reason:
+        "Couldn't read the Instagram bio right now. Keep the code in your bio and try again in a minute — if it keeps failing, the account will be picked up by manual review.",
+    };
+  }
+  if (!profile.bio.toLowerCase().includes(String(acct.verification_code).toLowerCase())) {
+    return {
+      ok: false,
+      reason: `The code ${acct.verification_code} wasn't found in the Instagram bio for ${acct.handle}. Add it to your bio and try again.`,
+    };
+  }
+  const followers = profile.followers ?? 0;
+  if (followers < MIN_FOLLOWERS) {
+    return {
+      ok: false,
+      reason: `This account has ${followers.toLocaleString()} followers — at least ${MIN_FOLLOWERS.toLocaleString()} are required.`,
+    };
+  }
+
+  const { error } = await supabase
+    .from("social_accounts")
+    .update({
+      verified: true,
+      verified_at: new Date().toISOString(),
+      follower_count: followers,
+      platform_user_id: profile.username ?? acct.handle,
     })
     .eq("id", id)
     .eq("user_id", userId);

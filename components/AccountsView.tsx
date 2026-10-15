@@ -1,10 +1,11 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { BadgeCheck, Copy, Plus } from "lucide-react";
 import Header from "@/components/Header";
 import { Badge, Button, Card, Dialog, EmptyState, Field, PlatformDot, inputCls } from "@/components/ui";
 import { connectSocialAccount, removeSocialAccount, verifySocialAccount } from "@/lib/actions";
+import type { VerifyResult } from "@/lib/actions";
 import { MIN_FOLLOWERS } from "@/lib/youtube";
 import { PLATFORM_LABELS, type Platform, type SocialAccount } from "@/lib/types";
 
@@ -19,10 +20,35 @@ const BIO_INSTRUCTIONS: Record<Platform, string> = {
 
 function AccountCard({ account }: { account: SocialAccount }) {
   const [verifying, setVerifying] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean; reason?: string; manual?: boolean } | null>(null);
+  const [result, setResult] = useState<VerifyResult | null>(null);
   const [copied, setCopied] = useState(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
+  // Seconds until the server unlocks the bio check (3-min gate), then auto-retry.
+  const [waitLeft, setWaitLeft] = useState<number | null>(null);
+  // Client-side cooldown after each bio scrape — bounds verification spend.
+  const [cooldownLeft, setCooldownLeft] = useState<number | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    if (waitLeft === null) return;
+    if (waitLeft <= 0) {
+      setWaitLeft(null);
+      void handleVerify();
+      return;
+    }
+    const t = setTimeout(() => setWaitLeft((s) => (s === null ? null : s - 1)), 1000);
+    return () => clearTimeout(t);
+  }, [waitLeft]);
+
+  useEffect(() => {
+    if (cooldownLeft === null) return;
+    if (cooldownLeft <= 0) {
+      setCooldownLeft(null);
+      return;
+    }
+    const t = setTimeout(() => setCooldownLeft((s) => (s === null ? null : s - 1)), 1000);
+    return () => clearTimeout(t);
+  }, [cooldownLeft]);
 
   function copyCode() {
     navigator.clipboard.writeText(account.verificationCode).catch(() => {});
@@ -46,14 +72,36 @@ function AccountCard({ account }: { account: SocialAccount }) {
     setResult(null);
     try {
       const r = await verifySocialAccount(account.id);
-      setResult(r);
-      if (r.ok) router.refresh();
+      if (!r.ok && r.waiting) {
+        // Server gate: the code hasn't been out for 3 minutes yet. Count
+        // down, then retry automatically — the clipper just waits.
+        setWaitLeft(r.waitSeconds ?? 60);
+        setResult({ ok: false, reason: r.reason });
+      } else {
+        setResult(r);
+        if (r.ok) {
+          router.refresh();
+        } else if (!r.manual) {
+          // 45s cooldown before the next bio scrape (each check costs an Apify run).
+          setCooldownLeft(45);
+        }
+      }
     } catch (e: any) {
       setResult({ ok: false, reason: e.message ?? "Verification failed." });
     } finally {
       setVerifying(false);
     }
   }
+
+  const autoCheck = account.platform === "youtube" || account.platform === "instagram";
+  const busy = verifying || waitLeft !== null || cooldownLeft !== null;
+  const verifyLabel = verifying
+    ? "Checking bio…"
+    : waitLeft !== null
+      ? `Checking in ${waitLeft}s…`
+      : cooldownLeft !== null
+        ? `Try again in ${cooldownLeft}s`
+        : "Verify now";
 
   return (
     <Card className="p-5">
@@ -90,13 +138,13 @@ function AccountCard({ account }: { account: SocialAccount }) {
             <div className="text-xs font-semibold uppercase tracking-wide text-status-warning">
               Step 2 — verify
             </div>
-            {account.platform === "youtube" ? (
-              <Button variant="primary" onClick={handleVerify} disabled={verifying} className="mt-2 w-full py-2 text-sm">
-                <BadgeCheck size={15} /> {verifying ? "Checking bio…" : "Verify now"}
+            {autoCheck ? (
+              <Button variant="primary" onClick={handleVerify} disabled={busy} className="mt-2 w-full py-2 text-sm">
+                <BadgeCheck size={15} /> {verifyLabel}
               </Button>
             ) : (
               <p className="mt-2 text-xs leading-relaxed text-ink-soft">
-                Our review bot checks YouTube automatically. For {PLATFORM_LABELS[account.platform]},
+                Our review bot checks YouTube and Instagram automatically. For {PLATFORM_LABELS[account.platform]},
                 add the code to your bio — the account is activated by manual review
                 (needs {MIN_FOLLOWERS.toLocaleString()}+ followers).
               </p>
