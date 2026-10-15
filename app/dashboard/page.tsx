@@ -6,6 +6,7 @@ import OnboardingBanner from "@/components/OnboardingBanner";
 import { Button, Card, EmptyState, Stat } from "@/components/ui";
 import { getCampaigns, getProfile, getUserClips, getUserPayouts, getUserPaymentMethods, getUserSocialAccounts, isLive } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
+import { isAdminUser } from "@/lib/admin";
 import { profile as mockProfile } from "@/lib/mock";
 import { formatCompact, formatMoney } from "@/lib/format";
 import type { Clip, PaymentMethodRow, PayoutCycle, SocialAccount } from "@/lib/types";
@@ -31,8 +32,8 @@ export default async function DashboardHome() {
     userId = user?.id;
     if (userId) {
       const p = await getProfile(userId);
-      // Wondeed-style role routing: admins land on the admin side.
-      if (p?.role === "admin") redirect("/admin");
+      // Admins land on the admin side (single authorized Google account).
+      if (isAdminUser(user)) redirect("/admin");
       if (p) name = p.displayName;
     }
   }

@@ -1,18 +1,10 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/lib/auth";
+import { isAdminUser } from "@/lib/admin";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export const dynamic = "force-dynamic";
-
-function isAdminEmail(email: string | undefined | null): boolean {
-  if (!email) return false;
-  const list = (process.env.ADMIN_EMAILS || "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-  return list.includes(email.toLowerCase());
-}
 
 const NAV = [
   { href: "/admin", label: "Overview" },
@@ -34,15 +26,8 @@ const NAV = [
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await getSessionUser();
-  // Admin = profiles.role='admin' (Wondeed model) or email in ADMIN_EMAILS.
-  let isAdmin = isAdminEmail(user?.email);
-  if (!isAdmin && user?.id) {
-    const { createClient } = await import("@/lib/supabase/server");
-    const supabase = await createClient();
-    const { data } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    isAdmin = (data as any)?.role === "admin";
-  }
-  if (!isAdmin) redirect("/dashboard");
+  // Admin = the single authorized Google account only (see lib/admin.ts).
+  if (!isAdminUser(user)) redirect("/dashboard");
 
   return (
     <div className="min-h-screen bg-paper">

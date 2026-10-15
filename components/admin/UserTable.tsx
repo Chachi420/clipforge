@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { Badge, Card, EmptyState } from "@/components/ui";
 import { updateUserRole, type AdminUser } from "@/lib/admin-actions";
 
-const ROLES = ["clipper", "brand", "admin"] as const;
+const ROLES = ["clipper", "brand"] as const;
 
 export default function UserTable({ initial }: { initial: AdminUser[] }) {
   const [busy, setBusy] = useState<string | null>(null);
@@ -79,7 +79,7 @@ export default function UserTable({ initial }: { initial: AdminUser[] }) {
         </div>
       </Card>
       <p className="text-xs text-ink-faint">
-        Role controls which side a user lands on: clipper → dashboard, brand → brand dashboard, admin → this panel. You cannot change your own role.
+        Role controls which side a user lands on: clipper → dashboard, brand → brand dashboard. Admin access is restricted to the owner's Google account and can't be granted here. You cannot change your own role.
       </p>
     </div>
   );

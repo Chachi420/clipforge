@@ -3,30 +3,13 @@
 import { createClient } from "@supabase/supabase-js";
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "./auth";
+import { isAdminUser } from "./admin";
 
-function adminEmails(): string[] {
-  return (process.env.ADMIN_EMAILS || "")
-    .split(",")
-    .map((e) => e.trim().toLowerCase())
-    .filter(Boolean);
-}
-
-/** Throws unless the caller is an admin: profiles.role='admin' (Wondeed model)
- *  or email in ADMIN_EMAILS (backwards compat for existing admins). */
+/** Throws unless the caller is the admin: signed in with the single
+ *  authorized Google account (see lib/admin.ts). No role-based backdoor. */
 async function requireAdmin() {
   const user = await getSessionUser();
-  const email = (user?.email || "").toLowerCase();
-  if (!user) throw new Error("Not authorized");
-  if (adminEmails().includes(email)) return user;
-  const db = adminDb();
-  const { data: profile } = await db
-    .from("profiles")
-    .select("role")
-    .eq("id", user.id)
-    .single();
-  if ((profile as any)?.role !== "admin") {
-    throw new Error("Not authorized");
-  }
+  if (!user || !isAdminUser(user)) throw new Error("Not authorized");
   return user;
 }
 
@@ -882,7 +865,7 @@ export async function getAdminUsers(): Promise<AdminUser[]> {
 /** Change a user's role. Admins cannot change their own role (lockout guard). */
 export async function updateUserRole(id: string, role: string) {
   const user = await requireAdmin();
-  if (!["clipper", "brand", "admin"].includes(role)) throw new Error("Invalid role.");
+  if (!["clipper", "brand"].includes(role)) throw new Error("Invalid role.");
   if (id === user.id) throw new Error("You cannot change your own role.");
   const db = adminDb();
   const { error } = await db.from("profiles").update({ role }).eq("id", id);
