@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { getBrand, getUserRole } from "./brand-db";
+import { isAdminUser } from "./admin";
 import type { Platform } from "./types";
 
 /**
@@ -21,7 +22,9 @@ export async function requireBrand() {
   if (!user) redirect("/brand/login");
 
   const role = await getUserRole(user.id);
-  if (role !== "brand") redirect("/dashboard");
+  // The owner (admin email) can always open the brand side — for QA, support,
+  // and demos. Everyone else needs the brand role.
+  if (role !== "brand" && !isAdminUser(user)) redirect("/dashboard");
 
   let brand = await getBrand(user.id);
   if (!brand) {
