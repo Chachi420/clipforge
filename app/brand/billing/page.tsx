@@ -2,6 +2,7 @@ import { requireBrand } from "@/lib/brand-actions";
 import { getBrandBalance, getBrandTopups } from "@/lib/brand-db";
 import { Card, EmptyState, Stat } from "@/components/ui";
 import { formatMoney } from "@/lib/format";
+import TopupRequestForm from "./TopupRequestForm";
 
 export const dynamic = "force-dynamic";
 
@@ -44,19 +45,11 @@ export default async function BillingPage() {
         <h2 className="font-display text-lg font-bold text-ink">Add funds</h2>
         <p className="mt-2 max-w-xl text-sm text-ink-soft">
           Top-ups are arranged with your account manager — there are no automated
-          payments in v1. Once funds are received, an admin records the top-up and
-          it appears in your ledger below.
+          payments in v1. Send a top-up request below after paying, and our team
+          will confirm once the funds are received. An admin then records the
+          top-up and it appears in your ledger below.
         </p>
-        <p className="mt-3 text-sm text-ink">
-          Email{" "}
-          <a
-            href="mailto:billing@clipforge.example"
-            className="font-semibold text-ink underline decoration-ink/30 underline-offset-2"
-          >
-            billing@clipforge.example
-          </a>{" "}
-          to arrange a top-up.
-        </p>
+        <TopupRequestForm />
       </Card>
 
       <div>

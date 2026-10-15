@@ -11,6 +11,7 @@ interface ScanResult {
   youtubeUpdated: number;
   instagramUpdated: number;
   skipped: { tiktok: number; x: number; instagram: number };
+  daysLeftTicked: number;
   errors: string[];
 }
 
@@ -44,8 +45,36 @@ export async function GET(request: NextRequest) {
     youtubeUpdated: 0,
     instagramUpdated: 0,
     skipped: { tiktok: 0, x: 0, instagram: 0 },
+    daysLeftTicked: 0,
     errors: [],
   };
+
+  // Once-daily tick: this route runs every 30 min, so gating on UTC hour 0
+  // fires ~once per day. Decrement days_left on active campaigns; a campaign
+  // that reaches 0 is auto-paused (brands/admins can resume it manually).
+  if (new Date().getUTCHours() === 0) {
+    const { data: ticking, error: tickError } = await supabase
+      .from("campaigns")
+      .select("id, days_left")
+      .eq("status", "active")
+      .gt("days_left", 0);
+    if (tickError) {
+      result.errors.push(`days_left tick failed: ${tickError.message}`);
+    } else {
+      for (const c of ticking ?? []) {
+        const next = Math.max(0, (c.days_left ?? 1) - 1);
+        const { error: updError } = await supabase
+          .from("campaigns")
+          .update(next === 0 ? { days_left: 0, status: "paused" } : { days_left: next })
+          .eq("id", c.id);
+        if (updError) {
+          result.errors.push(`days_left tick failed for campaign ${c.id}: ${updError.message}`);
+        } else {
+          result.daysLeftTicked += 1;
+        }
+      }
+    }
+  }
 
   const { data: clips, error: clipsError } = await supabase
     .from("clips")
@@ -92,7 +121,8 @@ export async function GET(request: NextRequest) {
       .filter((c) => stats.has(c.videoId))
       .map((c) => {
         const s = stats.get(c.videoId)!;
-        return { clip_id: c.id, views: s.views, likes: s.likes, comments: s.comments };
+        // Columns are NOT NULL — one null poisons the whole batch insert.
+        return { clip_id: c.id, views: s.views ?? 0, likes: s.likes ?? 0, comments: s.comments ?? 0 };
       });
     if (rows.length > 0) {
       const { error: insertError } = await supabase
@@ -127,7 +157,8 @@ export async function GET(request: NextRequest) {
         .filter((c) => stats.has(c.url))
         .map((c) => {
           const s = stats.get(c.url)!;
-          return { clip_id: c.id, views: s.views, likes: s.likes, comments: s.comments };
+          // Columns are NOT NULL — one null poisons the whole batch insert.
+          return { clip_id: c.id, views: s.views ?? 0, likes: s.likes ?? 0, comments: s.comments ?? 0 };
         });
       if (rows.length > 0) {
         const { error: insertError } = await supabase

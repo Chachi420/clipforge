@@ -57,6 +57,22 @@ export default async function DashboardHome() {
 
   const liveCycles = payouts.filter((p) => p.status === "live");
   const cycleEarnings = liveCycles.reduce((sum, p) => sum + p.estimatedAmount, 0);
+  // Live in-cycle estimate: latest snapshot views per tracking clip, priced at
+  // each campaign's rate per 100k. Recomputed on every load — independent of
+  // the stored month-end payout estimates shown above.
+  const liveEstimates = liveCycles.map((p) => {
+    const rate = campaigns.find((c) => c.id === p.campaignId)?.ratePer100k ?? 0;
+    const views = clips
+      .filter((c) => c.campaignId === p.campaignId && c.trackingStatus === "tracking")
+      .reduce((sum, c) => sum + c.views, 0);
+    return {
+      campaignId: p.campaignId,
+      campaignName: p.campaignName,
+      views,
+      estimated: (views / 100000) * rate,
+    };
+  });
+  const liveEstimateTotal = liveEstimates.reduce((sum, e) => sum + e.estimated, 0);
   const verifiedViews = clips
     .filter((c) => c.trackingStatus === "tracking")
     .reduce((sum, c) => sum + c.views, 0);
@@ -157,25 +173,63 @@ export default async function DashboardHome() {
               }
             />
           ) : (
-            <Card className="p-5 sm:p-6">
-              <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
-                <Stat
-                  label="Estimated earnings"
-                  value={formatMoney(cycleEarnings)}
-                  sub="This cycle · estimated, not final"
-                />
-                <Stat
-                  label="Verified views"
-                  value={formatCompact(verifiedViews)}
-                  sub="On your clips"
-                />
-                <Stat
-                  label="Cycle ends in"
-                  value={pluralize(daysLeft, "day", "days")}
-                  sub="Admins review before payout"
-                />
-              </div>
-            </Card>
+            <>
+              <Card className="p-5 sm:p-6">
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                  <Stat
+                    label="Estimated earnings"
+                    value={formatMoney(cycleEarnings)}
+                    sub="This cycle · estimated, not final"
+                  />
+                  <Stat
+                    label="Verified views"
+                    value={formatCompact(verifiedViews)}
+                    sub="On your clips"
+                  />
+                  <Stat
+                    label="Cycle ends in"
+                    value={pluralize(daysLeft, "day", "days")}
+                    sub="Admins review before payout"
+                  />
+                </div>
+              </Card>
+              <Card className="mt-4 p-5 sm:p-6">
+                <div className="flex flex-wrap items-baseline justify-between gap-2">
+                  <h3 className="font-display text-base font-bold text-ink">
+                    This cycle (live estimate)
+                  </h3>
+                  <span className="rounded-full border border-line/10 bg-ink/5 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
+                    live estimate, not final
+                  </span>
+                </div>
+                <ul className="mt-4 space-y-2">
+                  {liveEstimates.map((e) => (
+                    <li
+                      key={e.campaignId}
+                      className="flex items-center justify-between gap-4 text-sm"
+                    >
+                      <span className="text-ink">{e.campaignName}</span>
+                      <span className="shrink-0 text-ink-soft">
+                        <span className="tnum">{formatCompact(e.views)}</span> views ·{" "}
+                        <span className="tnum font-semibold text-ink">
+                          {formatMoney(e.estimated)}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4 flex items-center justify-between border-t border-line/10 pt-4">
+                  <span className="text-sm font-semibold text-ink-soft">Total estimated</span>
+                  <span className="tnum font-display text-2xl font-bold text-ink">
+                    {formatMoney(liveEstimateTotal)}
+                  </span>
+                </div>
+                <p className="mt-2 text-xs text-ink-faint">
+                  Priced from your latest view snapshots. The final payout is
+                  calculated at cycle end and reviewed by admins before money moves.
+                </p>
+              </Card>
+            </>
           )}
         </section>
 

@@ -9,7 +9,8 @@ const CATEGORIES = ["Music", "Gaming", "Lifestyle", "Tech", "Education", "Other"
 const TYPES: { value: CampaignBriefInput["type"]; label: string }[] = [
   { value: "per_view", label: "Pay per view" },
   { value: "bounty", label: "Bounty" },
-  { value: "pot", label: "Prize pot" },
+  // 'pot' payout_mode stays in the schema for legacy rows but is no longer
+  // offered at brief creation — only payrate can be selected.
 ];
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
 const PAYOUT_METHODS: PayoutMethod[] = ["paypal", "usdt_eth", "usdc_eth"];
@@ -72,7 +73,7 @@ export default function CampaignBriefForm() {
     <Card className="p-6">
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
-          <p className="rounded-xl bg-red-500/10 px-4 py-2.5 text-sm text-red-600 dark:text-red-300">{error}</p>
+          <p className="rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
         )}
 
         <Field label="Campaign name">

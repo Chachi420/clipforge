@@ -4,7 +4,8 @@ import { useRouter } from "next/navigation";
 import { BadgeCheck, Copy, Plus } from "lucide-react";
 import Header from "@/components/Header";
 import { Badge, Button, Card, Dialog, EmptyState, Field, PlatformDot, inputCls } from "@/components/ui";
-import { connectSocialAccount, removeSocialAccount, verifySocialAccount, MIN_FOLLOWERS } from "@/lib/actions";
+import { connectSocialAccount, removeSocialAccount, verifySocialAccount } from "@/lib/actions";
+import { MIN_FOLLOWERS } from "@/lib/youtube";
 import { PLATFORM_LABELS, type Platform, type SocialAccount } from "@/lib/types";
 
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
