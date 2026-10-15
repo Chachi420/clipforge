@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: "Grievance Officer — ClipForge",
   description:
     "How to raise a complaint with ClipForge's Grievance Officer under the IT Act 2000 and DPDP Act 2023.",
+  alternates: { canonical: "/policies/grievance-officer" },
 };
 
 export default function GrievanceOfficerPage() {

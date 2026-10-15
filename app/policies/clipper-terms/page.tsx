@@ -4,6 +4,7 @@ import { h2Cls, pCls, listCls } from "../styles";
 export const metadata: Metadata = {
   title: "Clipper Terms — ClipForge",
   description: "The terms for clippers earning on ClipForge: verification, content rules, and payouts.",
+  alternates: { canonical: "/policies/clipper-terms" },
 };
 
 export default function ClipperTermsPage() {

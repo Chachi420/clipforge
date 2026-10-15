@@ -4,6 +4,7 @@ import { h2Cls, pCls, listCls } from "../styles";
 export const metadata: Metadata = {
   title: "Privacy Policy — ClipForge",
   description: "How ClipForge collects, uses, and protects your data.",
+  alternates: { canonical: "/policies/privacy-policy" },
 };
 
 export default function PrivacyPolicyPage() {

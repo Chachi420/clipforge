@@ -4,6 +4,7 @@ import { h2Cls, pCls, listCls } from "../styles";
 export const metadata: Metadata = {
   title: "Terms of Service — ClipForge",
   description: "The terms governing use of the ClipForge clipping marketplace.",
+  alternates: { canonical: "/policies/terms-of-service" },
 };
 
 export default function TermsOfServicePage() {

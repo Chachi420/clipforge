@@ -10,7 +10,7 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://clipforge-2wkpqkqxx-chachi420s-projects.vercel.app"),
+  metadataBase: new URL("https://clipforge-pied-rho.vercel.app"),
   title: "ClipForge — The Pay-Per-View Clipping Marketplace",
   description:
     "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view. Real rates up front, hard budget caps, no follower minimums.",
