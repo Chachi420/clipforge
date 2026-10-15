@@ -5,7 +5,9 @@ import {
   endOfMonth,
   roundCents,
   computePayouts,
+  MIN_PAYOUT_USD,
 } from "@/lib/payout-math";
+import { formatMoney } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -14,36 +16,73 @@ export const maxDuration = 300;
  * GET /api/cron/close-payout-cycle — monthly payout cycle closer.
  *
  * Closes each active campaign's finished `live` payout cycle, computes
- * per-clipper earnings from the LATEST metric snapshot per clip, inserts
- * `payouts` rows with status='pending' for admin review, and opens the next
- * cycle. Money never moves automatically — an admin flips payouts to 'paid'
+ * per-clipper earnings from the views gained DURING the cycle (period
+ * deltas vs the previous cycle's snapshot baseline), inserts `payouts`
+ * rows with status='pending' for admin review, and opens the next cycle.
+ * Money never moves automatically — an admin flips payouts to 'paid'
  * via the existing markPayoutPaid action after sending funds manually.
  *
  * PRODUCT ASSUMPTIONS (founder to review):
  *  1. Monthly cycles: calendar-month periods (1st → last day of month),
  *     one cycle per campaign per month. A campaign's first cycle is
  *     bootstrapped for the current calendar month.
- *  2. Earnings = (latest snapshot views per clip, CUMULATIVE — not period
- *     deltas) / 100,000 * campaign.rate_per_100k, summed per clipper,
- *     rounded to cents.
+ *  2. PERIOD-DELTA earnings (not cumulative): each cycle pays only the
+ *     views gained DURING that cycle. Baseline = the previous cycle's
+ *     snapshot_at for the same campaign — the highest cycle_number below
+ *     the closing one with a non-null snapshot_at. If no previous cycle
+ *     exists (first close ever), the baseline is 0 for every clip.
+ *     Per clip: delta = max(0, viewsNow − viewsPrev), where viewsNow is
+ *     the latest snapshot and viewsPrev is the latest snapshot with
+ *     scanned_at <= prevCloseAt (0 when there is no previous cycle). The
+ *     max(0,·) clamp means bot-cleanup view drops never create negative
+ *     payouts — the clip simply earns 0 for the cycle.
+ *     Earnings = (period-delta views / 100,000) * campaign.rate_per_100k,
+ *     summed per clipper, rounded to cents.
  *  3. Only clips with tracking_status='tracking' count. Clips with no
  *     snapshots contribute zero views.
- *  4. Payout rows are created only when estimated_amount > 0 — no $0 noise
- *     rows for the admin to dismiss (there is no dismiss action, only
- *     "mark paid").
- *  5. A cycle closes only after its period_end has passed. Re-runs are
+ *  4. Min-view thresholds ARE applied (campaign.min_views_per_post /
+ *     min_views_total): clips with period views below the per-post
+ *     threshold are dropped entirely (not counted in the clipper's clip
+ *     count either); after per-user aggregation, users whose total period
+ *     views are below the total threshold are dropped — no payout row
+ *     and no carryover.
+ *  5. Payout minimum: MIN_PAYOUT_USD = $10. A clipper's effective earnings
+ *     (this cycle's delta earnings + carried balance) below $10 do NOT
+ *     create a payout row — the amount is carried forward in
+ *     payout_carryover (pk user_id+campaign_id). Once effective earnings
+ *     reach $10, a payout row is created for the FULL amount and the
+ *     carry resets to 0. Carry writes tolerate the table's absence
+ *     (migration 010 not yet run): the close continues, but sub-minimum
+ *     earnings are then lost for that cycle.
+ *  6. Clipper payment method/address IS snapshotted onto payout rows at
+ *     close time: the clipper's default payment method (else the most
+ *     recent one) is copied as method/address, so the admin knows where
+ *     to send money even if the clipper later changes methods.
+ *  7. A cycle closes only after its period_end has passed. Re-runs are
  *     no-ops (idempotent): payouts upsert on (cycle_id, user_id) with
- *     ignoreDuplicates, and cycle numbers are unique per campaign.
- *  6. min_views_per_post / min_views_total thresholds are NOT applied.
- *  7. Bounty-specific rates (bounties.rate_per_100k) are NOT applied — the
+ *     ignoreDuplicates, cycle numbers are unique per campaign, and carry
+ *     updates are skipped when the stored carry row was already written
+ *     by the current run (updated_at >= run start) — so a crash between
+ *     the carry write and the cycle close never double-adds carry.
+ *  8. Bounty-specific rates (bounties.rate_per_100k) are NOT applied — the
  *     campaign rate is used for every clip.
- *  8. Campaigns with payout_mode='pot' get the same payrate formula; they
+ *  9. Campaigns with payout_mode='pot' get the same payrate formula; they
  *     are flagged in the summary because pot distribution is a separate
- *     product decision.
- *  9. Clipper payment method/address is NOT copied onto payout rows
- *     (payment_methods.identifier may be masked; the admin UI renders null
- *     as "Not set").
- * 10. Only campaigns with status='active' are processed.
+ *     product decision (NOT implemented — no new pot campaigns should be
+ *     created; 'pot' is being removed from the brief form).
+ * 10. Budget cap: after closing, lifetime accrued payouts (sum of
+ *     estimated_amount over ALL of the campaign's cycles' payout rows)
+ *     are compared against campaign.budget_cap. If the cap is set and
+ *     accrued >= cap, the campaign is auto-paused (status='paused') and
+ *     the brand owner gets an in-app notification (type
+ *     'campaign_paused'). Notification/email failures never fail the
+ *     close.
+ * 11. After a successful close with payouts, the admin is notified via
+ *     notifyPayoutsReady (lib/admin-email) with payout ids + clipper
+ *     display names. Email failure never fails the close (dynamic import
+ *     in try/catch, so the route also typechecks before lib/admin-email
+ *     is finished).
+ * 12. Only campaigns with status='active' are processed.
  *
  * Auth: fails closed. CRON_SECRET must be set (503 otherwise) and presented
  * as `Authorization: Bearer <secret>` (401 otherwise). Unlike scan-clips,
@@ -60,6 +99,7 @@ interface CampaignSummary {
   payoutsCreated?: number;
   totalEstimated?: number;
   potMode?: boolean;
+  budgetPaused?: boolean;
   reason?: string;
 }
 
@@ -109,7 +149,9 @@ export async function GET(request: NextRequest) {
 
   const { data: campaigns, error: campError } = await supabase
     .from("campaigns")
-    .select("id, name, rate_per_100k, payout_mode")
+    .select(
+      "id, name, rate_per_100k, payout_mode, budget_cap, brand_id, min_views_per_post, min_views_total"
+    )
     .eq("status", "active");
 
   if (campError) {
@@ -179,6 +221,22 @@ export async function GET(request: NextRequest) {
       }
 
       // --- Case 3: live cycle's period has ended → close it. ---
+      const runStartedAt = new Date().toISOString();
+
+      // Baseline: previous cycle for this campaign with a non-null
+      // snapshot_at (highest cycle_number below the closing one). None →
+      // baseline is 0 for every clip (first close ever).
+      const { data: prevCycle } = await supabase
+        .from("payout_cycles")
+        .select("snapshot_at")
+        .eq("campaign_id", campaign.id)
+        .lt("cycle_number", liveCycle.cycle_number)
+        .not("snapshot_at", "is", null)
+        .order("cycle_number", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      const prevCloseAt: string | null = prevCycle?.snapshot_at ?? null;
+
       const { data: clips, error: clipsError } = await supabase
         .from("clips")
         .select("id, user_id")
@@ -186,46 +244,152 @@ export async function GET(request: NextRequest) {
         .eq("tracking_status", "tracking");
       if (clipsError) throw new Error(`clips fetch failed: ${clipsError.message}`);
 
-      // Latest snapshot per clip (ordered desc → first row per clip wins).
-      const latestViews = new Map<string, number>();
+      // Per-clip period deltas. Snapshots ordered desc → the first row per
+      // clip is the latest (viewsNow); the first row with scanned_at <=
+      // prevCloseAt is the baseline (viewsPrev). ISO timestamps compare
+      // lexicographically. delta = max(0, now − prev).
+      const viewsNow = new Map<string, number>();
+      const viewsPrev = new Map<string, number>();
       const clipIds = (clips ?? []).map((c: any) => c.id);
       if (clipIds.length > 0) {
         const { data: snaps, error: snapsError } = await supabase
           .from("clip_metric_snapshots")
-          .select("clip_id, views")
+          .select("clip_id, views, scanned_at")
           .in("clip_id", clipIds)
           .order("scanned_at", { ascending: false });
         if (snapsError) throw new Error(`snapshots fetch failed: ${snapsError.message}`);
         for (const s of snaps ?? []) {
-          if (!latestViews.has(s.clip_id)) {
-            latestViews.set(s.clip_id, Number(s.views ?? 0));
+          const v = Number(s.views ?? 0);
+          if (!viewsNow.has(s.clip_id)) viewsNow.set(s.clip_id, v);
+          if (
+            prevCloseAt &&
+            !viewsPrev.has(s.clip_id) &&
+            s.scanned_at <= prevCloseAt
+          ) {
+            viewsPrev.set(s.clip_id, v);
           }
         }
       }
 
-      // Aggregate per clipper. Clips with no snapshots contribute zero views.
-      // (Pure math lives in lib/payout-math.ts — covered by tests/.)
-      const payoutRows = computePayouts(
+      // Pure math lives in lib/payout-math.ts — covered by tests/.
+      // ClipViews.views here is the PERIOD delta, not cumulative.
+      const payoutCandidates = computePayouts(
         (clips ?? []).map((c: any) => ({
           userId: c.user_id as string,
-          views: latestViews.get(c.id) ?? 0,
+          views: Math.max(0, (viewsNow.get(c.id) ?? 0) - (viewsPrev.get(c.id) ?? 0)),
         })),
-        rate
-      ).map((r) => ({
-        cycle_id: liveCycle.id,
-        user_id: r.userId,
-        role: "clipper",
-        estimated_amount: r.estimatedAmount,
-        status: "pending", // admin review required; nothing auto-pays
-        total_views: r.views,
-        total_clips: r.clips,
-      }));
+        rate,
+        {
+          minViewsPerPost: Number(campaign.min_views_per_post ?? 0),
+          minViewsPerTotal: Number(campaign.min_views_total ?? 0),
+        }
+      );
+
+      // P1-10: payment method snapshot — default method per clipper, else
+      // the most recent one (created_at desc → first row wins).
+      const userIds = [...new Set(payoutCandidates.map((r) => r.userId))];
+      const methodByUser = new Map<string, { method: string; address: string }>();
+      if (userIds.length > 0) {
+        const { data: methods, error: methError } = await supabase
+          .from("payment_methods")
+          .select("user_id, type, identifier, is_default")
+          .in("user_id", userIds)
+          .order("created_at", { ascending: false });
+        if (methError) throw new Error(`payment methods fetch failed: ${methError.message}`);
+        const byUser = new Map<string, any[]>();
+        for (const m of methods ?? []) {
+          const arr = byUser.get(m.user_id) ?? [];
+          arr.push(m);
+          byUser.set(m.user_id, arr);
+        }
+        for (const [uid, arr] of byUser) {
+          const best = arr.find((m) => m.is_default) ?? arr[0];
+          methodByUser.set(uid, { method: best.type, address: best.identifier });
+        }
+      }
+
+      // Payout-minimum carryover balances. Tolerates the table's absence
+      // (migration 010 not yet run) → treated as zero carry.
+      const carryByUser = new Map<string, { amount: number; updatedAt: string | null }>();
+      if (userIds.length > 0) {
+        try {
+          const { data: carries, error: carryError } = await supabase
+            .from("payout_carryover")
+            .select("user_id, amount, updated_at")
+            .eq("campaign_id", campaign.id)
+            .in("user_id", userIds);
+          if (carryError) throw carryError;
+          for (const c of carries ?? []) {
+            carryByUser.set(c.user_id, {
+              amount: Number(c.amount ?? 0),
+              updatedAt: c.updated_at ?? null,
+            });
+          }
+        } catch {
+          // payout_carryover not migrated yet — zero carry, close continues.
+        }
+      }
+
+      // Apply the $10 payout minimum: effective = delta earnings + carried.
+      // >= MIN → payout row for the full amount, carry reset to 0.
+      // < MIN → no payout row, amount carried forward.
+      // Idempotency: carry rows already written by THIS run (updated_at >=
+      // run start — i.e. a re-run after a crash between the carry write and
+      // the cycle close) are skipped, so re-runs never double-add carry.
+      const payoutRows: Record<string, any>[] = [];
+      const carryUpdates: { user_id: string; amount: number }[] = [];
+      for (const r of payoutCandidates) {
+        const carry = carryByUser.get(r.userId);
+        const carried = carry?.amount ?? 0;
+        const effective = roundCents(r.estimatedAmount + carried);
+        const pm = methodByUser.get(r.userId);
+        const alreadyWrittenThisRun =
+          !!carry?.updatedAt && carry.updatedAt >= runStartedAt;
+        if (effective >= MIN_PAYOUT_USD) {
+          payoutRows.push({
+            cycle_id: liveCycle.id,
+            user_id: r.userId,
+            role: "clipper",
+            estimated_amount: effective,
+            status: "pending", // admin review required; nothing auto-pays
+            total_views: r.views,
+            total_clips: r.clips,
+            method: pm?.method ?? null,
+            address: pm?.address ?? null,
+          });
+          if (!alreadyWrittenThisRun && roundCents(carried) !== 0) {
+            carryUpdates.push({ user_id: r.userId, amount: 0 });
+          }
+        } else if (!alreadyWrittenThisRun && roundCents(carried) !== effective) {
+          carryUpdates.push({ user_id: r.userId, amount: effective });
+        }
+      }
 
       if (payoutRows.length > 0) {
         const { error: payError } = await supabase
           .from("payouts")
           .upsert(payoutRows, { onConflict: "cycle_id,user_id", ignoreDuplicates: true });
         if (payError) throw new Error(`payouts insert failed: ${payError.message}`);
+      }
+
+      if (carryUpdates.length > 0) {
+        try {
+          const { error: carryError } = await supabase
+            .from("payout_carryover")
+            .upsert(
+              carryUpdates.map((u) => ({
+                user_id: u.user_id,
+                campaign_id: campaign.id,
+                amount: u.amount,
+                updated_at: new Date().toISOString(),
+              })),
+              { onConflict: "user_id,campaign_id" }
+            );
+          if (carryError) throw carryError;
+        } catch {
+          // Table missing (migration 010) — sub-minimum earnings are lost
+          // this cycle, but the close continues.
+        }
       }
 
       const { error: closeError } = await supabase
@@ -246,6 +410,100 @@ export async function GET(request: NextRequest) {
         status: "live",
       });
       if (nextError) throw new Error(`next cycle open failed: ${nextError.message}`);
+
+      // P2 — budget_cap: pause the campaign once lifetime accrued payouts
+      // reach the cap, and notify the brand owner. Never fails the close.
+      try {
+        const cap = Number(campaign.budget_cap ?? 0);
+        if (cap > 0) {
+          const { data: cycleRows } = await supabase
+            .from("payout_cycles")
+            .select("id")
+            .eq("campaign_id", campaign.id);
+          const cycleIds = (cycleRows ?? []).map((c: any) => c.id);
+          let accrued = 0;
+          if (cycleIds.length > 0) {
+            const { data: allPayouts } = await supabase
+              .from("payouts")
+              .select("estimated_amount")
+              .in("cycle_id", cycleIds);
+            accrued = roundCents(
+              (allPayouts ?? []).reduce(
+                (s: number, p: any) => s + Number(p.estimated_amount ?? 0),
+                0
+              )
+            );
+          }
+          if (accrued >= cap) {
+            await supabase
+              .from("campaigns")
+              .update({ status: "paused" })
+              .eq("id", campaign.id);
+            if (campaign.brand_id) {
+              const { data: brand } = await supabase
+                .from("brands")
+                .select("owner_id")
+                .eq("id", campaign.brand_id)
+                .maybeSingle();
+              if (brand?.owner_id) {
+                await supabase.from("notifications").insert({
+                  user_id: brand.owner_id,
+                  type: "campaign_paused",
+                  title: `Campaign "${campaign.name}" paused — budget cap reached`,
+                  body: `Lifetime accrued payouts (${formatMoney(accrued)}) reached the campaign budget cap (${formatMoney(cap)}). No further cycles will close until you raise the cap or resume the campaign.`,
+                });
+              }
+            }
+            summary.budgetPaused = true;
+          }
+        }
+      } catch {
+        // Budget-cap enforcement is best-effort; the cycle already closed.
+      }
+
+      // P1-6: payout-ready email to admin. Email failure never fails the
+      // close; dynamic import keeps this compiling before lib/admin-email
+      // exports notifyPayoutsReady.
+      try {
+        const { data: readyPayouts } = await supabase
+          .from("payouts")
+          .select("id, estimated_amount, total_views, total_clips, method, profiles(display_name)")
+          .eq("cycle_id", liveCycle.id);
+        if (readyPayouts && readyPayouts.length > 0) {
+          const mod = (await import("@/lib/admin-email")) as {
+            notifyPayoutsReady?: (args: {
+              cycleId: string;
+              cycleLabel: string;
+              campaignName: string;
+              payouts: {
+                id: string;
+                clipperName: string;
+                amount: number;
+                views: number;
+                clips: number;
+                method?: string;
+              }[];
+            }) => Promise<unknown>;
+          };
+          if (typeof mod.notifyPayoutsReady === "function") {
+            await mod.notifyPayoutsReady({
+              cycleId: liveCycle.id,
+              cycleLabel: `#${liveCycle.cycle_number} (${liveCycle.period_start} – ${liveCycle.period_end})`,
+              campaignName: campaign.name,
+              payouts: readyPayouts.map((p: any) => ({
+                id: p.id,
+                clipperName: p.profiles?.display_name ?? "Clipper",
+                amount: Number(p.estimated_amount ?? 0),
+                views: Number(p.total_views ?? 0),
+                clips: Number(p.total_clips ?? 0),
+                method: p.method ?? undefined,
+              })),
+            });
+          }
+        }
+      } catch {
+        // Email failure must not fail the close.
+      }
 
       const cycleTotal = roundCents(
         payoutRows.reduce((s, r) => s + r.estimated_amount, 0)

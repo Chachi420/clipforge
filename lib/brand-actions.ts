@@ -131,11 +131,44 @@ export async function createCampaignBrief(input: CampaignBriefInput) {
       bounty_pot: input.bountyPot ?? null,
       rules: input.rules ?? "",
     })
-    .select("slug")
+    .select("id, slug")
     .single();
   if (error) throw new Error(error.message);
   revalidatePath("/brand/campaigns");
   revalidatePath("/admin");
+
+  // Email the admin one-click approve/reject links (best-effort).
+  try {
+    const { data: brand } = await supabase
+      .from("brands")
+      .select("name")
+      .eq("id", brandId)
+      .single();
+    // Advisory balance for the admin's approval decision; never blocks the email.
+    let brandBalance: number | null = null;
+    try {
+      const { getBrandBalance } = await import("./brand-db");
+      brandBalance = (await getBrandBalance(brandId)).balance;
+    } catch {
+      /* fall through with null */
+    }
+    const { notifyCampaignSubmitted } = await import("./admin-email");
+    // Built as a variable (not a fresh literal) so this stays type-safe
+    // whether or not lib/admin-email has picked up the brandBalance field yet.
+    const emailInput = {
+      id: (data as any).id as string,
+      name,
+      brandName: (brand as any)?.name ?? "A brand",
+      ratePer100k: input.ratePer100k,
+      platforms: input.platforms.map(String),
+      budgetCap: input.budgetCap ?? null,
+      brandBalance,
+    };
+    await notifyCampaignSubmitted(emailInput);
+  } catch {
+    /* admin email is best-effort; the campaign is already saved */
+  }
+
   return { slug: (data as any).slug as string };
 }
 
@@ -206,6 +239,46 @@ export async function resumeCampaign(campaignId: string) {
     .eq("status", "paused");
   if (error) throw new Error(error.message);
   revalidatePath("/brand", "layout");
+}
+
+// ---------- billing ----------
+
+export interface TopupRequestInput {
+  amount: number;
+  reference: string;
+}
+
+/**
+ * Brand requests a top-up: emails the admin, who verifies the payment and
+ * records it in brand_topups via a signed email link. Nothing is written to
+ * brand_topups here — the ledger only changes through the admin flow.
+ */
+export async function requestTopup(input: TopupRequestInput) {
+  const { brandId, brand } = await requireBrand();
+  const amount = input.amount;
+  if (!Number.isFinite(amount) || amount <= 0) {
+    throw new Error("Enter a top-up amount greater than $0.");
+  }
+  if (amount > 100000) {
+    throw new Error(
+      "Top-up requests are capped at $100,000 — contact your account manager for larger amounts."
+    );
+  }
+  const reference = (input.reference ?? "").trim().slice(0, 120);
+  try {
+    // Dynamic import: lib/admin-email is edited by another agent; never
+    // break the billing page if it's mid-edit.
+    const mod = (await import("@/lib/admin-email")) as any;
+    const notifyTopupRequest = mod?.notifyTopupRequest;
+    if (typeof notifyTopupRequest !== "function") {
+      throw new Error("Top-up request email is not available yet.");
+    }
+    await notifyTopupRequest({ brandId, brandName: brand.name, amount, reference });
+  } catch {
+    throw new Error("Could not send the request — try again.");
+  }
+  revalidatePath("/brand/billing");
+  return { ok: true };
 }
 
 // ---------- bounties ----------
@@ -306,7 +379,7 @@ export async function requestBrandAccess(input: BrandRequestInput) {
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error("Enter a valid work email.");
   if (!BUDGET_RANGES.includes(input.budgetRange)) throw new Error("Pick a budget range.");
 
-  const { error } = await supabase.from("brand_requests").upsert(
+  const { data: req, error } = await supabase.from("brand_requests").upsert(
     {
       user_id: user.id,
       company_name: companyName,
@@ -319,8 +392,24 @@ export async function requestBrandAccess(input: BrandRequestInput) {
       reviewed_at: null,
     },
     { onConflict: "user_id" }
-  );
+  ).select("id").single();
   if (error) throw new Error(error.message);
+
+  // Email the admin one-click approve/reject links (best-effort).
+  try {
+    const { notifyBrandRequest } = await import("./admin-email");
+    await notifyBrandRequest({
+      id: (req as any)?.id as string,
+      company: companyName,
+      contact: contactName,
+      email,
+      website: input.website?.trim() || null,
+      budget: input.budgetRange,
+      message: input.message?.trim() || null,
+    });
+  } catch {
+    /* admin email is best-effort; the request is already saved */
+  }
 }
 
 /** Current user's brand request, if any. */
