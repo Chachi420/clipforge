@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Globe } from "lucide-react";
-import { Badge, Button, Card, EmptyState } from "@/components/ui";
+import { Badge, Button, Card, Dialog, EmptyState } from "@/components/ui";
 import {
   approveBrandRequest,
   rejectBrandRequest,
@@ -21,6 +21,7 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
   const [items, setItems] = useState(initial);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [rejecting, setRejecting] = useState<{ id: string; company: string } | null>(null);
   const router = useRouter();
 
   async function act(id: string, fn: (id: string) => Promise<void>) {
@@ -34,6 +35,7 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
       setError(e.message ?? "Action failed.");
     } finally {
       setBusy(null);
+      setRejecting(null);
     }
   }
 
@@ -83,9 +85,7 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
               <Button
                 variant="outline"
                 disabled={busy === r.id}
-                onClick={() => {
-                  if (window.confirm(`Reject the request from "${r.companyName}"?`)) act(r.id, rejectBrandRequest);
-                }}
+                onClick={() => setRejecting({ id: r.id, company: r.companyName })}
                 className="inline-flex items-center gap-1.5"
               >
                 <X size={15} /> Reject
@@ -94,6 +94,26 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
           </div>
         </Card>
       ))}
+      {rejecting && (
+        <Dialog
+          title={`Reject ${rejecting.company}?`}
+          subtitle="This is logged in the activity feed."
+          onClose={() => setRejecting(null)}
+        >
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setRejecting(null)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => act(rejecting.id, rejectBrandRequest)}
+              disabled={busy === rejecting.id}
+              className="!bg-status-error hover:!bg-status-error/90"
+            >
+              {busy === rejecting.id ? "Rejecting…" : "Reject request"}
+            </Button>
+          </div>
+        </Dialog>
+      )}
     </div>
   );
 }

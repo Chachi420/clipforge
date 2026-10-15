@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Pencil } from "lucide-react";
-import { Badge, Button, Card, EmptyState, PlatformDot } from "@/components/ui";
+import { Badge, Button, Card, Dialog, EmptyState, Field, PlatformDot } from "@/components/ui";
 import { approveCampaign, rejectCampaign, updateCampaignRate, type AdminCampaign } from "@/lib/admin-actions";
 import { PLATFORM_LABELS } from "@/lib/types";
 import { formatMoney } from "@/lib/format";
@@ -25,6 +25,8 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
   const [error, setError] = useState<string | null>(null);
   const [editingRate, setEditingRate] = useState<string | null>(null);
   const [rateValue, setRateValue] = useState("");
+  const [rejecting, setRejecting] = useState<{ id: string; name: string } | null>(null);
+  const [reason, setReason] = useState("");
   const router = useRouter();
 
   async function handleApprove(id: string) {
@@ -40,18 +42,18 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
     }
   }
 
-  async function handleReject(id: string, name: string) {
-    const reason = window.prompt(`Reject the campaign brief "${name}"? The brand will see your reason.`);
-    if (reason === null) return;
+  async function handleReject(id: string, r: string) {
     setBusy(id);
     setError(null);
     try {
-      await rejectCampaign(id, reason);
+      await rejectCampaign(id, r);
       router.refresh();
     } catch (e: any) {
       setError(e.message ?? "Rejection failed.");
     } finally {
       setBusy(null);
+      setRejecting(null);
+      setReason("");
     }
   }
 
@@ -166,7 +168,7 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
                     {c.status === "pending" && (
                       <div className="inline-flex items-center gap-2">
                         <Button
-                          onClick={() => handleReject(c.id, c.name)}
+                          onClick={() => setRejecting({ id: c.id, name: c.name })}
                           disabled={busy === c.id}
                           variant="outline"
                           className="!px-3 !py-1.5 text-xs !text-status-error !border-status-error/30 hover:!bg-status-error/10"
@@ -188,6 +190,35 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
       <p className="text-xs text-ink-faint">
         Approving sets a pending brief live. The pencil edits the pay rate on live, paused, or pending campaigns.
       </p>
+      {rejecting && (
+        <Dialog
+          title={`Reject “${rejecting.name}”?`}
+          subtitle="The brand will see your reason and can revise and resubmit."
+          onClose={() => { setRejecting(null); setReason(""); }}
+        >
+          <Field label="Reason (shown to the brand)">
+            <textarea
+              value={reason}
+              onChange={(e) => setReason(e.target.value)}
+              rows={3}
+              placeholder="Optional"
+              className="w-full rounded-lg border border-line/20 bg-paper px-3 py-2.5 text-sm text-ink placeholder:text-ink-faint focus:border-ink/40 focus:outline-none"
+            />
+          </Field>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="outline" onClick={() => { setRejecting(null); setReason(""); }}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => handleReject(rejecting.id, reason)}
+              disabled={busy === rejecting.id}
+              className="!bg-status-error hover:!bg-status-error/90"
+            >
+              {busy === rejecting.id ? "Rejecting…" : "Reject brief"}
+            </Button>
+          </div>
+        </Dialog>
+      )}
     </div>
   );
 }

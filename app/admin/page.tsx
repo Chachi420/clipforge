@@ -18,6 +18,7 @@ export default async function AdminHome() {
     { label: "Brands", desc: `${o.brands} on the platform`, href: "/admin/brands" },
     { label: "Users", desc: "Roles and access", href: "/admin/users" },
     { label: "Billing", desc: "Record brand top-ups", href: "/admin/billing" },
+    { label: "Activity", desc: "Admin decision log", href: "/admin/audit" },
   ];
 
   return (
@@ -58,6 +59,13 @@ export default async function AdminHome() {
           <Stat dark label="Brands" value={String(o.brands)} sub="On the platform" />
           <Stat dark label="Clips" value={String(o.clips)} sub="All statuses" />
           <Stat dark label="Total users" value={String(o.users)} sub="Registered profiles" />
+          <Stat
+            dark
+            label="Flagged clips"
+            value={String(o.flaggedClips)}
+            sub="Paused, need review"
+          />
+          <Stat dark label="Live campaigns" value={String(o.liveCampaigns)} sub="Earning now" />
         </div>
       </NightCard>
 
