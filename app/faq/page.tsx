@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import MarketingNav from "@/components/MarketingNav";
 import { MarketingFooter } from "@/components/marketing";
 import { Reveal } from "@/components/motion";
+import { JsonLd, faqPageSchema } from "@/components/JsonLd";
 import { FaqGroup } from "./FaqGroup";
 
 export const metadata: Metadata = {
@@ -87,6 +88,7 @@ const BRAND_FAQ: { q: string; a: string }[] = [
 export default function FaqPage() {
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <JsonLd data={faqPageSchema([...CLIPPER_FAQ, ...BRAND_FAQ])} />
       <MarketingNav
         ctaHref="/brand/request"
         ctaLabel="Start a campaign"

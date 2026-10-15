@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import MarketingNav from "@/components/MarketingNav";
 import { MarketingFooter } from "@/components/marketing";
+import { JsonLd, organizationSchema, websiteSchema } from "@/components/JsonLd";
 import {
   HomeHero,
   HomeHowItWorks,
@@ -25,6 +26,8 @@ export const metadata: Metadata = {
 export default function Landing() {
   return (
     <div className="min-h-screen bg-paper text-ink">
+      <JsonLd data={organizationSchema()} />
+      <JsonLd data={websiteSchema()} />
       <MarketingNav />
       <main>
         <HomeHero />

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Clock } from "lucide-react";
 import MarketingNav from "@/components/MarketingNav";
@@ -7,6 +8,20 @@ import { BLOG_POSTS, getBlogPost } from "@/lib/blog-posts";
 
 export function generateStaticParams() {
   return BLOG_POSTS.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string };
+}): Promise<Metadata> {
+  const post = getBlogPost(params.slug);
+  if (!post) return { title: "Post not found — ClipForge" };
+  return {
+    title: `${post.title} — ClipForge Blog`,
+    description: post.excerpt,
+    alternates: { canonical: `/blog/${post.slug}` },
+  };
 }
 
 /**

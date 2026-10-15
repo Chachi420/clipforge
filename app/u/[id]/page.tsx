@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowUpRight, BadgeCheck } from "lucide-react";
@@ -13,6 +14,20 @@ import { formatCompact } from "@/lib/format";
  * shown as a grid, stats second. All figures are real data from the
  * PII-safe public_profiles view — no emails, no invented numbers.
  */
+export async function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Promise<Metadata> {
+  const profile = await getPublicProfile(params.id).catch(() => null);
+  if (!profile?.displayName) return { title: "Clipper — ClipForge" };
+  return {
+    title: `${profile.displayName} — Clipper on ClipForge`,
+    description: `Clips and verified-view stats from ${profile.displayName}, a clipper on the ClipForge pay-per-view marketplace.`,
+    alternates: { canonical: `/u/${params.id}` },
+  };
+}
+
 export default async function PublicProfilePage({ params }: { params: { id: string } }) {
   const profile = await getPublicProfile(params.id);
   if (!profile) notFound();

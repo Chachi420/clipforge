@@ -1,0 +1,42 @@
+# ClipForge
+
+ClipForge is a pay-per-view clipping marketplace at https://clipforge-pied-rho.vercel.app.
+
+## What it is
+
+Brands run clipping campaigns: they set a budget cap and a per-view rate, fund their balance up front (prepay only), and clippers post short clips about the brand. Clippers earn money for every verified view their clips get. ClipForge keeps a standard 20% cut on brand spend. There are no subscriptions, setup fees, or seat charges.
+
+## For clippers
+
+- Connect social accounts (YouTube, TikTok, Instagram, X) and verify ownership with a unique code placed in the account bio. Accounts need at least 1,000 followers.
+- Browse live campaigns, submit clip links from verified accounts.
+- Every clip is reviewed by an admin before view tracking starts.
+- Views are verified: YouTube via the YouTube Data API, Instagram via a view-tracking integration. Spike detection flags unnatural view patterns for manual review.
+- Earnings settle in monthly payout cycles. The payout minimum is $10; smaller balances carry forward to the next month.
+
+## For brands
+
+- Request brand access, pick a budget range (under $1K, $1K–$5K, $5K–$25K, $25K+), set a per-view rate and budget cap per campaign.
+- Spend can never exceed the cap: campaigns pause automatically when the budget runs out.
+- Live dashboard shows verified views per clip, spend against cap, and per-clipper reach.
+- Campaigns can set minimum view thresholds per post as a quality filter.
+
+## Trust and safety
+
+- Admin review on every clip before tracking.
+- Verified-view counting from official sources, not self-reported numbers.
+- Fraud detection for fake engagement (viewbots, engagement pods, bought views).
+- Grievance Officer page with complaint process under India's IT Act 2000 and DPDP Act 2023: /policies/grievance-officer
+
+## Key pages
+
+- Homepage: /
+- For brands: /brands
+- For clippers: /clip
+- Pricing: /pricing
+- FAQ: /faq
+- Trust & Safety: /trust
+- Get started: /onboard
+- Blog: /blog
+- Docs: /docs
+- Contact: /contact
