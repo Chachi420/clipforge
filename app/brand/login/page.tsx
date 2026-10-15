@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { Button, Card } from "@/components/ui";
@@ -24,7 +24,27 @@ function GoogleLogo() {
 /** Separate brand entry point (hard role separation, like clipping.net's client login). */
 export default function BrandLoginPage() {
   const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState<{ email: string; role: string } | null>(null);
+  const [checking, setChecking] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (data.user) {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", data.user.id)
+          .single();
+        setSession({
+          email: data.user.email ?? "",
+          role: (profile as any)?.role ?? "clipper",
+        });
+      }
+      setChecking(false);
+    });
+  }, []);
 
   async function signIn() {
     if (!isLive) {
@@ -37,6 +57,13 @@ export default function BrandLoginPage() {
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback?next=/brand` },
     });
+  }
+
+  async function signOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setSession(null);
+    router.refresh();
   }
 
   return (
@@ -52,11 +79,39 @@ export default function BrandLoginPage() {
         <p className="mt-2 text-sm text-ink-soft">
           Access your ClipForge brand dashboard — campaigns, verified views, billing.
         </p>
-        <div className="mt-8">
-          <Button onClick={signIn} disabled={loading} variant="primary" className="w-full py-3">
-            <GoogleLogo /> {loading ? "Redirecting…" : "Continue with Google"}
-          </Button>
-        </div>
+        {checking ? (
+          <div className="mt-8 flex justify-center py-3">
+            <span className="text-sm text-ink-faint">Checking session…</span>
+          </div>
+        ) : session ? (
+          <div className="mt-8">
+            <p className="text-sm text-ink-soft">
+              Signed in as <span className="font-semibold text-ink">{session.email}</span>
+            </p>
+            {session.role === "brand" ? (
+              <Button onClick={() => router.push("/brand")} variant="primary" className="mt-4 w-full py-3">
+                Continue to brand dashboard
+              </Button>
+            ) : (
+              <p className="mt-3 rounded-md border border-status-warning/25 bg-status-warning/10 px-3 py-2 text-xs leading-relaxed text-ink-soft">
+                This account isn&apos;t a brand account, so it can&apos;t open the brand dashboard.
+                Sign out and continue with the Google account your brand uses.
+              </p>
+            )}
+            <button
+              onClick={signOut}
+              className="mt-4 w-full py-2 text-sm font-semibold text-ink-soft hover:text-ink"
+            >
+              Use a different account
+            </button>
+          </div>
+        ) : (
+          <div className="mt-8">
+            <Button onClick={signIn} disabled={loading} variant="primary" className="w-full py-3">
+              <GoogleLogo /> {loading ? "Redirecting…" : "Continue with Google"}
+            </Button>
+          </div>
+        )}
         <p className="mt-6 text-xs text-ink-faint">
           Brand accounts are provisioned by our team. New here?{" "}
           <Link href="/brand/request" className="font-semibold text-ink-soft hover:text-ink">

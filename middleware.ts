@@ -51,8 +51,11 @@ export async function middleware(request: NextRequest) {
     const login = pathname.startsWith("/brand") ? "/brand/login" : "/login";
     return NextResponse.redirect(new URL(login, request.url));
   }
-  // Logged-in users hitting a login page go to their home.
-  if (user && (pathname === "/login" || pathname === "/brand/login")) {
+  // Logged-in users hitting the clipper login page go to their home.
+  // Brand login is deliberately left alone: a logged-in non-brand user who
+  // explicitly chose "sign in as a brand" gets an explanation + account
+  // switcher on the page instead of a confusing silent redirect.
+  if (user && pathname === "/login") {
     const { data: profile } = await supabase
       .from("profiles")
       .select("role")
