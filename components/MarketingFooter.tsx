@@ -7,6 +7,9 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
     links: [
       { href: "/clip", label: "For Clippers" },
       { href: "/brands", label: "For Brands" },
+      { href: "/pricing", label: "Pricing" },
+      { href: "/faq", label: "FAQ" },
+      { href: "/trust", label: "Trust & Safety" },
       { href: "/blog", label: "Blog" },
       { href: "/docs", label: "Docs" },
     ],
@@ -21,6 +24,7 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
       { href: "/policies/terms-of-service", label: "Terms" },
       { href: "/policies/privacy-policy", label: "Privacy" },
       { href: "/policies/clipper-terms", label: "Clipper Terms" },
+      { href: "/policies/grievance-officer", label: "Grievance Officer" },
     ],
   },
   {

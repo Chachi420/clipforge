@@ -5,17 +5,22 @@ import { getAllDocsSlugs } from "@/lib/docs-articles";
 const SITE_URL = "https://clipforge-2wkpqkqxx-chachi420s-projects.vercel.app";
 
 // Public marketing routes only — /dashboard, /admin, /login, /auth are excluded.
-// Note: /policies has no index page; the three policy documents are listed instead.
+// Note: /policies has no index page; the four policy documents are listed instead.
 const STATIC_ROUTES = [
   "/",
   "/brands",
   "/clip",
+  "/pricing",
+  "/faq",
+  "/trust",
+  "/onboard",
   "/blog",
   "/docs",
   "/contact",
   "/policies/clipper-terms",
   "/policies/privacy-policy",
   "/policies/terms-of-service",
+  "/policies/grievance-officer",
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
