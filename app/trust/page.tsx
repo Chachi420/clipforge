@@ -82,7 +82,7 @@ export default function TrustPage() {
         <section className="mx-auto max-w-6xl px-6 pb-12 md:pb-20">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {PILLARS.map((p, i) => (
-              <Reveal key={p.title} delay={Math.min(i * 0.06, 0.24)}>
+              <Reveal key={p.title} delay={Math.min(i * 0.06, 0.24)} className="h-full">
                 <Card className="h-full p-6 md:p-7">
                   <span className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15">
                     <p.icon size={20} strokeWidth={1.8} />
@@ -94,7 +94,7 @@ export default function TrustPage() {
             ))}
 
             {/* CTA card fills the 6th slot */}
-            <Reveal delay={0.24}>
+            <Reveal delay={0.24} className="h-full">
               <Card className="flex h-full flex-col justify-between bg-ink p-6 text-paper md:p-7">
                 <div>
                   <h2 className="text-lg font-bold">See it in the open</h2>

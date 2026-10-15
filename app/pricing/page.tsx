@@ -84,7 +84,7 @@ export default function PricingPage() {
         <section className="mx-auto max-w-6xl px-6 pb-12 md:pb-20">
           <div className="grid gap-4 md:grid-cols-3">
             {FLOW.map((s, i) => (
-              <Reveal key={s.step} delay={i * 0.08}>
+              <Reveal key={s.step} delay={i * 0.08} className="h-full">
                 <Card className="h-full p-6 md:p-8">
                   <div className="flex items-center justify-between">
                     <span className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15">
@@ -112,8 +112,8 @@ export default function PricingPage() {
             </Reveal>
             <div className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
               {RATE_CARD.map((r, i) => (
-                <Reveal key={r.label} delay={Math.min(i * 0.05, 0.2)}>
-                  <Card className="p-5 md:p-6">
+                <Reveal key={r.label} delay={Math.min(i * 0.05, 0.2)} className="h-full">
+                  <Card className="h-full p-5 md:p-6">
                     <Stat label={r.label} value={r.value} sub={r.sub} />
                   </Card>
                 </Reveal>
