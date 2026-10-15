@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "@supabase/supabase-js";
+import { adminDb } from "./admin-db";
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "./auth";
 import { isAdminUser } from "./admin";
@@ -11,19 +11,6 @@ async function requireAdmin() {
   const user = await getSessionUser();
   if (!user || !isAdminUser(user)) throw new Error("Not authorized");
   return user;
-}
-
-/**
- * Service-role client: bypasses RLS so admins can read/write rows belonging
- * to other users. Requires SUPABASE_SERVICE_ROLE_KEY.
- */
-function adminDb() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    throw new Error("Admin panel is not configured: set SUPABASE_SERVICE_ROLE_KEY.");
-  }
-  return createClient(url, key);
 }
 
 export interface PendingVerification {
@@ -193,10 +180,44 @@ export async function getPendingCampaigns(): Promise<PendingCampaign[]> {
   }));
 }
 
-/** Approve a pending campaign brief → status='active'. */
+/** Brand wallet balance with the service-role client (bypasses RLS):
+ *  funded = sum(brand_topups.amount); spent = sum(payouts.estimated_amount)
+ *  across the brand's payout cycles. */
+async function getBrandBalance(
+  db: ReturnType<typeof adminDb>,
+  brandId: string
+): Promise<{ funded: number; spent: number; balance: number }> {
+  const { data: topups } = await db.from("brand_topups").select("amount").eq("brand_id", brandId);
+  const funded = (topups ?? []).reduce((s: number, t: any) => s + Number(t.amount ?? 0), 0);
+  const { data: cycles } = await db
+    .from("payout_cycles")
+    .select("id, campaigns!inner(brand_id)")
+    .eq("campaigns.brand_id", brandId);
+  const cycleIds = (cycles ?? []).map((c: any) => c.id);
+  let spent = 0;
+  if (cycleIds.length > 0) {
+    const { data: payouts } = await db.from("payouts").select("estimated_amount").in("cycle_id", cycleIds);
+    spent = (payouts ?? []).reduce((s: number, p: any) => s + Number(p.estimated_amount ?? 0), 0);
+  }
+  return { funded, spent, balance: funded - spent };
+}
+
+/** Approve a pending campaign brief → status='active'.
+ *  Balance gate: a campaign can't go live if its brand has $0 available. */
 export async function approveCampaign(id: string) {
   const user = await requireAdmin();
   const db = adminDb();
+  const { data: camp } = await db
+    .from("campaigns")
+    .select("id, brand_id, status")
+    .eq("id", id)
+    .eq("status", "pending")
+    .single();
+  if (!camp) throw new Error("Pending campaign not found.");
+  const { balance } = await getBrandBalance(db, (camp as any).brand_id);
+  if (balance <= 0) {
+    throw new Error("Cannot approve: brand balance is $0. Ask the brand to top up first.");
+  }
   const { error } = await db
     .from("campaigns")
     .update({ status: "active", reviewed_by: user.id, reviewed_at: new Date().toISOString() })
@@ -448,7 +469,18 @@ export async function rejectBrandRequest(id: string) {
 // every decision notifies the affected user.
 // ─────────────────────────────────────────────────────────────
 
-async function notifyUser(userId: string, type: string, title: string, body: string) {
+export async function notifyUser(userId: string, type: string, title: string, body: string) {
+  await requireAdmin();
+  const db = adminDb();
+  await db.from("notifications").insert({ user_id: userId, type, title, body });
+}
+
+/**
+ * Unguarded notification insert for trusted server contexts with no user
+ * session (e.g. the signed email-action route). Do NOT expose to client
+ * bundles — import only from server code.
+ */
+export async function insertNotification(userId: string, type: string, title: string, body: string) {
   const db = adminDb();
   await db.from("notifications").insert({ user_id: userId, type, title, body });
 }

@@ -65,12 +65,35 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   // campaignId. Campaigns are publicly readable, so this check is cheap.
   const { data: campaign, error: campaignError } = await supabase
     .from("campaigns")
-    .select("id, status")
+    .select("id, status, brand_id")
     .eq("id", campaignId)
     .single();
   if (campaignError || !campaign) throw new Error("Campaign not found.");
   if ((campaign as any).status !== "active") {
     throw new Error("This campaign is not accepting clips right now.");
+  }
+
+  // Balance gate: don't accept clips when the brand has $0 available.
+  // brand_topups/payouts are not clipper-readable under RLS, so the
+  // service-role client does the sums.
+  const { createServiceClient } = await import("./supabase/service");
+  const svc = createServiceClient();
+  if (svc) {
+    const { data: topups } = await svc.from("brand_topups").select("amount").eq("brand_id", (campaign as any).brand_id);
+    const funded = (topups ?? []).reduce((s: number, t: any) => s + Number(t.amount ?? 0), 0);
+    const { data: cycles } = await svc
+      .from("payout_cycles")
+      .select("id, campaigns!inner(brand_id)")
+      .eq("campaigns.brand_id", (campaign as any).brand_id);
+    const cycleIds = (cycles ?? []).map((c: any) => c.id);
+    let spent = 0;
+    if (cycleIds.length > 0) {
+      const { data: payouts } = await svc.from("payouts").select("estimated_amount").in("cycle_id", cycleIds);
+      spent = (payouts ?? []).reduce((s: number, p: any) => s + Number(p.estimated_amount ?? 0), 0);
+    }
+    if (funded - spent <= 0) {
+      throw new Error("This campaign's brand is out of funds — clips can't be accepted right now.");
+    }
   }
 
   const { data: accounts } = await supabase
@@ -139,10 +162,35 @@ export async function uploadClips(campaignId: string, urls: string[]) {
     streamer_name: "",
     tracking_status: p.status,
   }));
-  const { error } = await supabase.from("clips").insert(rows);
+  const { data: inserted, error } = await supabase
+    .from("clips")
+    .insert(rows)
+    .select("id, post_url, platform, account_handle");
   if (error) throw new Error(error.message);
   revalidatePath("/dashboard", "layout");
   const held = prepared.filter((p) => p.status === "pending_review").length;
+
+  // Email the admin one-click review links (fire-and-forget for the user).
+  try {
+    const [{ data: camp }, { data: prof }] = await Promise.all([
+      supabase.from("campaigns").select("name").eq("id", campaignId).single(),
+      supabase.from("profiles").select("display_name").eq("id", userId).single(),
+    ]);
+    const { notifyClipsSubmitted } = await import("./admin-email");
+    await notifyClipsSubmitted(
+      ((inserted ?? []) as any[]).map((c) => ({
+        id: c.id as string,
+        url: c.post_url as string,
+        platform: String(c.platform),
+        handle: (c.account_handle as string) || "",
+        campaignName: (camp as any)?.name ?? "a campaign",
+        clipperName: (prof as any)?.display_name ?? "A clipper",
+      }))
+    );
+  } catch {
+    /* admin email is best-effort; the clips are already saved */
+  }
+
   return { inserted: rows.length, heldForReview: held };
 }
 
@@ -186,13 +234,44 @@ export async function connectSocialAccount(platform: Platform, handle: string) {
   const { supabase, userId } = await authed();
   const h = handle.trim().replace(/^@/, "");
   if (!h) throw new Error("Enter your handle.");
+  // Never un-verify an already-verified account: re-adding it is a no-op error.
+  const { data: existing } = await supabase
+    .from("social_accounts")
+    .select("id, verified")
+    .eq("user_id", userId)
+    .eq("platform", platform)
+    .eq("handle", `@${h}`)
+    .maybeSingle();
+  if ((existing as any)?.verified) {
+    throw new Error("This account is already connected and verified.");
+  }
   const code = makeVerificationCode();
-  const { error } = await supabase.from("social_accounts").upsert(
+  const { data: acct, error } = await supabase.from("social_accounts").upsert(
     { user_id: userId, platform, handle: `@${h}`, verified: false, verification_code: code },
     { onConflict: "user_id,platform,handle" }
-  );
+  ).select("id").single();
   if (error) throw new Error(error.message);
   revalidatePath("/dashboard/accounts");
+
+  // Email the admin one-click verify/reject links (best-effort).
+  try {
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("display_name")
+      .eq("id", userId)
+      .single();
+    const { notifyAccountVerification } = await import("./admin-email");
+    await notifyAccountVerification({
+      id: (acct as any)?.id as string,
+      platform: String(platform),
+      handle: `@${h}`,
+      code,
+      clipperName: (prof as any)?.display_name ?? "A clipper",
+    });
+  } catch {
+    /* admin email is best-effort; the account is already saved */
+  }
+
   return { verificationCode: code };
 }
 
@@ -275,6 +354,19 @@ export async function createTeam(name: string) {
 
 export async function deleteClip(id: string) {
   const { supabase, userId } = await authed();
+  // Only clips that never earned anything can be deleted: awaiting review or
+  // rejected. Deleting a tracking/tracked clip would orphan payout data.
+  const { data: clip } = await supabase
+    .from("clips")
+    .select("id, tracking_status")
+    .eq("id", id)
+    .eq("user_id", userId)
+    .single();
+  if (!clip) throw new Error("Clip not found.");
+  const status = (clip as any).tracking_status;
+  if (status !== "pending_review" && status !== "not_tracking") {
+    throw new Error("Only clips awaiting review or rejected can be deleted.");
+  }
   const { error } = await supabase.from("clips").delete().eq("id", id).eq("user_id", userId);
   if (error) throw new Error(error.message);
   revalidatePath("/dashboard", "layout");
@@ -285,5 +377,3 @@ export async function signOutAction() {
   await supabase.auth.signOut();
   redirect("/login");
 }
-
-export { MIN_FOLLOWERS };
