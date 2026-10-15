@@ -11,6 +11,16 @@ export async function middleware(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
 
+  // Safety net: if Supabase drops the OAuth code on a page other than the
+  // callback (happens when the redirect URL isn't in the Supabase allowlist),
+  // forward it so the login actually completes instead of stranding the user
+  // on a page with a dead ?code= param.
+  if (request.nextUrl.searchParams.has("code") && pathname !== "/auth/callback") {
+    const url = request.nextUrl.clone();
+    url.pathname = "/auth/callback";
+    return NextResponse.redirect(url);
+  }
+
   // Expose the pathname to server components (layouts can't read it directly).
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-pathname", pathname);
@@ -55,5 +65,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*", "/login", "/brand/:path*", "/brand/login"],
+  matcher: ["/", "/dashboard/:path*", "/login", "/brand/:path*", "/brand/login"],
 };
