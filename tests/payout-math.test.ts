@@ -6,6 +6,11 @@
  *
  * These tests pin the exact behavior the monthly payout cron depends on.
  * If any of them fail, the money math changed — treat that as a P0.
+ *
+ * Key semantic: computePayouts takes PERIOD views (the delta the close
+ * route computed from snapshots), NOT cumulative lifetime view counts.
+ * The $10 payout minimum (MIN_PAYOUT_USD) and carryover logic live in the
+ * route, not here — this module only computes cycle earnings.
  */
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
@@ -14,6 +19,7 @@ import {
   endOfMonth,
   roundCents,
   computePayouts,
+  MIN_PAYOUT_USD,
 } from "../lib/payout-math.ts";
 
 describe("startOfMonth / endOfMonth", () => {
@@ -76,6 +82,12 @@ describe("roundCents", () => {
   });
 });
 
+describe("MIN_PAYOUT_USD", () => {
+  it("is $10", () => {
+    assert.equal(MIN_PAYOUT_USD, 10);
+  });
+});
+
 describe("computePayouts", () => {
   it("aggregates views and clips per user", () => {
     const rows = computePayouts(
@@ -101,7 +113,9 @@ describe("computePayouts", () => {
     });
   });
 
-  it("uses cumulative views, not period deltas", () => {
+  it("treats views as PERIOD deltas, not cumulative totals", () => {
+    // The route feeds per-cycle deltas (latest snapshot − baseline).
+    // computePayouts must not re-subtract anything.
     const rows = computePayouts([{ userId: "u1", views: 500000 }], 50);
     assert.equal(rows[0].estimatedAmount, 250);
   });
@@ -136,5 +150,104 @@ describe("computePayouts", () => {
   it("returns nothing for empty input or a zero rate", () => {
     assert.deepEqual(computePayouts([], 50), []);
     assert.deepEqual(computePayouts([{ userId: "u1", views: 100000 }], 0), []);
+  });
+
+  describe("minViewsPerPost", () => {
+    it("drops clips below the threshold entirely — not counted in clips", () => {
+      const rows = computePayouts(
+        [
+          { userId: "u1", views: 5000 },
+          { userId: "u1", views: 200000 },
+        ],
+        50,
+        { minViewsPerPost: 10000 }
+      );
+      assert.equal(rows.length, 1);
+      assert.deepEqual(rows[0], {
+        userId: "u1",
+        views: 200000,
+        clips: 1,
+        estimatedAmount: 100,
+      });
+    });
+
+    it("keeps clips exactly at the threshold", () => {
+      const rows = computePayouts(
+        [{ userId: "u1", views: 10000 }],
+        50,
+        { minViewsPerPost: 10000 }
+      );
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].clips, 1);
+    });
+
+    it("drops a user whose every clip is below the threshold", () => {
+      const rows = computePayouts(
+        [
+          { userId: "u1", views: 5000 },
+          { userId: "u2", views: 200000 },
+        ],
+        50,
+        { minViewsPerPost: 10000 }
+      );
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].userId, "u2");
+    });
+  });
+
+  describe("minViewsPerTotal", () => {
+    it("drops users below the total threshold after aggregation", () => {
+      const rows = computePayouts(
+        [
+          { userId: "u1", views: 20000 },
+          { userId: "u2", views: 200000 },
+        ],
+        50,
+        { minViewsPerTotal: 25000 }
+      );
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].userId, "u2");
+    });
+
+    it("keeps users exactly at the total threshold", () => {
+      const rows = computePayouts(
+        [{ userId: "u1", views: 25000 }],
+        50,
+        { minViewsPerTotal: 25000 }
+      );
+      assert.equal(rows.length, 1);
+      assert.equal(rows[0].userId, "u1");
+    });
+
+    it("applies per-post and per-total thresholds together", () => {
+      // u1: 20000 + 20000 = 40000 period views, but each clip passes the
+      // per-post threshold while the user passes the total threshold too.
+      const rows = computePayouts(
+        [
+          { userId: "u1", views: 20000 },
+          { userId: "u1", views: 20000 },
+          { userId: "u2", views: 5000 },
+        ],
+        50,
+        { minViewsPerPost: 10000, minViewsPerTotal: 25000 }
+      );
+      assert.equal(rows.length, 1);
+      assert.deepEqual(rows[0], {
+        userId: "u1",
+        views: 40000,
+        clips: 2,
+        estimatedAmount: 20,
+      });
+    });
+
+    it("per-post drop can push a user under the total threshold", () => {
+      // u1's 20000-view clip survives per-post, but 20000 < 25000 total.
+      const rows = computePayouts(
+        [{ userId: "u1", views: 20000 }],
+        50,
+        { minViewsPerPost: 10000, minViewsPerTotal: 25000 }
+      );
+      assert.deepEqual(rows, []);
+    });
   });
 });
