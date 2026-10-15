@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase/service";
 import { extractYouTubeVideoId, fetchVideoStats } from "@/lib/youtube";
+import { fetchInstagramStats } from "@/lib/apify";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 300;
@@ -8,6 +9,7 @@ export const maxDuration = 300;
 interface ScanResult {
   scanned: number;
   youtubeUpdated: number;
+  instagramUpdated: number;
   skipped: { tiktok: number; x: number; instagram: number };
   errors: string[];
 }
@@ -40,6 +42,7 @@ export async function GET(request: NextRequest) {
   const result: ScanResult = {
     scanned: 0,
     youtubeUpdated: 0,
+    instagramUpdated: 0,
     skipped: { tiktok: 0, x: 0, instagram: 0 },
     errors: [],
   };
@@ -58,6 +61,7 @@ export async function GET(request: NextRequest) {
   result.scanned = clips?.length ?? 0;
 
   const youtubeClips: { id: string; videoId: string }[] = [];
+  const instagramClips: { id: string; url: string }[] = [];
   for (const clip of clips ?? []) {
     if (clip.platform === "youtube") {
       const videoId = extractYouTubeVideoId(clip.post_url);
@@ -71,7 +75,7 @@ export async function GET(request: NextRequest) {
     } else if (clip.platform === "x") {
       result.skipped.x += 1;
     } else if (clip.platform === "instagram") {
-      result.skipped.instagram += 1;
+      instagramClips.push({ id: clip.id, url: clip.post_url });
     }
   }
 
@@ -105,6 +109,42 @@ export async function GET(request: NextRequest) {
       result.errors.push(
         `${missing} YouTube clip(s) returned no stats (video deleted/private or API error)`
       );
+    }
+  }
+
+  // Instagram is fetched via Apify's instagram-scraper actor (best-effort
+  // scraping of public posts). Without APIFY_API_TOKEN these clips stay
+  // skipped — metrics are NEVER fabricated.
+  if (instagramClips.length > 0) {
+    if (!process.env.APIFY_API_TOKEN) {
+      result.skipped.instagram = instagramClips.length;
+      result.errors.push(
+        "Instagram stats skipped: set APIFY_API_TOKEN to enable Apify fetching"
+      );
+    } else {
+      const stats = await fetchInstagramStats(instagramClips.map((c) => c.url));
+      const rows = instagramClips
+        .filter((c) => stats.has(c.url))
+        .map((c) => {
+          const s = stats.get(c.url)!;
+          return { clip_id: c.id, views: s.views, likes: s.likes, comments: s.comments };
+        });
+      if (rows.length > 0) {
+        const { error: insertError } = await supabase
+          .from("clip_metric_snapshots")
+          .insert(rows);
+        if (insertError) {
+          result.errors.push(`instagram snapshot insert failed: ${insertError.message}`);
+        } else {
+          result.instagramUpdated = rows.length;
+        }
+      }
+      const missing = instagramClips.length - rows.length;
+      if (missing > 0) {
+        result.errors.push(
+          `${missing} Instagram clip(s) returned no stats (private/deleted post, or Apify rate limit/breakage)`
+        );
+      }
     }
   }
 
