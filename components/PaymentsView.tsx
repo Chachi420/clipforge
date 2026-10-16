@@ -12,7 +12,7 @@ const STATUS_LABEL: Record<PayoutCycle["status"], string> = {
   live: "Live", pending_review: "Pending", awaiting_mark_paid: "Awaiting admin Mark Paid", paid: "Paid",
 };
 
-const METHOD_OPTIONS: PayoutMethod[] = ["paypal", "usdt_eth", "usdc_eth"];
+const METHOD_OPTIONS: PayoutMethod[] = ["paypal", "upi", "usdt_eth", "usdc_eth"];
 
 export default function PaymentsView({
   cycles, methods,
@@ -119,7 +119,7 @@ export default function PaymentsView({
           {methods.length === 0 ? (
             <EmptyState
               title="No payment methods yet"
-              body="Add one to receive payouts — PayPal or crypto (USDT/USDC on Ethereum)."
+              body="Add one to receive payouts — UPI, PayPal or crypto (USDT/USDC on Ethereum)."
             />
           ) : (
             <div className="space-y-2">
@@ -232,12 +232,12 @@ export default function PaymentsView({
                 ))}
               </select>
             </Field>
-            <Field label={mType === "paypal" ? "PayPal email" : "Wallet address (Ethereum)"}>
+            <Field label={mType === "paypal" ? "PayPal email" : mType === "upi" ? "UPI ID" : "Wallet address (Ethereum)"}>
               <input
                 className={inputCls}
                 value={mId}
                 onChange={(e) => setMId(e.target.value)}
-                placeholder={mType === "paypal" ? "you@example.com" : "0x…"}
+                placeholder={mType === "paypal" ? "you@example.com" : mType === "upi" ? "name@upi" : "0x…"}
               />
             </Field>
             {error && <p className="rounded-md bg-status-error/10 px-3 py-2 text-sm text-status-error">{error}</p>}

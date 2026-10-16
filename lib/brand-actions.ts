@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { getBrand, getUserRole } from "./brand-db";
 import { isAdminUser } from "./admin";
-import type { Platform } from "./types";
+import type { Platform, PayoutMethod } from "./types";
 
 /**
  * Throws/redirects unless the caller is a signed-in user with
@@ -109,7 +109,7 @@ export interface CampaignBriefInput {
   daysLeft: number;
   minViewsPerPost: number;
   minViewsTotal: number;
-  payoutMethod: "paypal" | "usdt_eth" | "usdc_eth";
+  payoutMethod: PayoutMethod;
   rules: string;
   bountyPot?: number | null;
 }

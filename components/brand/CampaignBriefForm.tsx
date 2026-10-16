@@ -13,7 +13,7 @@ const TYPES: { value: CampaignBriefInput["type"]; label: string }[] = [
   // offered at brief creation — only payrate can be selected.
 ];
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
-const PAYOUT_METHODS: PayoutMethod[] = ["paypal", "usdt_eth", "usdc_eth"];
+const PAYOUT_METHODS: PayoutMethod[] = ["paypal", "usdt_eth", "usdc_eth", "upi"];
 
 export default function CampaignBriefForm() {
   const router = useRouter();
