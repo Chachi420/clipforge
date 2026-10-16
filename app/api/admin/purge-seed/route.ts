@@ -10,6 +10,15 @@ import { isAdminUser } from "@/lib/admin";
 const SEED_SLUGS = ["kick-clipping", "clix-and-lacy", "rumble"];
 
 export async function POST() {
+  return purge();
+}
+
+/** GET for one-click browser trigger (still admin-gated via session). */
+export async function GET() {
+  return purge();
+}
+
+async function purge() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!isAdminUser(user)) {
