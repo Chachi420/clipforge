@@ -75,14 +75,6 @@ export const campaigns: Campaign[] = [
     rules: "Private campaign — apply for access.",
   },
   {
-    id: "c_steak", slug: "steak", name: "Steak",
-    iconUrl: "", status: "paused", type: "per_view", category: "Gambling",
-    platforms: ["x", "youtube"], payoutMethod: "usdt_eth",
-    ratePer100k: 400, minViewsPerPost: 1000, minViewsTotal: 25000, daysLeft: 90,
-    startDate: "2026-08-01", durationMode: "budget", payoutMode: "payrate",
-    rules: "Campaign paused — tracking continues, new clips disabled.",
-  },
-  {
     id: "c_adin", slug: "adin-ross", name: "Adin Ross",
     iconUrl: "", status: "paused", type: "per_view", category: "TV & Streaming",
     platforms: ["tiktok", "instagram", "youtube"], payoutMethod: "paypal",

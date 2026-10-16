@@ -23,7 +23,7 @@ const TYPES = [
 ] as const;
 type TypeKey = (typeof TYPES)[number]["v"];
 // Gambling is a hard avoid (Online Gaming Act 2025) — never a filter option.
-const CATEGORIES = ["All categories", "IRL Content", "Brands", "Gaming", "Sports", "Podcasts", "Music", "TV & Streaming", "Other"];
+const CATEGORIES = ["All categories", "IRL Content", "Brands", "Sports", "Podcasts", "Music", "TV & Streaming", "Other"];
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
 
 // 16px+ on selects: iOS auto-zooms on focus below 16px.
