@@ -38,7 +38,7 @@ const CLIPPER_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "How are my views counted?",
-    a: "YouTube views come straight from the YouTube Data API. Instagram views are fetched through our view-tracking integration. Views are recorded as snapshots over time, so only genuine accumulated views count toward your earnings — sudden spikes get flagged for review.",
+    a: "YouTube views come straight from the YouTube Data API. Instagram views are fetched through our view-tracking integration. Views are recorded as snapshots every 30 minutes, so only genuine accumulated views count toward your earnings — sudden spikes get flagged for review.",
   },
   {
     q: "When do I get paid?",

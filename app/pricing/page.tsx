@@ -27,7 +27,7 @@ const FLOW = [
     icon: Wallet,
     step: "01",
     title: "Brands fund a campaign",
-    body: "A brand sets a budget cap and a per-view rate, then tops up their balance before anything goes live. Spend can never exceed the cap — when the budget runs out, the campaign pauses automatically.",
+    body: "A brand sets a budget cap and a per-view rate, then tops up their balance before anything goes live. Spend can never exceed the cap — when the budget runs out, the campaign pauses automatically. Unused budget is refunded when the campaign ends.",
   },
   {
     icon: Percent,
