@@ -44,7 +44,22 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  let user = null;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    // Stale/broken session (e.g. user was deleted server-side): drop the
+    // dead cookies so the visitor gets a clean logged-out state instead of
+    // crashing or looping.
+    user = null;
+    for (const c of request.cookies.getAll()) {
+      if (c.name.startsWith("sb-")) {
+        request.cookies.delete(c.name);
+        response.cookies.delete(c.name);
+      }
+    }
+  }
 
   if (!user && (pathname.startsWith("/dashboard") ||
       (pathname.startsWith("/brand") && pathname !== "/brand/login"))) {
