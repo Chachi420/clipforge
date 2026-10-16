@@ -18,7 +18,13 @@ export async function requireBrand() {
     throw new Error("Demo mode: connect Supabase to enable brand actions.");
   }
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  let user;
+  try {
+    const { data } = await supabase.auth.getUser();
+    user = data.user;
+  } catch {
+    user = null;
+  }
   if (!user) redirect("/brand/login");
 
   const role = await getUserRole(user.id);
