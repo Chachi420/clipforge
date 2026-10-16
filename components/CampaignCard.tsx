@@ -8,8 +8,8 @@ import { formatCompact } from "@/lib/format";
 
 function toneFor(status: Campaign["status"]) {
   if (status === "active") return "success";
-  if (status === "paused") return "warning";
-  if (status === "pending") return "warning";
+  if (status === "paused" || status === "pending") return "warning";
+  if (status === "private") return "default";
   return "default";
 }
 
@@ -18,9 +18,10 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
   const detailHref = `/dashboard/campaigns/${campaign.slug}`;
   const isPrivate = campaign.status === "private";
   // Legacy: pot mode was removed from the product, but old rows may still
-  // carry a pot value — render it honestly rather than dropping the number.
-  const isPot = campaign.payoutMode === "pot" && campaign.potValue;
-  const rate = isPot ? campaign.potValue! : campaign.ratePer100k;
+  // carry payout_mode='pot'. A pot with no value must never fall back to a
+  // $0 per-view rate — that reads as broken data.
+  const isPot = campaign.payoutMode === "pot";
+  const potValue = isPot ? campaign.potValue : null;
 
   return (
     <>
@@ -53,15 +54,31 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
           </span>
         </div>
 
-        {/* Rate hero */}
+        {/* Rate hero — one unit phrasing everywhere: per 100K verified views */}
         <div className="mt-4 flex items-center justify-between gap-3 rounded-card bg-ink/[0.04] px-4 py-3.5">
           <div className="flex items-baseline gap-2">
-            <span className="tnum text-[28px] font-extrabold leading-none tracking-tight text-ink">
-              ${formatCompact(rate)}
-            </span>
-            <span className="text-xs text-ink-faint">
-              {isPot ? "pot · split by view share" : "per 100K views"}
-            </span>
+            {isPot ? (
+              potValue ? (
+                <>
+                  <span className="tnum text-[28px] font-extrabold leading-none tracking-tight text-ink">
+                    ${formatCompact(potValue)}
+                  </span>
+                  <span className="text-xs text-ink-faint">pot · split by view share</span>
+                </>
+              ) : (
+                <>
+                  <span className="text-[28px] font-extrabold leading-none tracking-tight text-ink">TBA</span>
+                  <span className="text-xs text-ink-faint">prize pot · amount to be announced</span>
+                </>
+              )
+            ) : (
+              <>
+                <span className="tnum text-[28px] font-extrabold leading-none tracking-tight text-ink">
+                  ${formatCompact(campaign.ratePer100k)}
+                </span>
+                <span className="text-xs text-ink-faint">per 100K verified views</span>
+              </>
+            )}
           </div>
           {campaign.type === "bounty" && (
             <span className="flex shrink-0 items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[11px] font-bold text-paper">
