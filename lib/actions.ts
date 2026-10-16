@@ -91,20 +91,41 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   // campaignId. Campaigns are publicly readable, so this check is cheap.
   const { data: campaign, error: campaignError } = await supabase
     .from("campaigns")
-    .select("id, status, brand_id")
+    .select("id, status, brand_id, platforms")
     .eq("id", campaignId)
     .single();
   if (campaignError || !campaign) throw new Error("Campaign not found.");
   if ((campaign as any).status !== "active") {
     throw new Error("This campaign is not accepting clips right now.");
   }
+  // Platform gate: each clip's platform must be in the campaign's allowed list.
+  {
+    const allowed = (campaign as any).platforms as string[] | null;
+    if (allowed && allowed.length > 0) {
+      for (const u of urls) {
+        const urlLower = u.toLowerCase();
+        let detected: string | null = null;
+        if (urlLower.includes("youtube.com") || urlLower.includes("youtu.be")) detected = "youtube";
+        else if (urlLower.includes("tiktok.com")) detected = "tiktok";
+        else if (urlLower.includes("instagram.com")) detected = "instagram";
+        else if (urlLower.includes("x.com") || urlLower.includes("twitter.com")) detected = "x";
+        if (detected && !allowed.includes(detected)) {
+          throw new Error(`This campaign only accepts ${allowed.join(", ")} clips.`);
+        }
+      }
+    }
+  }
 
   // Balance gate: don't accept clips when the brand has $0 available.
   // brand_topups/payouts are not clipper-readable under RLS, so the
-  // service-role client does the sums.
+  // service-role client does the sums. FAIL CLOSED: if the service client
+  // is unavailable, reject the upload rather than silently skipping the check.
   const { createServiceClient } = await import("./supabase/service");
   const svc = createServiceClient();
-  if (svc) {
+  if (!svc) {
+    throw new Error("Upload verification unavailable — please try again in a moment.");
+  }
+  {
     const { data: topups } = await svc.from("brand_topups").select("amount").eq("brand_id", (campaign as any).brand_id);
     const funded = (topups ?? []).reduce((s: number, t: any) => s + Number(t.amount ?? 0), 0);
     const { data: cycles } = await svc
@@ -168,7 +189,14 @@ export async function uploadClips(campaignId: string, urls: string[]) {
         // API not configured or video unreadable — hold for review instead of guessing.
         prepared.push({ url, platform, handle: "", status: "pending_review" });
       } else if (!mine.some((a: any) => a.platform_user_id === channelId)) {
-        throw new Error("This YouTube video is not from one of your verified channels.");
+        // Manually-verified accounts have no platform_user_id — hold for admin
+        // review instead of rejecting (admin verifies channel ownership manually).
+        const manualAcct = mine.find((a: any) => a.platform === "youtube" && !a.platform_user_id);
+        if (manualAcct) {
+          prepared.push({ url, platform, handle: (manualAcct as any).handle, status: "pending_review" });
+        } else {
+          throw new Error("This YouTube video is not from one of your verified channels.");
+        }
       } else {
         const acct = mine.find((a: any) => a.platform_user_id === channelId);
         prepared.push({ url, platform, handle: (acct as any).handle, status: "pending_review" });

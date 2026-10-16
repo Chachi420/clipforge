@@ -261,7 +261,24 @@ export async function getPublicProfile(userId: string): Promise<ClipperProfile |
 }
 
 export async function getPublicClips(userId: string): Promise<Clip[]> {
-  return getUserClips(userId);
+  // Public profiles must show clips to visitors (RLS "own clips" blocks this),
+  // so use the service role. Only approved clips are public.
+  if (!useSupabase) return mock.clips.filter((c: any) => c.userId === userId);
+  const { createServiceClient } = await import("./supabase/service");
+  const svc = createServiceClient();
+  if (!svc) return [];
+  const { data, error } = await svc
+    .from("clips")
+    .select(CLIP_SELECT)
+    .eq("user_id", userId)
+    .eq("tracking_status", "approved")
+    .order("created_at", { ascending: false })
+    .limit(50);
+  if (error) {
+    console.error("[db] getPublicClips failed:", userId, error.message);
+    return [];
+  }
+  return (data ?? []).map(toClip);
 }
 
 // ---------- payouts ----------
