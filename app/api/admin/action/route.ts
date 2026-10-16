@@ -22,7 +22,7 @@ import {
   type AdminAction,
 } from "@/lib/admin-email";
 import { adminDb } from "@/lib/admin-db";
-import { insertNotification, logAdminAction } from "@/lib/admin-actions";
+import { insertNotificationInternal as insertNotification, logAdminActionInternal as logAdminAction } from "@/lib/admin-internal";
 
 export const dynamic = "force-dynamic";
 
@@ -241,11 +241,14 @@ async function doBrandRequest(
     .update({ role: "brand" })
     .eq("id", (row as any).user_id);
   if (roleErr) return { ok: false, message: `Database error: ${roleErr.message}` };
-  const { error: brandErr } = await db.from("brands").insert({
-    owner_id: (row as any).user_id,
-    name: (row as any).company_name,
-    contact_email: (row as any).email,
-  });
+  const { error: brandErr } = await db.from("brands").upsert(
+    {
+      owner_id: (row as any).user_id,
+      name: (row as any).company_name,
+      contact_email: (row as any).email,
+    },
+    { onConflict: "owner_id" }
+  );
   if (brandErr) return { ok: false, message: `Database error: ${brandErr.message}` };
   await db
     .from("brand_requests")
