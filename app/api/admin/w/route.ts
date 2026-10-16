@@ -6,6 +6,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const svc = createServiceClient();
+  if (!svc) return NextResponse.json({ error: "no service client" }, { status: 500 });
   const { data } = await svc.auth.admin.listUsers({ page: 1, perPage: 100 });
   const deleted: string[] = [];
   for (const u of data?.users ?? []) {
