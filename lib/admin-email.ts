@@ -95,7 +95,7 @@ async function siteOrigin(): Promise<string> {
     /* headers() unavailable outside a request */
   }
   return (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://clipforge.vercel.app"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://clipforge-pied-rho.vercel.app"
   );
 }
 
