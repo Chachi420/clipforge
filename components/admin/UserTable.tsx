@@ -85,7 +85,7 @@ export default function UserTable({ initial }: { initial: AdminUser[] }) {
                         value={u.role}
                         disabled={busy === u.id}
                         onChange={(e) => setConfirming({ id: u.id, role: e.target.value, name: u.displayName })}
-                        className="rounded-md border border-line bg-paper px-2 py-1.5 text-sm text-ink"
+                        className="rounded-md border border-line/10 bg-paper px-2 py-1.5 text-sm text-ink"
                       >
                         {ROLES.map((r) => (
                           <option key={r} value={r}>

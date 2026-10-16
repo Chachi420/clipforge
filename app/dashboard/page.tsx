@@ -120,7 +120,7 @@ export default async function DashboardHome() {
 
   return (
     <>
-      <Header title={`${greeting}, ${name}`} subtitle={dateStr} />
+      <Header title={`${greeting}, ${name.split(" ")[0]}`} subtitle={dateStr} />
       <div className="space-y-8 px-4 py-6 sm:px-8 sm:py-8">
         {(!hasVerifiedAccount || clips.length === 0) && (
           <OnboardingBanner

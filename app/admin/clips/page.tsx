@@ -37,7 +37,7 @@ export default async function AdminClipsPage({
             className={`rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors ${
               filter === f.key
                 ? "border-ink bg-ink text-paper"
-                : "border-line text-ink-soft hover:border-ink/40 hover:text-ink"
+                : "border-line/10 text-ink-soft hover:border-ink/40 hover:text-ink"
             }`}
           >
             {f.label}

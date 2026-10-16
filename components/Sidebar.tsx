@@ -71,7 +71,7 @@ export function SidebarNav({
         </span>
       </Link>
 
-      <div className="mx-4 border-t border-line" aria-hidden />
+      <div className="mx-4 border-t border-line/10" aria-hidden />
 
       {/* Primary nav */}
       <nav aria-label="Dashboard" className="flex-1 px-2 py-3">
@@ -104,7 +104,7 @@ export function SidebarNav({
       </nav>
 
       {/* Bottom: settings + sign out */}
-      <div className="border-t border-line px-2 py-3">
+      <div className="border-t border-line/10 px-2 py-3">
         <ul className="space-y-0.5">
           <li>
             <Link

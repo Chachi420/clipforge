@@ -102,7 +102,7 @@ export function DashboardShell({
   return (
     <MenuContext.Provider value={{ open, openMenu, closeMenu, menuButtonRef }}>
       <div className="flex min-h-screen bg-paper">
-        <aside className="hidden w-60 shrink-0 border-r border-line bg-paper lg:block">
+        <aside className="hidden w-60 shrink-0 border-r border-line/10 bg-paper lg:block">
           <div className="sticky top-0 h-screen">
             <SidebarNav profile={profile} />
           </div>
@@ -124,11 +124,11 @@ export function DashboardShell({
             aria-hidden
           />
           <div
-            className={`absolute left-0 top-0 flex h-full w-72 flex-col border-r border-line bg-paper transition-transform duration-[250ms] ease-out motion-reduce:transition-none ${
+            className={`absolute left-0 top-0 flex h-full w-72 flex-col border-r border-line/10 bg-paper transition-transform duration-[250ms] ease-out motion-reduce:transition-none ${
               entered ? "translate-x-0" : "-translate-x-full"
             }`}
           >
-            <div className="flex items-center justify-end border-b border-line px-2 py-1">
+            <div className="flex items-center justify-end border-b border-line/10 px-2 py-1">
               <button
                 ref={closeRef}
                 onClick={closeMenu}

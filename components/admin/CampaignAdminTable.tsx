@@ -124,7 +124,7 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
                           step="0.01"
                           value={rateValue}
                           onChange={(e) => setRateValue(e.target.value)}
-                          className="w-20 rounded-md border border-line bg-paper px-2 py-1 text-sm text-ink"
+                          className="w-20 rounded-md border border-line/10 bg-paper px-2 py-1 text-sm text-ink"
                         />
                         <Button onClick={() => handleRate(c.id)} disabled={busy === c.id} className="!px-2 !py-1 text-xs">
                           Save

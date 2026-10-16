@@ -21,7 +21,7 @@ export default function Header({
   const { openMenu, menuButtonRef } = useDashboardMenu();
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-paper">
+    <header className="sticky top-0 z-30 border-b border-line/10 bg-paper">
       <div className="flex min-h-[64px] items-center gap-2 px-4 sm:gap-3 sm:px-6">
         <button
           ref={(el) => {

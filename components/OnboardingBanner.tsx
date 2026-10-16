@@ -76,7 +76,7 @@ export default function OnboardingBanner({
           <X size={16} />
         </button>
       </div>
-      <ol className="mt-4 space-y-1">
+      <ol className="mt-4 grid gap-1 sm:grid-cols-2 sm:gap-x-4">
         {steps.map((s, i) => (
           <li key={s.title}>
             <Link
