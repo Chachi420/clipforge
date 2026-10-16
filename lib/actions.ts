@@ -512,3 +512,25 @@ export async function signOutAction() {
   await supabase.auth.signOut();
   redirect("/login");
 }
+
+/**
+ * Permanently delete the caller's account and all associated data.
+ * Uses the service role (admin) client — the profiles table has
+ * ON DELETE CASCADE from auth.users, so profile/brands/campaigns/clips
+ * rows are removed automatically.
+ */
+export async function deleteAccountAction() {
+  const supabase = createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+
+  const { createServiceClient } = await import("./supabase/service");
+  const svc = createServiceClient();
+  if (!svc) throw new Error("Account deletion is temporarily unavailable.");
+
+  const { error } = await svc.auth.admin.deleteUser(user.id);
+  if (error) throw new Error(error.message);
+
+  await supabase.auth.signOut();
+  redirect("/");
+}

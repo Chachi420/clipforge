@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Badge, Button, Card, inputCls } from "@/components/ui";
-import { signOutAction, updateProfile } from "@/lib/actions";
+import { deleteAccountAction, signOutAction, updateProfile } from "@/lib/actions";
 import { AUTH_PROVIDER_LABELS, type ClipperProfile } from "@/lib/types";
 
 function Heatmap({ data }: { data: number[] }) {
@@ -36,6 +36,9 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deleting, setDeleting] = useState(false);
   const router = useRouter();
 
   async function save(next?: { publicProfile?: boolean }) {
@@ -80,7 +83,7 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
               <div className="text-lg font-bold text-ink">{displayName}</div>
               <div className="flex items-center gap-2 text-sm text-ink-faint">
                 <Badge tone="success">{profile.status}</Badge>
-                <span>Joined {profile.joinedAt}</span>
+                <span>Joined {new Date(profile.joinedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}</span>
                 <span>·</span>
                 <span>{AUTH_PROVIDER_LABELS[profile.provider]} login</span>
               </div>
@@ -180,6 +183,67 @@ export default function SettingsView({ profile, activity }: { profile: ClipperPr
             <Button variant="outline" type="submit">Sign out</Button>
           </form>
         </div>
+
+        {/* Danger zone */}
+        <Card className="border-status-error/30 p-6">
+          <h3 className="mb-1 font-bold text-status-error">Danger zone</h3>
+          <p className="mb-4 text-sm text-ink-soft">
+            Permanently delete your account and all associated data — profile,
+            connected accounts, clips, and earnings history. This cannot be undone.
+          </p>
+          {!confirmDelete ? (
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDelete(true)}
+              className="border-status-error/40 text-status-error hover:bg-status-error/10"
+            >
+              Delete account
+            </Button>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-sm font-medium text-ink">
+                Type <span className="font-bold">DELETE</span> to confirm:
+              </p>
+              <input
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="DELETE"
+                className={`${inputCls} max-w-xs`}
+                autoComplete="off"
+              />
+              <div className="flex gap-2">
+                <form
+                  action={async () => {
+                    setDeleting(true);
+                    try {
+                      await deleteAccountAction();
+                    } catch (e: any) {
+                      // redirect() throws NEXT_REDIRECT on success — don't show as error
+                      if (!e?.message?.includes("NEXT_REDIRECT")) {
+                        setError(e.message ?? "Could not delete account.");
+                        setDeleting(false);
+                      }
+                    }
+                  }}
+                >
+                  <Button
+                    type="submit"
+                    disabled={deleteConfirmText !== "DELETE" || deleting}
+                    className="bg-status-error text-white hover:bg-status-error/90 disabled:opacity-40"
+                  >
+                    {deleting ? "Deleting…" : "Yes, delete my account"}
+                  </Button>
+                </form>
+                <Button
+                  variant="ghost"
+                  onClick={() => { setConfirmDelete(false); setDeleteConfirmText(""); }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </Card>
       </div>
     </>
   );

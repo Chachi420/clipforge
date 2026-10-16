@@ -37,7 +37,7 @@ export default function Header({
         <div className="min-w-0 flex-1">
           <h1 className="display truncate text-xl text-ink">{title}</h1>
           {subtitle && (
-            <p className="truncate text-sm text-ink-faint">{subtitle}</p>
+            <p className="text-sm text-ink-faint">{subtitle}</p>
           )}
         </div>
 
