@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://clipforge-pied-rho.vercel.app"),
   title: "ClipForge — The Pay-Per-View Clipping Marketplace",
   description:
-    "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view. Real rates up front, hard budget caps, no follower minimums.",
+    "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view. Real rates up front, hard budget caps, 1,000+ followers to verify.",
   alternates: { canonical: "/" },
   openGraph: {
     title: "ClipForge — The Pay-Per-View Clipping Marketplace",

@@ -10,7 +10,7 @@ import { EarningsCalculator } from "./calculator";
 export const metadata: Metadata = {
   title: "ClipForge for Clippers — Get Paid Per View",
   description:
-    "Post clips for real brand campaigns and earn per verified view. No follower minimums, no sign-up fee — payouts via PayPal or crypto.",
+    "Post clips for real brand campaigns and earn per verified view. 1,000+ followers to verify, no sign-up fee — payouts via PayPal or crypto.",
   alternates: { canonical: "/clip" },
 };
 
