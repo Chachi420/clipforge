@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/DashboardChrome";
 import { createClient } from "@/lib/supabase/server";
 import { getProfile, isLive } from "@/lib/db";
+import { getUserRole } from "@/lib/brand-db";
 import { profile as mockProfile } from "@/lib/mock";
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
@@ -10,6 +11,19 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const supabase = createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) redirect("/login");
+    // One role per account: brand-role users belong on the brand side.
+    try {
+      const role = await Promise.race([
+        getUserRole(user.id),
+        new Promise<string>((_, reject) =>
+          setTimeout(() => reject(new Error("role timeout")), 5000)
+        ),
+      ]);
+      if (role === "brand") redirect("/brand");
+    } catch (e) {
+      if (e instanceof Error && e.message.includes("NEXT_REDIRECT")) throw e;
+      // Role check failed — let the page load; don't block on infra hiccups.
+    }
     const p = await getProfile(user.id);
     if (p) {
       profile = p;
