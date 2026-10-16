@@ -9,14 +9,16 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
       { href: "/brands", label: "For Brands" },
       { href: "/pricing", label: "Pricing" },
       { href: "/faq", label: "FAQ" },
-      { href: "/trust", label: "Trust & Safety" },
-      { href: "/blog", label: "Blog" },
-      { href: "/docs", label: "Docs" },
     ],
   },
   {
     heading: "Company",
-    links: [{ href: "/contact", label: "Contact" }],
+    links: [
+      { href: "/contact", label: "Contact" },
+      { href: "/trust", label: "Trust & Safety" },
+      { href: "/blog", label: "Blog" },
+      { href: "/docs", label: "Docs" },
+    ],
   },
   {
     heading: "Legal",
