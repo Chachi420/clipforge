@@ -15,7 +15,8 @@ export const dynamic = "force-dynamic";
  */
 export default async function BrandLayout({ children }: { children: React.ReactNode }) {
   const pathname = headers().get("x-pathname");
-  if (pathname === "/brand/login") {
+  // Login and request-access pages render bare (no shell, no guard).
+  if (pathname === "/brand/login" || pathname === "/brand/request") {
     return <>{children}</>;
   }
 
@@ -24,7 +25,7 @@ export default async function BrandLayout({ children }: { children: React.ReactN
       <div className="flex min-h-screen bg-paper">
         <div className="hidden lg:block">
           <BrandSidebar
-            brand={{ name: "Demo Brand", contactEmail: "brand@example.com", logoUrl: "" }}
+            brand={{ name: "Your brand", contactEmail: "brand@example.com", logoUrl: "" }}
           />
         </div>
         <main className="min-w-0 flex-1">
@@ -37,10 +38,19 @@ export default async function BrandLayout({ children }: { children: React.ReactN
 
   let brand: { name: string; contactEmail: string; logoUrl: string };
   try {
-    ({ brand } = await requireBrand());
+    ({ brand } = await Promise.race([
+      requireBrand(),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("brand layout timeout")), 8000)
+      ),
+    ]));
   } catch (e) {
     // requireBrand redirects on auth failure; anything else → dashboard.
+    // Timeout (dead session) → brand login.
     if (e instanceof Error && e.message.includes("NEXT_REDIRECT")) throw e;
+    if (e instanceof Error && e.message.includes("timeout")) {
+      redirect("/brand/login?next=/brand/request");
+    }
     redirect("/dashboard");
   }
 
