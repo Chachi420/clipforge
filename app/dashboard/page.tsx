@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import Header from "@/components/Header";
+import Greeting from "./_components/Greeting";
 import CampaignCard from "@/components/CampaignCard";
 import OnboardingBanner from "@/components/OnboardingBanner";
 import { Button, Card, EmptyState, Stat } from "@/components/ui";
@@ -82,8 +82,6 @@ export default async function DashboardHome() {
   const unverifiedAccounts = accounts.filter((a) => !a.verified);
   const hasVerifiedAccount = accounts.some((a) => a.verified);
 
-  const hour = new Date().getHours();
-  const greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const dateStr = new Date().toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
@@ -120,7 +118,7 @@ export default async function DashboardHome() {
 
   return (
     <>
-      <Header title={`${greeting}, ${name.split(" ")[0]}`} subtitle={dateStr} />
+      <Greeting name={name} dateStr={dateStr} />
       <div className="space-y-8 px-4 py-6 sm:px-8 sm:py-8">
         {(!hasVerifiedAccount || clips.length === 0) && (
           <OnboardingBanner
