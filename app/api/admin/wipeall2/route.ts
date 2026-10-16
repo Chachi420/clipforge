@@ -9,11 +9,11 @@ export async function GET(request: Request) {
   }
   const svc = createServiceClient();
   if (!svc) return NextResponse.json({ error: "no svc" }, { status: 500 });
-  const { data } = await svc.auth.admin.listUsers({ page: 1, perPage: 100 });
-  const deleted: string[] = [];
-  for (const u of data?.users ?? []) {
-    const { error } = await svc.auth.admin.deleteUser(u.id);
-    if (!error) deleted.push(u.email ?? u.id);
-  }
-  return NextResponse.json({ deleted, count: deleted.length });
+  const email = `brandauto+${Date.now()}@clipforge.test`;
+  const { data, error } = await svc.auth.admin.createUser({
+    email, password: "TestAuto123!", email_confirm: true,
+    user_metadata: { display_name: "Auto Brand Test" },
+  });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  return NextResponse.json({ email, password: "TestAuto123!" });
 }
