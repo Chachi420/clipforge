@@ -49,13 +49,17 @@ export async function requireBrand() {
       .single();
     const name =
       (profile as any)?.display_name || (user.email ?? "Brand").split("@")[0];
+    // Upsert (not insert) — layout and page may race to create the brand.
     const { data, error } = await supabase
       .from("brands")
-      .insert({
-        owner_id: user.id,
-        name,
-        contact_email: user.email ?? (profile as any)?.email ?? "",
-      })
+      .upsert(
+        {
+          owner_id: user.id,
+          name,
+          contact_email: user.email ?? (profile as any)?.email ?? "",
+        },
+        { onConflict: "owner_id" }
+      )
       .select("*")
       .single();
     if (error) throw new Error(error.message);
