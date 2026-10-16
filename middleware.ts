@@ -43,6 +43,10 @@ export async function middleware(request: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       global: { fetch: fetchWithTimeout },
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (toSet: { name: string; value: string; options?: Parameters<typeof response.cookies.set>[2] }[]) => {

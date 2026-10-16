@@ -17,6 +17,12 @@ export function createClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       global: { fetch: fetchWithTimeout },
+      auth: {
+        // Server components only read the session; never try to refresh it.
+        // Refresh attempts with stale/invalid tokens hang instead of failing.
+        autoRefreshToken: false,
+        persistSession: false,
+      },
       cookies: {
         getAll: () => cookieStore.getAll(),
         setAll: (
