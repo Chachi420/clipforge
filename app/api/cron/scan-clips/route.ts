@@ -50,9 +50,10 @@ export async function GET(request: NextRequest) {
   };
 
   // Once-daily tick: this route runs every 30 min, so gating on UTC hour 0
-  // fires ~once per day. Decrement days_left on active campaigns; a campaign
+  // fires ~once per day (vercel.json: 0 2 * * * = 02:00 UTC).
+  // Decrement days_left on active campaigns; a campaign
   // that reaches 0 is auto-paused (brands/admins can resume it manually).
-  if (new Date().getUTCHours() === 0) {
+  if (new Date().getUTCHours() === 2) {
     const { data: ticking, error: tickError } = await supabase
       .from("campaigns")
       .select("id, days_left")

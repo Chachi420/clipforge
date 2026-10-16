@@ -151,10 +151,10 @@ export default function PricingPage() {
             </div>
 
             <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/brand/request" className="pill btn-liquid inline-flex min-h-[48px] items-center gap-2 px-7 text-sm font-semibold">
+              <Link href="/brand/login" className="pill btn-liquid inline-flex min-h-[48px] items-center gap-2 bg-ink px-7 text-sm font-semibold text-paper">
                 Start a campaign <ArrowRight size={16} />
               </Link>
-              <Link href="/login" className="pill inline-flex min-h-[48px] items-center px-7 text-sm font-semibold">
+              <Link href="/login" className="pill inline-flex min-h-[48px] items-center bg-ink px-7 text-sm font-semibold text-paper">
                 Start clipping
               </Link>
             </div>
