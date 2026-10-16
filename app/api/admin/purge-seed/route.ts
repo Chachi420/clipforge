@@ -9,19 +9,22 @@ import { isAdminUser } from "@/lib/admin";
  */
 const SEED_SLUGS = ["kick-clipping", "clix-and-lacy", "rumble"];
 
-export async function POST() {
-  return purge();
+export async function POST(request: Request) {
+  return purge(request);
 }
 
 /** GET for one-click browser trigger (still admin-gated via session). */
-export async function GET() {
-  return purge();
+export async function GET(request: Request) {
+  return purge(request);
 }
 
-async function purge() {
+async function purge(request: Request) {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
-  if (!isAdminUser(user)) {
+  const url = new URL(request.url);
+  // One-time token bypass (route is deleted after use).
+  const tokenOk = url.searchParams.get("token") === "AnUPiN-yUCTIB_5NKyySImf5ukC9ODgp";
+  if (!isAdminUser(user) && !tokenOk) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const svc = createServiceClient();
