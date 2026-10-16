@@ -29,10 +29,16 @@ export async function requireBrand() {
 
   const role = await getUserRole(user.id);
   // The owner (admin email) can always open the brand side — for QA, support,
-  // and demos. Everyone else needs the brand role.
-  // Non-brand users go to /brand/request (not the clipper dashboard) so they
-  // land on the access-request flow instead of a confusing silent bounce.
-  if (role !== "brand" && !isAdminUser(user)) redirect("/brand/request");
+  // and demos.
+  // Auto-provision: anyone signing in via the brand flow gets brand access
+  // immediately (role transitions to brand; one role per account, never dual).
+  if (role !== "brand" && !isAdminUser(user)) {
+    const { error: roleError } = await supabase
+      .from("profiles")
+      .update({ role: "brand" })
+      .eq("id", user.id);
+    if (roleError) throw new Error(roleError.message);
+  }
 
   let brand = await getBrand(user.id);
   if (!brand) {
