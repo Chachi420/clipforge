@@ -262,6 +262,12 @@ export async function addPaymentMethod(type: PayoutMethod, identifier: string) {
   const { supabase, userId } = await authed();
   const id = identifier.trim();
   if (!id) throw new Error("Enter your payment identifier.");
+  if (type === "upi" && !id.includes("@")) {
+    throw new Error("Enter a valid UPI ID (e.g. name@upi).");
+  }
+  if (type === "paypal" && !id.includes("@")) {
+    throw new Error("Enter a valid PayPal email.");
+  }
   const { data: existing } = await supabase.from("payment_methods").select("id").eq("user_id", userId);
   const { error } = await supabase.from("payment_methods").insert({
     user_id: userId, type, identifier: id, is_default: !existing || existing.length === 0,
@@ -533,4 +539,33 @@ export async function deleteAccountAction() {
 
   await supabase.auth.signOut();
   redirect("/");
+}
+
+/**
+ * Phone-callback request from the /brands page (public, no auth).
+ * Indian 10-digit mobile validation; stored for sales follow-up.
+ */
+export async function requestCallback(input: {
+  name: string;
+  phone: string;
+  company?: string;
+  message?: string;
+}) {
+  const name = (input.name ?? "").trim();
+  const digits = (input.phone ?? "").replace(/\D/g, "");
+  // Accept 10 digits, or 12 starting with 91 (country code).
+  const normalized = digits.startsWith("91") && digits.length === 12 ? digits.slice(2) : digits;
+  if (!name) throw new Error("Please enter your name.");
+  if (!/^[6-9]\d{9}$/.test(normalized)) {
+    throw new Error("Enter a valid 10-digit Indian mobile number.");
+  }
+  const supabase = createClient();
+  const { error } = await supabase.from("callback_requests").insert({
+    name,
+    phone: normalized,
+    company: (input.company ?? "").trim() || null,
+    message: (input.message ?? "").trim() || null,
+    status: "new",
+  });
+  if (error) throw new Error("Could not submit your request. Please try again.");
 }

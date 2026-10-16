@@ -3,8 +3,9 @@ import { redirect } from "next/navigation";
 import Greeting from "./_components/Greeting";
 import CampaignCard from "@/components/CampaignCard";
 import OnboardingBanner from "@/components/OnboardingBanner";
-import { Button, Card, EmptyState, Stat } from "@/components/ui";
-import { getCampaigns, getProfile, getUserClips, getUserPayouts, getUserPaymentMethods, getUserSocialAccounts, isLive } from "@/lib/db";
+import { Badge, Button, Card, EmptyState, PlatformDot, Stat } from "@/components/ui";
+import { PLATFORM_LABELS, type TrackingStatus } from "@/lib/types";
+import { getCampaigns, getFundedBrandIds, getProfile, getUserClips, getUserPayouts, getUserPaymentMethods, getUserSocialAccounts, isLive } from "@/lib/db";
 import { getSessionUser } from "@/lib/auth";
 import { isAdminUser } from "@/lib/admin";
 import { profile as mockProfile } from "@/lib/mock";
@@ -41,6 +42,9 @@ export default async function DashboardHome() {
   const campaigns = await getCampaigns(userId);
   const joinedActive = campaigns.filter((c) => c.isJoined && c.status === "active");
   const newCampaigns = campaigns.filter((c) => !c.isJoined && c.status === "active");
+  const fundedBrands = await getFundedBrandIds(
+    campaigns.map((c) => c.brandId).filter((b): b is string => Boolean(b))
+  );
 
   let payouts: PayoutCycle[] = [];
   let clips: Clip[] = [];
@@ -267,11 +271,66 @@ export default async function DashboardHome() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
               {joinedActive.slice(0, 3).map((c) => (
-                <CampaignCard key={c.id} campaign={c} />
+                <CampaignCard key={c.id} campaign={c} funded={fundedBrands.has(c.brandId ?? "")} />
               ))}
             </div>
           )}
         </section>
+
+        {/* Per-clip earnings pipeline — top clips by views */}
+        {clips.length > 0 && (
+          <section aria-labelledby="top-clips-heading">
+            <div className="mb-3 flex items-baseline justify-between">
+              <h2 id="top-clips-heading" className="display text-lg">
+                Your top clips
+              </h2>
+              <Link href="/dashboard/clips" className="text-sm font-medium text-ink-soft hover:text-ink">
+                View all clips →
+              </Link>
+            </div>
+            <Card className="divide-y divide-line/10">
+              {[...clips]
+                .sort((a, b) => b.views - a.views)
+                .slice(0, 5)
+                .map((clip) => {
+                  const tone: Record<TrackingStatus, "success" | "warning" | "error" | "default"> = {
+                    tracking: "success",
+                    pending_review: "warning",
+                    flagged: "error",
+                    not_tracking: "default",
+                  };
+                  const label: Record<TrackingStatus, string> = {
+                    tracking: "Tracking",
+                    pending_review: "Pending review",
+                    flagged: "Flagged",
+                    not_tracking: "Not tracking",
+                  };
+                  return (
+                    <div key={clip.id} className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card bg-ink/[0.06]">
+                        <PlatformDot platform={clip.platform} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="truncate text-sm font-semibold text-ink">
+                            {clip.accountHandle || PLATFORM_LABELS[clip.platform]}
+                          </span>
+                          <Badge tone={tone[clip.trackingStatus]}>{label[clip.trackingStatus]}</Badge>
+                        </div>
+                        <div className="tnum mt-0.5 text-xs text-ink-faint">
+                          {formatCompact(clip.views)} views · {formatCompact(clip.likes)} likes
+                        </div>
+                      </div>
+                      <div className="tnum shrink-0 text-right">
+                        <div className="text-base font-bold text-ink">{formatMoney(clip.payout)}</div>
+                        <div className="text-[11px] text-ink-faint">earned</div>
+                      </div>
+                    </div>
+                  );
+                })}
+            </Card>
+          </section>
+        )}
       </div>
     </>
   );
