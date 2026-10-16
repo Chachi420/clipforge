@@ -7,8 +7,9 @@ import { EarningsCalculator } from "@/app/clip/calculator";
 
 /* ------------------------------------------------------------------ */
 /* Hero (brief §10.2) — white. Kicker, massive H1, one-line subline,    */
-/* single CTA, typographic money-equation lockup labeled Illustrative. */
-/* Staggered entrance via Reveal (above the fold = plays on mount).    */
+/* dual CTAs (clippers + brands), typographic money-equation lockup    */
+/* labeled Illustrative. Staggered entrance via Reveal (above the fold  */
+/* = plays on mount).                                                  */
 /* ------------------------------------------------------------------ */
 export function HomeHero() {
   return (
@@ -23,7 +24,7 @@ export function HomeHero() {
         Brands post campaigns with a per-view rate. You clip, post, and earn per
         verified view — monthly payouts via PayPal or crypto.
       </Reveal>
-      <Reveal delay={240} className="mt-10">
+      <Reveal delay={240} className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <Link
           href="/login"
           className="group pill btn-liquid min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
@@ -34,6 +35,12 @@ export function HomeHero() {
             aria-hidden
             className="transition-transform duration-micro group-hover:translate-x-0.5"
           />
+        </Link>
+        <Link
+          href="/brand/login"
+          className="pill min-h-[52px] border border-ink/20 px-9 py-4 text-base font-semibold text-ink transition-colors duration-micro hover:bg-ink/5"
+        >
+          Run a campaign
         </Link>
       </Reveal>
 

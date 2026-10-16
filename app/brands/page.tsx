@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BarChart3, Check, Gauge, HandCoins, Users } from "lucide-react";
 import MarketingNav from "@/components/MarketingNav";
+import CallbackForm from "@/components/CallbackForm";
 import { Faq, MarketingFooter } from "@/components/marketing";
 import { Reveal } from "@/components/motion";
 
@@ -223,6 +224,13 @@ export default function BrandsLanding() {
           </Reveal>
           <Reveal delay={100} className="mt-10">
             <Faq items={FAQ_ITEMS} />
+          </Reveal>
+        </section>
+
+        {/* Talk to us — phone callback (India B2B motion) */}
+        <section aria-labelledby="brand-callback" className="mx-auto max-w-2xl px-6 py-10 md:py-16">
+          <Reveal>
+            <CallbackForm />
           </Reveal>
         </section>
 
