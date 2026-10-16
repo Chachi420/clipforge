@@ -24,7 +24,9 @@ export async function requireBrand() {
   const role = await getUserRole(user.id);
   // The owner (admin email) can always open the brand side — for QA, support,
   // and demos. Everyone else needs the brand role.
-  if (role !== "brand" && !isAdminUser(user)) redirect("/dashboard");
+  // Non-brand users go to /brand/request (not the clipper dashboard) so they
+  // land on the access-request flow instead of a confusing silent bounce.
+  if (role !== "brand" && !isAdminUser(user)) redirect("/brand/request");
 
   let brand = await getBrand(user.id);
   if (!brand) {
