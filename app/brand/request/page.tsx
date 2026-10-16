@@ -16,7 +16,44 @@ export default async function BrandRequestPage() {
   if (!user) redirect("/brand/login?next=/brand/request");
 
   // Already a brand? Go to the dashboard.
-  if ((await getUserRole(user.id)) === "brand") redirect("/brand");
+  const role = await getUserRole(user.id);
+  if (role === "brand") redirect("/brand");
+
+  // Clipper identity? One account = one role. Explain before showing the form.
+  if (role === "clipper") {
+    return (
+      <div className="relative flex min-h-screen items-center justify-center bg-paper px-4 py-10">
+        <div className="absolute right-4 top-4">
+          <ThemeToggle />
+        </div>
+        <Card className="w-full max-w-xl p-8 text-center">
+          <Link href="/" className="mx-auto block w-fit font-display text-lg font-bold tracking-tight text-ink">
+            CLIPFORGE
+          </Link>
+          <h1 className="display mt-4 text-2xl">This account is a clipper</h1>
+          <p className="mt-4 text-sm text-ink-soft">
+            Your account is registered as a <span className="font-semibold text-ink">clipper</span>.
+            One account can only hold one role — to run campaigns as a brand, delete
+            your clipper account first (Settings → Delete account), then sign up again
+            as a brand.
+          </p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Link href="/dashboard" className="pill bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft">
+              Go to clipper dashboard
+            </Link>
+            <Link href="/dashboard/settings" className="pill border border-line px-6 py-3 text-sm font-semibold text-ink transition-colors duration-micro hover:bg-ink/5">
+              Delete clipper account
+            </Link>
+          </div>
+          <p className="mt-6 text-xs text-ink-faint">
+            <Link href="/brand/login" className="font-semibold text-ink-soft hover:text-ink">
+              ← Back to brand sign in
+            </Link>
+          </p>
+        </Card>
+      </div>
+    );
+  }
 
   const existing = await getMyBrandRequest();
 
