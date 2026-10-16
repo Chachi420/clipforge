@@ -19,41 +19,9 @@ export default async function BrandRequestPage() {
   const role = await getUserRole(user.id);
   if (role === "brand") redirect("/brand");
 
-  // Clipper identity? One account = one role. Explain before showing the form.
-  if (role === "clipper") {
-    return (
-      <div className="relative flex min-h-screen items-center justify-center bg-paper px-4 py-10">
-        <div className="absolute right-4 top-4">
-          <ThemeToggle />
-        </div>
-        <Card className="w-full max-w-xl p-8 text-center">
-          <Link href="/" className="mx-auto block w-fit font-display text-lg font-bold tracking-tight text-ink">
-            CLIPFORGE
-          </Link>
-          <h1 className="display mt-4 text-2xl">This account is a clipper</h1>
-          <p className="mt-4 text-sm text-ink-soft">
-            Your account is registered as a <span className="font-semibold text-ink">clipper</span>.
-            One account can only hold one role — to run campaigns as a brand, delete
-            your clipper account first (Settings → Delete account), then sign up again
-            as a brand.
-          </p>
-          <div className="mt-6 flex justify-center gap-3">
-            <Link href="/dashboard" className="pill bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft">
-              Go to clipper dashboard
-            </Link>
-            <Link href="/dashboard/settings" className="pill border border-line px-6 py-3 text-sm font-semibold text-ink transition-colors duration-micro hover:bg-ink/5">
-              Delete clipper account
-            </Link>
-          </div>
-          <p className="mt-6 text-xs text-ink-faint">
-            <Link href="/brand/login" className="font-semibold text-ink-soft hover:text-ink">
-              ← Back to brand sign in
-            </Link>
-          </p>
-        </Card>
-      </div>
-    );
-  }
+  // Clippers land here to request brand access — the form below handles it.
+  // (Role transitions clipper → brand on approval; never dual roles.)
+  const isClipper = role === "clipper";
 
   const existing = await getMyBrandRequest();
 
@@ -67,6 +35,13 @@ export default async function BrandRequestPage() {
           CLIPFORGE
         </Link>
         <h1 className="display mt-4 text-center text-2xl">Request brand access</h1>
+        {isClipper && (
+          <p className="mt-3 rounded-card border border-line bg-ink/5 p-4 text-center text-sm text-ink-soft">
+            Your account is currently a <span className="font-semibold text-ink">clipper</span>.
+            Submit the form below — on approval your account transitions to
+            <span className="font-semibold text-ink"> brand</span> (one role per account).
+          </p>
+        )}
         {existing?.status === "pending" ? (
           <div className="mt-8 rounded-card border border-status-warning/25 bg-status-warning/10 p-6 text-center">
             <p className="font-semibold text-ink">Request under review</p>
