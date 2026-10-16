@@ -9,14 +9,14 @@ export async function GET(request: Request) {
   }
   const svc = createServiceClient();
   if (!svc) return NextResponse.json({ error: "no svc" }, { status: 500 });
+  const emails = (url.searchParams.get("emails") ?? "").split(",").filter(Boolean);
   const { data } = await svc.auth.admin.listUsers({ page: 1, perPage: 100 });
-  const { data: profiles } = await svc.from("profiles").select("id, email, role");
-  const pmap = new Map((profiles ?? []).map((p: any) => [p.id, p.role]));
-  return NextResponse.json({
-    users: (data?.users ?? []).map((u: any) => ({
-      email: u.email, id: u.id.slice(0, 8),
-      role: pmap.get(u.id) ?? "no-profile",
-      created: u.created_at.slice(0, 16),
-    })),
-  });
+  const deleted: string[] = [];
+  for (const u of data?.users ?? []) {
+    if (emails.includes(u.email ?? "")) {
+      const { error } = await svc.auth.admin.deleteUser(u.id);
+      if (!error) deleted.push(u.email ?? u.id);
+    }
+  }
+  return NextResponse.json({ deleted });
 }
