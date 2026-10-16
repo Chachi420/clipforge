@@ -154,7 +154,7 @@ export function Field({ label, children }: { label: string; children: ReactNode 
 }
 
 export const inputCls =
-  "w-full rounded-md border border-line/15 bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-faint/70 outline-none transition-colors duration-micro focus:border-ink/40";
+  "w-full rounded-md border border-line/15 bg-surface px-3.5 py-2.5 text-base text-ink placeholder:text-ink-faint/70 outline-none transition-colors duration-micro focus:border-ink/40 sm:text-sm";
 
 /** Monochrome platform marker (brief §6.1 — no hues; tonal grays only). */
 export function PlatformDot({ platform }: { platform: string }) {

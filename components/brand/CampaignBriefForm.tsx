@@ -5,7 +5,7 @@ import { Button, Card, Field, inputCls } from "@/components/ui";
 import { createCampaignBrief, type CampaignBriefInput } from "@/lib/brand-actions";
 import { PLATFORM_LABELS, PAYOUT_METHOD_LABELS, type Platform, type PayoutMethod } from "@/lib/types";
 
-const CATEGORIES = ["Music", "Gaming", "Lifestyle", "Tech", "Education", "Other"] as const;
+const CATEGORIES = ["Music", "Lifestyle", "Tech", "Education", "Other"] as const;
 const TYPES: { value: CampaignBriefInput["type"]; label: string }[] = [
   { value: "per_view", label: "Pay per view" },
   { value: "bounty", label: "Bounty" },
