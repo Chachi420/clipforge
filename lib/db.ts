@@ -28,6 +28,7 @@ function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
     payoutMode: row.payout_mode, potValue: row.pot_value ?? undefined,
     bountyPot: row.bounty_pot ?? undefined, accountLimit: row.account_limit ?? undefined,
     rules: row.rules, isJoined: joinedIds ? joinedIds.has(row.id) : (row.is_joined ?? false),
+    brandId: row.brand_id ?? undefined,
   };
 }
 
@@ -355,4 +356,61 @@ export async function getUserTeams(userId: string): Promise<Team[]> {
   return (data ?? []).map((r: any) => ({
     id: r.id, name: r.name, referralCode: r.referral_code, members: 0, commissionEarned: 0,
   }));
+}
+
+// ---------- brand funding status ----------
+
+/**
+ * Whether a brand has deposited funds (sum of brand_topups > 0).
+ * Powers the "Verified funds" badge on campaign cards — clippers can see
+ * the money exists before they post. Uses the service role because
+ * brand_topups is not clipper-readable under RLS.
+ * Fails silently (returns false) so a badge never blocks rendering.
+ */
+export async function getBrandFundedStatus(brandId: string): Promise<boolean> {
+  if (!useSupabase || !brandId) return false;
+  try {
+    const { createServiceClient } = await import("./supabase/service");
+    const svc = createServiceClient();
+    if (!svc) return false;
+    const { data, error } = await svc
+      .from("brand_topups")
+      .select("amount")
+      .eq("brand_id", brandId);
+    if (error) return false;
+    const total = (data ?? []).reduce((s: number, t: any) => s + Number(t.amount ?? 0), 0);
+    return total > 0;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Batch version for campaign lists — returns the set of brand ids
+ * that have deposited funds. One query instead of N.
+ */
+export async function getFundedBrandIds(brandIds: string[]): Promise<Set<string>> {
+  const funded = new Set<string>();
+  if (!useSupabase || brandIds.length === 0) return funded;
+  try {
+    const { createServiceClient } = await import("./supabase/service");
+    const svc = createServiceClient();
+    if (!svc) return funded;
+    const { data, error } = await svc
+      .from("brand_topups")
+      .select("brand_id, amount")
+      .in("brand_id", [...new Set(brandIds)]);
+    if (error) return funded;
+    const totals = new Map<string, number>();
+    for (const t of data ?? []) {
+      const id = (t as any).brand_id as string;
+      totals.set(id, (totals.get(id) ?? 0) + Number((t as any).amount ?? 0));
+    }
+    for (const [id, total] of totals) {
+      if (total > 0) funded.add(id);
+    }
+  } catch {
+    // fail silently — no badge is better than a broken page
+  }
+  return funded;
 }

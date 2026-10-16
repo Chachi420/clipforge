@@ -3,7 +3,7 @@
 export type Platform = "tiktok" | "instagram" | "youtube" | "x";
 export type CampaignStatus = "active" | "paused" | "private" | "pending";
 export type CampaignType = "per_view" | "bounty" | "pot";
-export type PayoutMethod = "paypal" | "usdt_eth" | "usdc_eth";
+export type PayoutMethod = "paypal" | "usdt_eth" | "usdc_eth" | "upi";
 export type TrackingStatus = "tracking" | "not_tracking" | "flagged" | "pending_review";
 
 export interface Campaign {
@@ -31,6 +31,8 @@ export interface Campaign {
   accountLimit?: number;
   rules: string;
   isJoined?: boolean;
+  /** brand that owns the campaign — used for the "Verified funds" badge */
+  brandId?: string;
 }
 
 export interface Bounty {
@@ -137,6 +139,7 @@ export const PAYOUT_METHOD_LABELS: Record<PayoutMethod, string> = {
   paypal: "PayPal",
   usdt_eth: "USDT (ETH)",
   usdc_eth: "USDC (ETH)",
+  upi: "UPI",
 };
 
 // ---------- brand side ----------
@@ -162,7 +165,6 @@ export interface BrandTopup {
 
 /** Campaign row enriched for the brand dashboard (spend, views, clips). */
 export interface BrandCampaign extends Campaign {
-  brandId: string | null;
   spend: number;
   totalViews: number;
   clipCount: number;

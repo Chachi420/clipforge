@@ -1,10 +1,10 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock, Eye, Trophy, Wallet } from "lucide-react";
-import { Badge, Button, Card, Dialog, PlatformDot } from "./ui";
+import { ArrowRight, BadgeCheck, Clock, Eye, Trophy, Wallet } from "lucide-react";
+import { Badge, Button, Card, Dialog, PlatformDot, ProgressBar } from "./ui";
 import { CAMPAIGN_STATUS_LABELS, PAYOUT_METHOD_LABELS, PLATFORM_LABELS, type Campaign } from "@/lib/types";
-import { formatCompact } from "@/lib/format";
+import { formatCompact, formatMoney } from "@/lib/format";
 
 function toneFor(status: Campaign["status"]) {
   if (status === "active") return "success";
@@ -13,7 +13,7 @@ function toneFor(status: Campaign["status"]) {
   return "default";
 }
 
-export default function CampaignCard({ campaign }: { campaign: Campaign }) {
+export default function CampaignCard({ campaign, funded = false, budgetUsed }: { campaign: Campaign; funded?: boolean; budgetUsed?: number }) {
   const [showPrivate, setShowPrivate] = useState(false);
   const detailHref = `/dashboard/campaigns/${campaign.slug}`;
   const isPrivate = campaign.status === "private";
@@ -39,7 +39,17 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
               <div className="micro-label mt-0.5">{campaign.category}</div>
             </div>
           </div>
-          <Badge tone={toneFor(campaign.status)}>{CAMPAIGN_STATUS_LABELS[campaign.status]}</Badge>
+          <div className="flex shrink-0 flex-col items-end gap-1.5">
+            <Badge tone={toneFor(campaign.status)}>{CAMPAIGN_STATUS_LABELS[campaign.status]}</Badge>
+            {funded && (
+              <span
+                className="flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[11px] font-bold text-paper"
+                title="This brand has deposited funds — payouts are backed by real money"
+              >
+                <BadgeCheck size={11} aria-hidden /> Verified funds
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Meta: time + qualification */}
@@ -98,6 +108,26 @@ export default function CampaignCard({ campaign }: { campaign: Campaign }) {
         <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-ink-faint">
           <Wallet size={11} aria-hidden /> {PAYOUT_METHOD_LABELS[campaign.payoutMethod]}
         </div>
+
+        {/* Budget progress — shows when the cap is known; spend bar when provided */}
+        {campaign.budgetCap != null && campaign.budgetCap > 0 && (
+          <div className="mt-3.5">
+            {budgetUsed != null ? (
+              <>
+                <ProgressBar pct={Math.min(100, (budgetUsed / campaign.budgetCap) * 100)} />
+                <div className="tnum mt-1.5 text-xs text-ink-soft">
+                  {formatMoney(budgetUsed)}{" "}
+                  <span className="text-ink-faint">of {formatMoney(campaign.budgetCap)} spent</span>
+                </div>
+              </>
+            ) : (
+              <div className="tnum text-xs text-ink-soft">
+                <span className="font-semibold text-ink">{formatMoney(campaign.budgetCap)}</span>{" "}
+                <span className="text-ink-faint">campaign budget</span>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="mt-4 flex-1" />
         {isPrivate ? (
