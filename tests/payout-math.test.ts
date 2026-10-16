@@ -103,13 +103,13 @@ describe("computePayouts", () => {
       userId: "u1",
       views: 100000,
       clips: 2,
-      estimatedAmount: 50,
+      estimatedAmount: 40, // 80% after 20% platform take
     });
     assert.deepEqual(rows[1], {
       userId: "u2",
       views: 200000,
       clips: 1,
-      estimatedAmount: 100,
+      estimatedAmount: 80, // 80% after 20% platform take
     });
   });
 
@@ -117,12 +117,12 @@ describe("computePayouts", () => {
     // The route feeds per-cycle deltas (latest snapshot − baseline).
     // computePayouts must not re-subtract anything.
     const rows = computePayouts([{ userId: "u1", views: 500000 }], 50);
-    assert.equal(rows[0].estimatedAmount, 250);
+    assert.equal(rows[0].estimatedAmount, 200); // 80% after 20% platform take
   });
 
   it("rounds fractional earnings to cents", () => {
     const rows = computePayouts([{ userId: "u1", views: 33333 }], 50);
-    assert.equal(rows[0].estimatedAmount, 16.67);
+    assert.equal(rows[0].estimatedAmount, 13.33); // 80% after 20% platform take
   });
 
   it("drops zero-view clips (no $0 noise rows)", () => {
@@ -167,7 +167,7 @@ describe("computePayouts", () => {
         userId: "u1",
         views: 200000,
         clips: 1,
-        estimatedAmount: 100,
+        estimatedAmount: 80, // 80% after 20% platform take
       });
     });
 
@@ -236,7 +236,7 @@ describe("computePayouts", () => {
         userId: "u1",
         views: 40000,
         clips: 2,
-        estimatedAmount: 20,
+        estimatedAmount: 16, // 80% after 20% platform take
       });
     });
 

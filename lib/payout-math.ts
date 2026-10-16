@@ -63,12 +63,18 @@ export interface PayoutOpts {
 }
 
 /**
+ * Platform take: 20% of the brand's per-100k rate is retained by ClipForge.
+ * Clippers earn 80%. Brands are charged the full ratePer100k.
+ */
+export const PLATFORM_TAKE_RATE = 0.2;
+
+/**
  * Aggregate per-clipper earnings from PER-CLIP PERIOD view counts.
  *
- * Earnings = (period views / 100,000) * ratePer100k, summed per user,
- * rounded to cents. Clips with zero views contribute zero. Rows with a zero
- * (or negative) estimated amount are dropped — no $0 noise rows for admin
- * review (there is no dismiss action, only "mark paid").
+ * Earnings = (period views / 100,000) * ratePer100k * (1 - PLATFORM_TAKE_RATE),
+ * summed per user, rounded to cents. Clips with zero views contribute zero.
+ * Rows with a zero (or negative) estimated amount are dropped — no $0 noise
+ * rows for admin review (there is no dismiss action, only "mark paid").
  *
  * Sub-minimum earnings are NOT dropped here — the route applies
  * MIN_PAYOUT_USD via payout_carryover after this returns.
@@ -94,7 +100,7 @@ export function computePayouts(
       userId,
       views: agg.views,
       clips: agg.clips,
-      estimatedAmount: roundCents((agg.views / 100000) * ratePer100k),
+      estimatedAmount: roundCents((agg.views / 100000) * ratePer100k * (1 - PLATFORM_TAKE_RATE)),
     }))
     .filter((r) => r.estimatedAmount > 0);
 }
