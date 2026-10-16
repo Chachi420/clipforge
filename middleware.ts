@@ -28,10 +28,21 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next({
     request: { headers: requestHeaders },
   });
+
+  // Fetch with a hard timeout: a stale/invalid session (e.g. user deleted
+  // server-side) makes Supabase's token refresh hang for ~16s, which shows
+  // as a stuck loading screen. Fail fast instead.
+  const fetchWithTimeout: typeof fetch = (url, init) => {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 4000);
+    return fetch(url, { ...init, signal: ctrl.signal }).finally(() => clearTimeout(t));
+  };
+
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      global: { fetch: fetchWithTimeout },
       cookies: {
         getAll: () => request.cookies.getAll(),
         setAll: (toSet: { name: string; value: string; options?: Parameters<typeof response.cookies.set>[2] }[]) => {
