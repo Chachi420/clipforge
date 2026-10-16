@@ -12,11 +12,37 @@ export const dynamic = "force-dynamic";
 /** Sales-led brand onboarding: sign in with Google, request access, we provision. */
 export default async function BrandRequestPage() {
   const supabase = createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+
+  // Fail fast: if the session is dead (e.g. user deleted), redirect to login
+  // instead of hanging on the loading screen.
+  let user;
+  try {
+    const { data } = await Promise.race([
+      supabase.auth.getUser(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("auth timeout")), 5000)
+      ),
+    ]) as any;
+    user = data?.user;
+  } catch {
+    redirect("/brand/login?next=/brand/request");
+  }
   if (!user) redirect("/brand/login?next=/brand/request");
 
+  // Verify the profile exists — a session for a deleted user must not hang here.
+  let role: string;
+  try {
+    role = await Promise.race([
+      getUserRole(user.id),
+      new Promise<string>((_, reject) =>
+        setTimeout(() => reject(new Error("role timeout")), 5000)
+      ),
+    ]);
+  } catch {
+    redirect("/brand/login?next=/brand/request");
+  }
+
   // Already a brand? Go to the dashboard.
-  const role = await getUserRole(user.id);
   if (role === "brand") redirect("/brand");
 
   // Clippers land here to request brand access — the form below handles it.
