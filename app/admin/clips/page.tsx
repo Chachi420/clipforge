@@ -19,7 +19,14 @@ export default async function AdminClipsPage({
 }) {
   const { status } = await searchParams;
   const filter = FILTERS.some((f) => f.key === status) ? status! : "pending_review";
-  const clips = await getAdminClips(filter);
+
+  let clips: Awaited<ReturnType<typeof getAdminClips>> = [];
+  let loadError: string | null = null;
+  try {
+    clips = await getAdminClips(filter);
+  } catch (e: any) {
+    loadError = e?.message ?? "Could not load clips.";
+  }
 
   return (
     <div className="space-y-6 px-4 py-6 sm:px-8 sm:py-8">
@@ -44,7 +51,13 @@ export default async function AdminClipsPage({
           </Link>
         ))}
       </div>
-      <ClipReviewQueue initial={clips} />
+      {loadError ? (
+        <div className="rounded-md border border-status-error/30 bg-status-error/10 px-4 py-3 text-sm text-status-error">
+          Could not load clips: {loadError}
+        </div>
+      ) : (
+        <ClipReviewQueue initial={clips} />
+      )}
     </div>
   );
 }

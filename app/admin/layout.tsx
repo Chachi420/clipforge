@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { getSessionUser } from "@/lib/auth";
 import { isAdminUser } from "@/lib/admin";
+import { signOutAction } from "@/lib/actions";
 import ThemeToggle from "@/components/ThemeToggle";
 
 export const dynamic = "force-dynamic";
@@ -52,9 +53,17 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <ThemeToggle />
-            <Link href="/dashboard" className="text-sm font-medium text-ink-soft hover:text-ink">
-              ← Back to dashboard
+            <Link href="/" className="text-sm font-medium text-ink-soft hover:text-ink">
+              Homepage
             </Link>
+            <form action={signOutAction}>
+              <button
+                type="submit"
+                className="text-sm font-medium text-ink-soft transition-colors hover:text-ink"
+              >
+                Log out
+              </button>
+            </form>
           </div>
         </div>
       </header>
