@@ -14,7 +14,7 @@ const TYPES: { value: CampaignBriefInput["type"]; label: string }[] = [
   // 'pot' payout_mode stays in the schema for legacy rows but is no longer
   // offered at brief creation — only payrate can be selected.
 ];
-const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
+const PLATFORMS: Platform[] = ["instagram", "youtube"];
 const PAYOUT_METHODS: PayoutMethod[] = ["paypal", "usdt_eth", "usdc_eth", "upi"];
 
 export default function CampaignBriefForm() {

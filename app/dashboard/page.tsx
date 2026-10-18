@@ -73,7 +73,8 @@ export default async function DashboardHome() {
       campaignId: p.campaignId,
       campaignName: p.campaignName,
       views,
-      estimated: (views / 100000) * rate,
+      // Clippers earn 80% — platform takes 20% (matches pricing page).
+      estimated: (views / 100000) * rate * 0.8,
     };
   });
   const liveEstimateTotal = liveEstimates.reduce((sum, e) => sum + e.estimated, 0);
@@ -229,6 +230,9 @@ export default async function DashboardHome() {
                 <p className="mt-2 text-xs text-ink-faint">
                   Priced from your latest view snapshots. The final payout is
                   calculated at cycle end and reviewed by admins before money moves.
+                </p>
+                <p className="mt-1 text-xs text-ink-faint">
+                  Payouts are calculated when the monthly cycle closes and sent manually by our team — there's no automatic withdrawal. You'll get a notification here when your payout is marked paid.
                 </p>
               </Card>
             </>

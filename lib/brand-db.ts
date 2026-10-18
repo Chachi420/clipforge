@@ -370,7 +370,8 @@ export async function getCampaignClippers(
       email: "",
       clips: u.clips,
       views: u.views,
-      earnings: (u.views / 100000) * rate,
+      // Clippers earn 80% — platform takes 20% (matches pricing page).
+      earnings: (u.views / 100000) * rate * 0.8,
     }))
     .sort((a, b) => b.views - a.views);
 }

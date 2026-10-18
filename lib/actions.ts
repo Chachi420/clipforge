@@ -98,6 +98,18 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   if ((campaign as any).status !== "active") {
     throw new Error("This campaign is not accepting clips right now.");
   }
+  // Join gate: the clipper must have joined this campaign. Eligibility is
+  // enforced at join time (lib/eligibility.ts); the UI hides uploads for
+  // non-members, but this server action is the trust boundary — enforce here.
+  const { data: membership } = await supabase
+    .from("campaign_members")
+    .select("user_id")
+    .eq("user_id", userId)
+    .eq("campaign_id", (campaign as any).id)
+    .maybeSingle();
+  if (!membership) {
+    throw new Error("Join this campaign before uploading clips.");
+  }
   // Platform gate: each clip's platform must be in the campaign's allowed list.
   {
     const allowed = (campaign as any).platforms as string[] | null;
@@ -159,6 +171,13 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   for (const url of clean) {
     assertValidClipUrl(url);
     const platform = detectPlatform(url)!;
+    // TikTok/X view tracking isn't built — reject before any platform handling.
+    {
+      const u = url.toLowerCase();
+      if (u.includes("tiktok.com") || u.includes("x.com") || u.includes("twitter.com")) {
+        throw new Error("TikTok/X tracking isn't live yet — upload from YouTube, Instagram instead.");
+      }
+    }
     const mine = byPlatform(platform);
     if (mine.length === 0) {
       throw new Error(

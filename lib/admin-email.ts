@@ -358,6 +358,7 @@ export interface PayoutReadyItem {
   views: number;
   clips: number;
   method: string | null;
+  address: string | null;
 }
 
 /**
@@ -382,6 +383,7 @@ export async function notifyPayoutsReady(input: {
         `<div style="font-size:13px;color:#555;margin-bottom:10px;">` +
         `${Number(p.views).toLocaleString("en-US")} views · ${p.clips} clip${p.clips === 1 ? "" : "s"}` +
         (p.method ? ` · ${esc(p.method)}` : "") +
+        (p.address ? `<br/>Pay to: <strong>${esc(p.address)}</strong>` : "") +
         `</div>` +
         btn("Mark paid", markPaid, "#111") +
         `</div>`

@@ -9,6 +9,10 @@ import EligibilitySection, {
   emptyEligibility,
   type EligibilityState,
 } from "@/components/brand/EligibilitySection";
+import ContentRequirementsSection, {
+  emptyContentRequirements,
+  type ContentRequirementsState,
+} from "@/components/brand/ContentRequirementsSection";
 import { PLATFORM_LABELS, type BrandCampaign, type EligibilityType, type Platform } from "@/lib/types";
 
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
@@ -29,6 +33,17 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
     minFollowers: campaign.minFollowers ? String(campaign.minFollowers) : "",
     minAvgViews: campaign.minAvgViews ? String(campaign.minAvgViews) : "",
     rateTiers: [],
+  });
+  const [content, setContent] = useState<ContentRequirementsState>({
+    promoFormats: campaign.promoFormats ?? ["video"],
+    aspectRatios: campaign.aspectRatios ?? ["9:16"],
+    minDurationSec: campaign.minDurationSec != null ? String(campaign.minDurationSec) : "",
+    maxDurationSec: campaign.maxDurationSec != null ? String(campaign.maxDurationSec) : "",
+    requiredHashtags: (campaign.requiredHashtags ?? []).join(", "),
+    requiredTags: (campaign.requiredTags ?? []).join(", "),
+    sourceMaterialUrl: campaign.sourceMaterialUrl ?? "",
+    minClipsExpected: String(campaign.minClipsExpected ?? 1),
+    requiresPreapproval: campaign.requiresPreapproval ?? false,
   });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
@@ -56,6 +71,10 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
       setBusy(false);
       return setMessage({ tone: "err", text: "Set a minimum average view count." });
     }
+    if (content.promoFormats.length === 0) {
+      setBusy(false);
+      return setMessage({ tone: "err", text: "Pick at least one promotion format." });
+    }
     const patch: CampaignSettingsPatch = {
       name,
       ratePer100k: Number(ratePer100k),
@@ -70,6 +89,15 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
       minFollowers: eligibility.type === "followers" ? Number(eligibility.minFollowers) : null,
       minAvgViews: eligibility.type === "engagement" ? Number(eligibility.minAvgViews) : null,
       rateTiers: eligibility.rateTiers,
+      promoFormats: content.promoFormats,
+      aspectRatios: content.aspectRatios.length > 0 ? content.aspectRatios : ["9:16"],
+      minDurationSec: content.minDurationSec.trim() === "" ? null : Number(content.minDurationSec) || null,
+      maxDurationSec: content.maxDurationSec.trim() === "" ? null : Number(content.maxDurationSec) || null,
+      requiredHashtags: content.requiredHashtags.split(",").map((s) => s.trim()).filter(Boolean),
+      requiredTags: content.requiredTags.split(",").map((s) => s.trim()).filter(Boolean),
+      sourceMaterialUrl: content.sourceMaterialUrl.trim() || null,
+      minClipsExpected: Number(content.minClipsExpected) || 1,
+      requiresPreapproval: content.requiresPreapproval,
     };
     try {
       await updateCampaignSettings(campaign.id, patch);
@@ -177,6 +205,9 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
         </div>
         <div className="border-t border-line/10 pt-5 sm:col-span-2">
           <EligibilitySection value={eligibility} onChange={setEligibility} />
+        </div>
+        <div className="border-t border-line/10 pt-5 sm:col-span-2">
+          <ContentRequirementsSection value={content} onChange={setContent} />
         </div>
         {message && (
           <p className={`text-sm sm:col-span-2 ${message.tone === "ok" ? "text-status-success" : "text-status-error"}`}>

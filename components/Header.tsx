@@ -1,13 +1,15 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Bell, Menu } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useDashboardMenu } from "./DashboardChrome";
+import { getUnreadNotificationCount } from "@/app/dashboard/notifications/page";
 
 /**
  * Sticky page header: hamburger (mobile), page H1 + subtitle, then the
- * page-primary action slot, a reserved (disabled) notifications bell, and
- * the theme toggle.
+ * page-primary action slot, the notifications bell, and the theme toggle.
  */
 export default function Header({
   title,
@@ -43,18 +45,44 @@ export default function Header({
 
         {action}
 
-        {/* Notifications: slot reserved for Phase 2. Bell is present but disabled. */}
-        <button
-          disabled
-          aria-label="Notifications — coming soon"
-          title="Notifications — coming soon"
-          className="flex h-11 w-11 shrink-0 cursor-not-allowed items-center justify-center rounded-md text-ink-faint opacity-60"
-        >
-          <Bell size={18} aria-hidden />
-        </button>
+        <NotificationBell />
 
         <ThemeToggle />
       </div>
     </header>
+  );
+}
+
+/** Bell linking to the notifications inbox, with an unread-count badge. */
+function NotificationBell() {
+  const [unread, setUnread] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getUnreadNotificationCount()
+      .then((n) => {
+        if (!cancelled) setUnread(n);
+      })
+      .catch(() => {
+        if (!cancelled) setUnread(0);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return (
+    <Link
+      href="/dashboard/notifications"
+      aria-label={unread ? `${unread} unread notifications` : "Notifications"}
+      className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-ink transition-colors hover:bg-ink/5"
+    >
+      <Bell size={18} aria-hidden />
+      {unread != null && unread > 0 && (
+        <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-[10px] font-bold leading-none text-paper">
+          {unread > 99 ? "99+" : unread}
+        </span>
+      )}
+    </Link>
   );
 }

@@ -285,6 +285,53 @@ export async function GET(request: NextRequest) {
         }
       );
 
+      // Rate tiers: brands can configure follower-band multipliers
+      // (campaign_rate_tiers). Look up each clipper's best verified follower
+      // count and apply their tier multiplier to the payout. No tiers →
+      // multiplier 1 (existing behavior). Applied to the delta earnings only,
+      // not to carried balances (those were priced in their own cycle).
+      const tierMultiplierByUser = new Map<string, number>();
+      {
+        const candidateIds = [...new Set(payoutCandidates.map((r) => r.userId))];
+        const { data: tiers } = await supabase
+          .from("campaign_rate_tiers")
+          .select("min_followers, multiplier")
+          .eq("campaign_id", campaign.id)
+          .order("min_followers", { ascending: false });
+        if (tiers && tiers.length > 0 && candidateIds.length > 0) {
+          const { data: accounts } = await supabase
+            .from("social_accounts")
+            .select("user_id, follower_count")
+            .in("user_id", candidateIds)
+            .eq("verified", true);
+          const bestByUser = new Map<string, number>();
+          for (const a of (accounts ?? []) as any[]) {
+            const cur = bestByUser.get(a.user_id) ?? 0;
+            bestByUser.set(a.user_id, Math.max(cur, Number(a.follower_count ?? 0)));
+          }
+          for (const uid of candidateIds) {
+            const best = bestByUser.get(uid) ?? 0;
+            let mult = 1.0;
+            if (best > 0) {
+              for (const t of tiers as any[]) {
+                if (best >= Number(t.min_followers)) {
+                  mult = Number(t.multiplier);
+                  break;
+                }
+              }
+            }
+            tierMultiplierByUser.set(uid, mult);
+          }
+          // Apply multipliers to this cycle's delta earnings.
+          for (const r of payoutCandidates) {
+            const mult = tierMultiplierByUser.get(r.userId) ?? 1.0;
+            if (mult !== 1.0) {
+              r.estimatedAmount = roundCents(r.estimatedAmount * mult);
+            }
+          }
+        }
+      }
+
       // P1-10: payment method snapshot — default method per clipper, else
       // the most recent one (created_at desc → first row wins).
       const userIds = [...new Set(payoutCandidates.map((r) => r.userId))];
@@ -370,6 +417,39 @@ export async function GET(request: NextRequest) {
           .from("payouts")
           .upsert(payoutRows, { onConflict: "cycle_id,user_id", ignoreDuplicates: true });
         if (payError) throw new Error(`payouts insert failed: ${payError.message}`);
+      }
+
+      // Per-clip earned amounts: write this cycle's earnings onto each
+      // qualifying clip's `payout` column (after 20% take, after tier
+      // multiplier) so the dashboard's per-clip "earned" stops showing $0.
+      // NOTE: requires a `payout numeric` column on clips (migration pending).
+      // Best-effort: a missing column must never fail the close.
+      try {
+        const qualifiedUsers = new Set(payoutCandidates.map((r) => r.userId));
+        const minPost = Number(campaign.min_views_per_post ?? 0);
+        const clipPayouts: { id: string; payout: number }[] = [];
+        for (const c of (clips ?? []) as any[]) {
+          if (!qualifiedUsers.has(c.user_id)) continue;
+          const periodViews = Math.max(0, (viewsNow.get(c.id) ?? 0) - (viewsPrev.get(c.id) ?? 0));
+          if (periodViews < minPost) continue;
+          const mult = tierMultiplierByUser.get(c.user_id) ?? 1.0;
+          clipPayouts.push({
+            id: c.id,
+            payout: roundCents((periodViews / 100000) * rate * 0.8 * mult),
+          });
+        }
+        // Chunked parallel updates; each is idempotent for this cycle.
+        const CHUNK = 25;
+        for (let i = 0; i < clipPayouts.length; i += CHUNK) {
+          await Promise.all(
+            clipPayouts.slice(i, i + CHUNK).map((cp) =>
+              supabase.from("clips").update({ payout: cp.payout }).eq("id", cp.id)
+            )
+          );
+        }
+      } catch {
+        // clips.payout column not migrated yet — dashboard keeps showing $0
+        // until the migration runs, but the close itself succeeded.
       }
 
       if (carryUpdates.length > 0) {
@@ -467,7 +547,7 @@ export async function GET(request: NextRequest) {
       try {
         const { data: readyPayouts } = await supabase
           .from("payouts")
-          .select("id, estimated_amount, total_views, total_clips, method, profiles(display_name)")
+          .select("id, estimated_amount, total_views, total_clips, method, address, profiles(display_name)")
           .eq("cycle_id", liveCycle.id);
         if (readyPayouts && readyPayouts.length > 0) {
           const mod = (await import("@/lib/admin-email")) as {
@@ -482,6 +562,7 @@ export async function GET(request: NextRequest) {
                 views: number;
                 clips: number;
                 method?: string;
+                address?: string;
               }[];
             }) => Promise<unknown>;
           };
@@ -497,6 +578,7 @@ export async function GET(request: NextRequest) {
                 views: Number(p.total_views ?? 0),
                 clips: Number(p.total_clips ?? 0),
                 method: p.method ?? undefined,
+                address: p.address ?? undefined,
               })),
             });
           }

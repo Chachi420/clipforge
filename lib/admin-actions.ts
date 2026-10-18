@@ -1,6 +1,7 @@
 "use server";
 
 import { adminDb } from "./admin-db";
+import { insertNotificationInternal, logAdminActionInternal } from "./admin-internal";
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "./auth";
 import { isAdminUser, ADMIN_EMAIL } from "./admin";
@@ -68,7 +69,7 @@ export async function approveAccount(id: string, followerCount: number) {
     })
     .eq("id", id);
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "account.approve",
     targetType: "social_account",
@@ -76,6 +77,14 @@ export async function approveAccount(id: string, followerCount: number) {
     summary: `Verified ${(acct as any)?.platform ?? ""} account ${(acct as any)?.handle ?? id}`,
     metadata: { followerCount: Math.max(0, Math.floor(Number(followerCount) || 0)) },
   });
+  if ((acct as any)?.user_id) {
+    await insertNotificationInternal(
+      (acct as any).user_id,
+      "account_verified",
+      `${(acct as any)?.platform ?? "Social"} account verified`,
+      `@${(acct as any)?.handle ?? ""} is now verified and can be used for uploads.`
+    );
+  }
   revalidatePath("/admin/verifications");
 }
 
@@ -85,18 +94,26 @@ export async function rejectAccount(id: string) {
   const db = adminDb();
   const { data: acct } = await db
     .from("social_accounts")
-    .select("platform, handle")
+    .select("platform, handle, user_id")
     .eq("id", id)
     .single();
   const { error } = await db.from("social_accounts").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "account.reject",
     targetType: "social_account",
     targetId: id,
     summary: `Rejected ${(acct as any)?.platform ?? ""} account ${(acct as any)?.handle ?? id} (removed)`,
   });
+  if ((acct as any)?.user_id) {
+    await insertNotificationInternal(
+      (acct as any).user_id,
+      "account_rejected",
+      `${(acct as any)?.platform ?? "Social"} account not verified`,
+      "We couldn't verify your account. Check the bio code and try again."
+    );
+  }
   revalidatePath("/admin/verifications");
 }
 
@@ -109,6 +126,7 @@ export interface PendingPayout {
   period: string;
   amount: number;
   method: string | null;
+  address: string | null;
   totalViews: number;
   totalClips: number;
 }
@@ -119,7 +137,7 @@ export async function getPendingPayouts(): Promise<PendingPayout[]> {
   const { data, error } = await db
     .from("payouts")
     .select(
-      "id, estimated_amount, method, total_views, total_clips, profiles!inner(email, display_name), payout_cycles!inner(cycle_number, period_start, period_end, campaigns!inner(name))"
+      "id, estimated_amount, method, address, total_views, total_clips, profiles!inner(email, display_name), payout_cycles!inner(cycle_number, period_start, period_end, campaigns!inner(name))"
     )
     .eq("status", "pending")
     .order("created_at", { ascending: true });
@@ -135,6 +153,7 @@ export async function getPendingPayouts(): Promise<PendingPayout[]> {
       period: `${c?.period_start ?? ""} → ${c?.period_end ?? ""}`,
       amount: Number(r.estimated_amount ?? 0),
       method: r.method ?? null,
+      address: r.address ?? null,
       totalViews: r.total_views ?? 0,
       totalClips: r.total_clips ?? 0,
     };
@@ -156,7 +175,7 @@ export async function markPayoutPaid(id: string) {
     .update({ status: "paid", final_amount: Number(row?.estimated_amount ?? 0) })
     .eq("id", id);
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "payout.mark_paid",
     targetType: "payout",
@@ -260,13 +279,27 @@ export async function approveCampaign(id: string) {
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "campaign.approve",
     targetType: "campaign",
     targetId: id,
     summary: `Approved campaign “${(camp as any).name ?? id}” (now live)`,
   });
+  // Notify the brand owner.
+  const { data: brand } = await db
+    .from("brands")
+    .select("owner_id")
+    .eq("id", (camp as any).brand_id)
+    .single();
+  if ((brand as any)?.owner_id) {
+    await insertNotificationInternal(
+      (brand as any).owner_id,
+      "campaign_approved",
+      `Campaign is live: ${(camp as any).name}`,
+      "Your campaign brief was approved and is now accepting clips."
+    );
+  }
   revalidatePath("/admin");
   revalidatePath("/brand", "layout");
 }
@@ -285,7 +318,7 @@ export async function rejectCampaign(id: string, reason: string) {
   if (!row) throw new Error("Pending campaign not found.");
   const { error } = await db.from("campaigns").delete().eq("id", id);
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "campaign.reject",
     targetType: "campaign",
@@ -342,7 +375,7 @@ export async function recordTopup(input: {
     recorded_by: user.id,
   });
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "topup.record",
     targetType: "brand",
@@ -497,11 +530,14 @@ export async function approveBrandRequest(id: string) {
     .eq("id", (row as any).user_id);
   if (roleErr) throw new Error(roleErr.message);
 
-  const { error: brandErr } = await db.from("brands").insert({
-    owner_id: (row as any).user_id,
-    name: (row as any).company_name,
-    contact_email: (row as any).email,
-  });
+  const { error: brandErr } = await db.from("brands").upsert(
+    {
+      owner_id: (row as any).user_id,
+      name: (row as any).company_name,
+      contact_email: (row as any).email,
+    },
+    { onConflict: "owner_id" }
+  );
   if (brandErr) throw new Error(brandErr.message);
 
   const { error: reqErr } = await db
@@ -510,7 +546,7 @@ export async function approveBrandRequest(id: string) {
     .eq("id", id);
   if (reqErr) throw new Error(reqErr.message);
 
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "brand_request.approve",
     targetType: "brand_request",
@@ -536,7 +572,7 @@ export async function rejectBrandRequest(id: string) {
     .eq("id", id)
     .eq("status", "pending");
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "brand_request.reject",
     targetType: "brand_request",
@@ -565,8 +601,8 @@ export async function notifyUser(userId: string, type: string, title: string, bo
  * bundles — import only from server code.
  */
 export async function insertNotification(userId: string, type: string, title: string, body: string) {
-  const db = adminDb();
-  await db.from("notifications").insert({ user_id: userId, type, title, body });
+  await requireAdmin();
+  await insertNotificationInternal(userId, type, title, body);
 }
 
 export interface AuditEntry {
@@ -580,9 +616,10 @@ export interface AuditEntry {
 }
 
 /**
- * Record an admin decision in the audit log. Unguarded by design — callers
- * are server actions (already past requireAdmin) or the signed email-action
- * route (HMAC token IS the authorization). Import only from server code.
+ * Record an admin decision in the audit log.
+ * Guarded: only callable by admin (server action).
+ * Server-side callers with their own auth (HMAC email-action route)
+ * should import logAdminActionInternal from ./admin-internal instead.
  */
 export async function logAdminAction(input: {
   actor: string;
@@ -592,15 +629,8 @@ export async function logAdminAction(input: {
   summary: string;
   metadata?: Record<string, unknown>;
 }) {
-  const db = adminDb();
-  await db.from("admin_audit_log").insert({
-    actor: input.actor,
-    action: input.action,
-    target_type: input.targetType,
-    target_id: input.targetId,
-    summary: input.summary,
-    metadata: input.metadata ?? {},
-  });
+  await requireAdmin();
+  await logAdminActionInternal(input);
 }
 
 /** Latest audit entries for the admin activity viewer. */
@@ -718,7 +748,7 @@ export async function reviewClip(
       .update({ tracking_status: "tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
-    await logAdminAction({
+    await logAdminActionInternal({
       actor: PANEL_ACTOR,
       action: "clip.approve",
       targetType: "clip",
@@ -739,7 +769,7 @@ export async function reviewClip(
       .update({ tracking_status: "not_tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
-    await logAdminAction({
+    await logAdminActionInternal({
       actor: PANEL_ACTOR,
       action: "clip.reject",
       targetType: "clip",
@@ -762,7 +792,7 @@ export async function reviewClip(
       .update({ tracking_status: "flagged", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
-    await logAdminAction({
+    await logAdminActionInternal({
       actor: PANEL_ACTOR,
       action: "clip.flag",
       targetType: "clip",
@@ -783,7 +813,7 @@ export async function reviewClip(
       .update({ tracking_status: "tracking", reviewed_by: user.id, reviewed_at: now, review_note: cleanNote })
       .eq("id", id);
     if (error) throw new Error(error.message);
-    await logAdminAction({
+    await logAdminActionInternal({
       actor: PANEL_ACTOR,
       action: "clip.unflag",
       targetType: "clip",
@@ -835,7 +865,7 @@ export async function reviewClipsBulk(
     .in("id", eligible.map((c) => c.id));
   if (error) throw new Error(error.message);
   // One audit row per bulk run (not per clip — keeps the log readable).
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: action === "approve" ? "clip.bulk_approve" : "clip.bulk_reject",
     targetType: "clip",
@@ -1005,7 +1035,7 @@ export async function setClipperStatus(id: string, status: "active" | "suspended
   const { data: profile } = await db.from("profiles").select("display_name").eq("id", id).single();
   const { error } = await db.from("profiles").update({ status }).eq("id", id).eq("role", "clipper");
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: status === "suspended" ? "clipper.suspend" : "clipper.reactivate",
     targetType: "clipper",
@@ -1091,7 +1121,7 @@ export async function setBrandStatus(id: string, status: "active" | "suspended",
   if (status === "suspended") {
     await db.from("campaigns").update({ status: "paused" }).eq("brand_id", id).eq("status", "active");
   }
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: status === "suspended" ? "brand.suspend" : "brand.reactivate",
     targetType: "brand",
@@ -1151,7 +1181,7 @@ export async function updateUserRole(id: string, role: string) {
   const { data: profile } = await db.from("profiles").select("display_name, role").eq("id", id).single();
   const { error } = await db.from("profiles").update({ role }).eq("id", id);
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "user.role_change",
     targetType: "user",
@@ -1224,7 +1254,7 @@ export async function updateCampaignRate(id: string, ratePer100k: number) {
     .eq("id", id)
     .in("status", ["active", "paused", "pending"]);
   if (error) throw new Error(error.message);
-  await logAdminAction({
+  await logAdminActionInternal({
     actor: PANEL_ACTOR,
     action: "campaign.rate_change",
     targetType: "campaign",

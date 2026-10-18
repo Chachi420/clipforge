@@ -42,7 +42,7 @@ const COLUMNS: { heading: string; external?: boolean; links: { href: string; lab
     links: [
       { href: "https://chatgpt.com/?q=What+is+ClipForge+clipping+marketplace", label: "ChatGPT" },
       { href: "https://claude.ai/new?q=What+is+ClipForge+clipping+marketplace", label: "Claude" },
-      { href: "https://gemini.google.com/share/placeholder?q=What+is+ClipForge", label: "Gemini" },
+      { href: "https://gemini.google.com/", label: "Gemini" },
       { href: "https://www.perplexity.ai/search?q=What+is+ClipForge+clipping+marketplace", label: "Perplexity" },
     ],
   },

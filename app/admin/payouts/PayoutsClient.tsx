@@ -75,6 +75,11 @@ export default function PayoutsClient({ initial }: { initial: PendingPayout[] })
                   ) : (
                     <span className="text-xs text-ink-faint">Not set</span>
                   )}
+                  {p.address && (
+                    <div className="mt-1 max-w-[220px] truncate font-mono text-xs text-ink-soft" title={p.address}>
+                      {p.address}
+                    </div>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-right font-bold text-status-success">
                   {formatMoney(p.amount)}

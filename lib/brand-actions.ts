@@ -4,7 +4,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { getBrand, getUserRole } from "./brand-db";
-import { isAdminUser } from "./admin";
+import { isAdminUser, ADMIN_EMAIL } from "./admin";
+import { adminDb } from "./admin-db";
+import { insertNotificationInternal } from "./admin-internal";
 import type { Platform, PayoutMethod, EligibilityType, RateTier } from "./types";
 
 /**
@@ -246,6 +248,15 @@ export interface CampaignSettingsPatch {
   minFollowers?: number | null;
   minAvgViews?: number | null;
   rateTiers?: RateTier[];
+  promoFormats?: string[];
+  aspectRatios?: string[];
+  minDurationSec?: number | null;
+  maxDurationSec?: number | null;
+  requiredHashtags?: string[];
+  requiredTags?: string[];
+  sourceMaterialUrl?: string | null;
+  minClipsExpected?: number;
+  requiresPreapproval?: boolean;
 }
 
 /** Brand edits settings on their own campaign (pending or live). */
@@ -284,6 +295,21 @@ export async function updateCampaignSettings(campaignId: string, patch: Campaign
     update.min_followers = patch.minFollowers == null ? null : Math.max(0, Math.floor(patch.minFollowers));
   if (patch.minAvgViews !== undefined)
     update.min_avg_views = patch.minAvgViews == null ? null : Math.max(0, Math.floor(patch.minAvgViews));
+  if (patch.promoFormats !== undefined) {
+    if (patch.promoFormats.length === 0) throw new Error("Pick at least one promotion format.");
+    update.promo_formats = patch.promoFormats;
+  }
+  if (patch.aspectRatios !== undefined)
+    update.aspect_ratios = patch.aspectRatios.length > 0 ? patch.aspectRatios : ["9:16"];
+  if (patch.minDurationSec !== undefined) update.min_duration_sec = patch.minDurationSec;
+  if (patch.maxDurationSec !== undefined) update.max_duration_sec = patch.maxDurationSec;
+  if (patch.requiredHashtags !== undefined) update.required_hashtags = patch.requiredHashtags;
+  if (patch.requiredTags !== undefined) update.required_tags = patch.requiredTags;
+  if (patch.sourceMaterialUrl !== undefined)
+    update.source_material_url = patch.sourceMaterialUrl?.trim() || null;
+  if (patch.minClipsExpected !== undefined)
+    update.min_clips_expected = Math.max(1, Math.floor(patch.minClipsExpected));
+  if (patch.requiresPreapproval !== undefined) update.requires_preapproval = patch.requiresPreapproval;
   if (Object.keys(update).length === 0 && patch.rateTiers === undefined) return;
   if (Object.keys(update).length > 0) {
     const { error } = await supabase.from("campaigns").update(update).eq("id", id);
@@ -355,6 +381,37 @@ export async function requestTopup(input: TopupRequestInput) {
     );
   }
   const reference = (input.reference ?? "").trim().slice(0, 120);
+
+  // Durable record first: insert an in-app notification for the admin so the
+  // request is visible in the admin UI even if email is down (no RESEND_API_KEY).
+  // This never fails the request — the email below is the fail-loud part.
+  try {
+    const db = adminDb();
+    const { data: adminProfile } = await db
+      .from("profiles")
+      .select("id")
+      .eq("email", ADMIN_EMAIL)
+      .maybeSingle();
+    const adminId = (adminProfile as any)?.id;
+    if (adminId) {
+      await insertNotificationInternal(
+        adminId,
+        "topup_request",
+        `Top-up request: ${brand.name} — $${amount.toLocaleString()}`,
+        `${brand.name} requested a top-up of $${amount.toLocaleString()}${reference ? ` (ref: ${reference})` : ""}. Arrange payment with them, then record it in Admin → Billing.`
+      );
+    }
+  } catch {
+    // Notification is best-effort; the email attempt below decides success.
+  }
+
+  // Fail LOUD: sendAdminEmail returns false (never throws) when RESEND_API_KEY
+  // is missing, so a bare await would report success while nothing was sent.
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error(
+      "Top-up requests are temporarily unavailable — please contact your account manager directly to arrange funding."
+    );
+  }
   try {
     // Dynamic import: lib/admin-email is edited by another agent; never
     // break the billing page if it's mid-edit.
@@ -364,7 +421,9 @@ export async function requestTopup(input: TopupRequestInput) {
       throw new Error("Top-up request email is not available yet.");
     }
     await notifyTopupRequest({ brandId, brandName: brand.name, amount, reference });
-  } catch {
+  } catch (e: any) {
+    // Preserve our own fail-loud error; wrap anything else.
+    if (e?.message?.includes("temporarily unavailable")) throw e;
     throw new Error("Could not send the request — try again.");
   }
   revalidatePath("/brand/billing");
