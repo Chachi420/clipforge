@@ -32,6 +32,15 @@ function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
     eligibilityType: (row.eligibility_type as EligibilityType) ?? "open",
     minFollowers: row.min_followers ?? undefined,
     minAvgViews: row.min_avg_views ?? undefined,
+    promoFormats: row.promo_formats ?? ["video"],
+    aspectRatios: row.aspect_ratios ?? ["9:16"],
+    minDurationSec: row.min_duration_sec ?? null,
+    maxDurationSec: row.max_duration_sec ?? null,
+    requiredHashtags: row.required_hashtags ?? [],
+    requiredTags: row.required_tags ?? [],
+    sourceMaterialUrl: row.source_material_url ?? null,
+    minClipsExpected: row.min_clips_expected ?? 1,
+    requiresPreapproval: row.requires_preapproval ?? false,
   };
 }
 

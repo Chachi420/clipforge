@@ -36,6 +36,16 @@ export interface Campaign {
   eligibilityType?: EligibilityType;
   minFollowers?: number | null;
   minAvgViews?: number | null;
+  /** content requirements */
+  promoFormats?: string[];
+  aspectRatios?: string[];
+  minDurationSec?: number | null;
+  maxDurationSec?: number | null;
+  requiredHashtags?: string[];
+  requiredTags?: string[];
+  sourceMaterialUrl?: string | null;
+  minClipsExpected?: number;
+  requiresPreapproval?: boolean;
 }
 
 /** How a campaign gates who can join. */

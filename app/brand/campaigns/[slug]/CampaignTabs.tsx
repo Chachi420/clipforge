@@ -7,6 +7,8 @@ import { PLATFORM_LABELS, type Bounty, type BrandCampaign, type CampaignClipperR
 import { formatCompact, formatMoney } from "@/lib/format";
 import BountyManager from "./BountyManager";
 import CampaignSettingsForm from "./CampaignSettingsForm";
+import InviteManager from "./InviteManager";
+import CampaignBriefDisplay from "@/components/CampaignBriefDisplay";
 
 const TRACKING_TONES: Record<TrackingStatus, "green" | "default" | "red" | "amber"> = {
   tracking: "green",
@@ -22,8 +24,8 @@ const TRACKING_LABELS: Record<TrackingStatus, string> = {
   pending_review: "Pending review",
 };
 
-const TABS = ["Clips", "Clippers", "Bounties", "Settings"] as const;
-type Tab = (typeof TABS)[number];
+const BASE_TABS = ["Brief", "Clips", "Clippers", "Bounties", "Settings"] as const;
+type Tab = (typeof BASE_TABS)[number] | "Invites";
 
 export default function CampaignTabs({
   campaign,
@@ -37,11 +39,13 @@ export default function CampaignTabs({
   bounties: Bounty[];
 }) {
   const [tab, setTab] = useState<Tab>("Clips");
+  const isInviteOnly = campaign.eligibilityType === "invite_only";
+  const tabs: Tab[] = isInviteOnly ? [...BASE_TABS, "Invites"] : [...BASE_TABS];
 
   return (
     <div>
       <div className="mb-4 flex gap-1 overflow-x-auto border-b border-line/10">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -56,10 +60,12 @@ export default function CampaignTabs({
         ))}
       </div>
 
+      {tab === "Brief" && <CampaignBriefDisplay campaign={campaign} />}
       {tab === "Clips" && <ClipsTab clips={clips} />}
       {tab === "Clippers" && <ClippersTab clippers={clippers} />}
       {tab === "Bounties" && <BountyManager campaignId={campaign.id} initial={bounties} />}
       {tab === "Settings" && <CampaignSettingsForm campaign={campaign} />}
+      {tab === "Invites" && isInviteOnly && <InviteManager campaignId={campaign.id} />}
     </div>
   );
 }

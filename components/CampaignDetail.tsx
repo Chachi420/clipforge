@@ -9,6 +9,7 @@ import { Badge, Button, Card, NightCard, ProgressBar, Stat, inputCls } from "@/c
 import { joinCampaign, type EligibilityCheck } from "@/lib/eligibility";
 import { CAMPAIGN_STATUS_LABELS, PAYOUT_METHOD_LABELS, type Bounty, type Campaign, type Clip, type PayoutCycle } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
+import CampaignBriefDisplay from "@/components/CampaignBriefDisplay";
 
 /** "Need 5K followers — your biggest verified account has 2.1K…" */
 function missingMessage(e: EligibilityCheck): string {
@@ -207,27 +208,7 @@ export default function CampaignDetail({
           <Card className="p-6">
             <h3 className="mb-4 font-bold text-ink">Campaign details</h3>
             {joined ? (
-              <>
-                <dl className="space-y-3 text-sm">
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-ink-faint">Program structure</dt>
-                    <dd className="text-right text-ink-soft">{campaign.payoutMode === "pot" ? "Pot-style proportional payout" : "Flat rate per verified view"}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-ink-faint">Payment method</dt>
-                    <dd className="text-ink-soft">{PAYOUT_METHOD_LABELS[campaign.payoutMethod]}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-ink-faint">Account limit</dt>
-                    <dd className="text-ink-soft">{campaign.accountLimit ? `${campaign.accountLimit} accounts` : "Unlimited"}</dd>
-                  </div>
-                  <div className="flex justify-between gap-4">
-                    <dt className="text-ink-faint">Duration</dt>
-                    <dd className="text-ink-soft capitalize">{campaign.durationMode === "budget" ? "Until budget spent" : "Fixed deadline"}</dd>
-                  </div>
-                </dl>
-                <p className="mt-4 border-t border-line/10 pt-4 text-xs leading-relaxed text-ink-faint">{campaign.rules}</p>
-              </>
+              <CampaignBriefDisplay campaign={campaign} />
             ) : (
               <div className="space-y-3">
                 <p className="text-sm text-ink-soft">
