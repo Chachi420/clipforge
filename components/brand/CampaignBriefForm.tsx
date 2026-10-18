@@ -97,12 +97,12 @@ export default function CampaignBriefForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
+    <form onSubmit={handleSubmit}>
       {error && (
         <p className="mb-5 rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
       )}
 
-      <div className="space-y-5">
+      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         {/* Basics */}
         <Card className="space-y-5 p-6">
           <Field label="Campaign name">
@@ -269,23 +269,23 @@ export default function CampaignBriefForm() {
             </Field>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 xl:col-span-2">
             <EligibilitySection value={eligibility} onChange={setEligibility} />
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-6 xl:col-span-2">
             <ContentRequirementsSection value={content} onChange={setContent} />
           </Card>
+        </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-xs text-ink-faint">
-              Submitted as a draft — it goes live only after our team approves it.
-            </p>
-            <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
-              {submitting ? "Submitting…" : "Submit brief"}
-            </Button>
-          </div>
-      </div>
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-xs text-ink-faint">
+            Submitted as a draft — it goes live only after our team approves it.
+          </p>
+          <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
+            {submitting ? "Submitting…" : "Submit brief"}
+          </Button>
+        </div>
     </form>
   );
 }
