@@ -6,9 +6,21 @@ import Header from "@/components/Header";
 import UploadClipDialog from "@/components/UploadClipDialog";
 import { ClipTable } from "@/components/ClipTable";
 import { Badge, Button, Card, NightCard, ProgressBar, Stat, inputCls } from "@/components/ui";
-import { joinCampaign } from "@/lib/actions";
+import { joinCampaign, type EligibilityCheck } from "@/lib/eligibility";
 import { CAMPAIGN_STATUS_LABELS, PAYOUT_METHOD_LABELS, type Bounty, type Campaign, type Clip, type PayoutCycle } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
+
+/** "Need 5K followers — your biggest verified account has 2.1K…" */
+function missingMessage(e: EligibilityCheck): string {
+  const m = e.missing;
+  if (!m) return e.reason ?? "You don't meet this campaign's requirements.";
+  const tight = (n: number) => formatCompact(n).replace(/\.0([KMB])$/, "$1");
+  const subject =
+    m.metric === "followers"
+      ? "your biggest verified account has"
+      : "your clips average";
+  return `Need ${tight(m.need)} ${m.metric} — ${subject} ${tight(m.have)}. Verify more accounts or grow your audience to join.`;
+}
 
 function statusTone(status: Campaign["status"]) {
   if (status === "active") return "success";
@@ -17,9 +29,10 @@ function statusTone(status: Campaign["status"]) {
 }
 
 export default function CampaignDetail({
-  campaign, bounties, clips, cycles,
+  campaign, bounties, clips, cycles, eligibility,
 }: {
   campaign: Campaign; bounties: Bounty[]; clips: Clip[]; cycles: PayoutCycle[];
+  eligibility?: EligibilityCheck | null;
 }) {
   const [showUpload, setShowUpload] = useState(false);
   const [bountyQuery, setBountyQuery] = useState("");
@@ -84,17 +97,34 @@ export default function CampaignDetail({
             {copied ? <Check size={15} /> : <Link2 size={15} />} {copied ? "Copied" : "Copy link"}
           </Button>
           {!joined && campaign.status === "active" && (
-            <Button variant="outline" onClick={handleJoin} disabled={joining}>
+            <Button
+              variant="outline"
+              onClick={handleJoin}
+              disabled={joining || (eligibility != null && !eligibility.eligible)}
+            >
               {joining ? "Joining…" : "Join campaign"}
             </Button>
           )}
+          {joined && (
+            <span className="flex items-center gap-1.5 rounded-full bg-ink px-3.5 py-2 text-sm font-semibold text-paper">
+              <Check size={15} aria-hidden /> You&apos;re in
+            </span>
+          )}
         </div>
+        {eligibility && !eligibility.eligible && !joined && (
+          <p role="alert" className="rounded-card border border-status-warning/25 bg-status-warning/10 px-4 py-3 text-sm text-ink">
+            {missingMessage(eligibility)}{" "}
+            <Link href="/dashboard/accounts" className="font-semibold underline underline-offset-2 hover:text-ink">
+              Verify accounts
+            </Link>
+          </p>
+        )}
         {joinError && (
           <p role="alert" className="rounded-card border border-status-error/25 bg-status-error/10 px-4 py-3 text-sm text-status-error">
             {joinError}
           </p>
         )}
-        {!joined && campaign.status === "active" && (
+        {!joined && campaign.status === "active" && (!eligibility || eligibility.eligible) && (
           <div className="rounded-card border border-line/10 bg-surface p-4 text-sm text-ink-soft">
             Join this campaign to start submitting clips and earning.
           </div>
@@ -176,25 +206,45 @@ export default function CampaignDetail({
           </Card>
           <Card className="p-6">
             <h3 className="mb-4 font-bold text-ink">Campaign details</h3>
-            <dl className="space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <dt className="text-ink-faint">Program structure</dt>
-                <dd className="text-right text-ink-soft">{campaign.payoutMode === "pot" ? "Pot-style proportional payout" : "Flat rate per verified view"}</dd>
+            {joined ? (
+              <>
+                <dl className="space-y-3 text-sm">
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-ink-faint">Program structure</dt>
+                    <dd className="text-right text-ink-soft">{campaign.payoutMode === "pot" ? "Pot-style proportional payout" : "Flat rate per verified view"}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-ink-faint">Payment method</dt>
+                    <dd className="text-ink-soft">{PAYOUT_METHOD_LABELS[campaign.payoutMethod]}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-ink-faint">Account limit</dt>
+                    <dd className="text-ink-soft">{campaign.accountLimit ? `${campaign.accountLimit} accounts` : "Unlimited"}</dd>
+                  </div>
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-ink-faint">Duration</dt>
+                    <dd className="text-ink-soft capitalize">{campaign.durationMode === "budget" ? "Until budget spent" : "Fixed deadline"}</dd>
+                  </div>
+                </dl>
+                <p className="mt-4 border-t border-line/10 pt-4 text-xs leading-relaxed text-ink-faint">{campaign.rules}</p>
+              </>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm text-ink-soft">
+                  The full brief — content guidelines, do&apos;s and don&apos;ts, and payout terms — unlocks when you join.
+                </p>
+                <div className="space-y-2" aria-hidden>
+                  <div className="h-3 w-full rounded bg-ink/5" />
+                  <div className="h-3 w-11/12 rounded bg-ink/5" />
+                  <div className="h-3 w-4/5 rounded bg-ink/5" />
+                </div>
+                {campaign.status === "active" && (
+                  <Button variant="outline" onClick={handleJoin} disabled={joining || (eligibility != null && !eligibility.eligible)}>
+                    {joining ? "Joining…" : "Join to reveal the brief"}
+                  </Button>
+                )}
               </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-ink-faint">Payment method</dt>
-                <dd className="text-ink-soft">{PAYOUT_METHOD_LABELS[campaign.payoutMethod]}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-ink-faint">Account limit</dt>
-                <dd className="text-ink-soft">{campaign.accountLimit ? `${campaign.accountLimit} accounts` : "Unlimited"}</dd>
-              </div>
-              <div className="flex justify-between gap-4">
-                <dt className="text-ink-faint">Duration</dt>
-                <dd className="text-ink-soft capitalize">{campaign.durationMode === "budget" ? "Until budget spent" : "Fixed deadline"}</dd>
-              </div>
-            </dl>
-            <p className="mt-4 border-t border-line/10 pt-4 text-xs leading-relaxed text-ink-faint">{campaign.rules}</p>
+            )}
           </Card>
         </div>
 
