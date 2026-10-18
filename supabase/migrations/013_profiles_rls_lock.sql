@@ -7,6 +7,11 @@
 -- Drop the overly broad policy.
 drop policy if exists "own profile" on profiles;
 
+-- Drop the split policies if re-running (Postgres has no CREATE POLICY IF NOT EXISTS).
+drop policy if exists "own profile select" on profiles;
+drop policy if exists "own profile insert" on profiles;
+drop policy if exists "own profile update" on profiles;
+
 -- Users can read their own profile.
 create policy "own profile select"
   on profiles for select
