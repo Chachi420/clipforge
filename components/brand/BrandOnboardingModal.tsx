@@ -1,19 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Field } from "@/components/ui";
+import { createClient } from "@/lib/supabase/client";
 import { completeBrandOnboarding } from "@/lib/brand-actions";
 
 /**
  * First-login modal for brands: captures the brand (company) name and the
  * operator's own name separately — the person running the account often
- * isn't the brand name itself.
+ * isn't the brand name itself. The name field is pre-filled from the
+ * Google account and remains editable.
  */
 export default function BrandOnboardingModal() {
   const [brandName, setBrandName] = useState("");
   const [userName, setUserName] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Pre-fill the operator name from the Google account (editable).
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      const meta = (data.user as any)?.user_metadata;
+      const googleName = meta?.full_name || meta?.name || "";
+      if (googleName) setUserName(googleName);
+    });
+  }, []);
 
   const valid = brandName.trim().length > 0 && userName.trim().length > 0;
 
