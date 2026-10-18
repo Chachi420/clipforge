@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 export default async function NewCampaignBriefPage() {
   await requireBrand();
   return (
-    <div className="mx-auto max-w-2xl space-y-6 px-6 py-8">
+    <div className="mx-auto max-w-6xl space-y-6 px-4 py-6 sm:px-8 sm:py-8">
       <div>
         <h1 className="display text-3xl">New campaign brief</h1>
         <p className="mt-1 text-sm text-ink-soft">
