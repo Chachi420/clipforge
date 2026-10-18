@@ -102,7 +102,7 @@ export default function CampaignBriefForm() {
         <p className="mb-5 rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
       )}
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         {/* Basics */}
         <Card className="space-y-5 p-6">
           <Field label="Campaign name">
@@ -269,11 +269,11 @@ export default function CampaignBriefForm() {
             </Field>
           </Card>
 
-          <Card className="p-6 xl:col-span-2">
+          <Card className="p-6 lg:col-span-2">
             <EligibilitySection value={eligibility} onChange={setEligibility} />
           </Card>
 
-          <Card className="p-6 xl:col-span-2">
+          <Card className="p-6 lg:col-span-2">
             <ContentRequirementsSection value={content} onChange={setContent} />
           </Card>
         </div>
