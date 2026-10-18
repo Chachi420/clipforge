@@ -32,14 +32,12 @@ export default function BrandLoginPage() {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data }) => {
       if (data.user) {
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("role")
-          .eq("id", data.user.id)
-          .single();
+        // Don't gate on role here — requireBrand() in the brand layout
+        // auto-provisions brand access on first visit. A fresh Google signup
+        // via this page still has the default role until then.
         setSession({
           email: data.user.email ?? "",
-          role: (profile as any)?.role ?? "clipper",
+          role: "brand",
         });
       }
       setChecking(false);
@@ -88,16 +86,9 @@ export default function BrandLoginPage() {
             <p className="text-sm text-ink-soft">
               Signed in as <span className="font-semibold text-ink">{session.email}</span>
             </p>
-            {session.role === "brand" ? (
-              <Button onClick={() => router.push("/brand")} variant="primary" className="mt-4 w-full py-3">
-                Continue to brand dashboard
-              </Button>
-            ) : (
-              <p className="mt-3 rounded-md border border-status-warning/25 bg-status-warning/10 px-3 py-2 text-xs leading-relaxed text-ink-soft">
-                This account isn&apos;t a brand account, so it can&apos;t open the brand dashboard.
-                Sign out and continue with the Google account your brand uses.
-              </p>
-            )}
+            <Button onClick={() => router.push("/brand")} variant="primary" className="mt-4 w-full py-3">
+              Continue to brand dashboard
+            </Button>
             <button
               onClick={signOut}
               className="mt-4 w-full py-2 text-sm font-semibold text-ink-soft hover:text-ink"
