@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Button, Card, Field, inputCls } from "@/components/ui";
 import { createCampaignBrief, type CampaignBriefInput } from "@/lib/brand-actions";
 import { PLATFORM_LABELS, PAYOUT_METHOD_LABELS, type Platform, type PayoutMethod } from "@/lib/types";
+import EligibilitySection, { emptyEligibility, type EligibilityState } from "./EligibilitySection";
 
 const CATEGORIES = ["Music", "Lifestyle", "Tech", "Education", "Other"] as const;
 const TYPES: { value: CampaignBriefInput["type"]; label: string }[] = [
@@ -29,6 +30,7 @@ export default function CampaignBriefForm() {
   const [minViewsTotal, setMinViewsTotal] = useState("");
   const [payoutMethod, setPayoutMethod] = useState<PayoutMethod>("paypal");
   const [rules, setRules] = useState("");
+  const [eligibility, setEligibility] = useState<EligibilityState>(emptyEligibility);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,6 +46,14 @@ export default function CampaignBriefForm() {
     const rate = Number(ratePer100k);
     if (!(rate > 0)) return setError("Set a rate per 100k views (USD).");
     if (platforms.length === 0) return setError("Pick at least one platform.");
+    if (eligibility.type === "followers" && !(Number(eligibility.minFollowers) > 0))
+      return setError("Set a minimum follower count.");
+    if (eligibility.type === "engagement" && !(Number(eligibility.minAvgViews) > 0))
+      return setError("Set a minimum average view count.");
+    for (const t of eligibility.rateTiers) {
+      if (!(t.minFollowers > 0) || !(t.multiplier >= 1))
+        return setError("Rate tiers need a follower count and a multiplier of 1 or more.");
+    }
 
     setSubmitting(true);
     try {
@@ -60,6 +70,10 @@ export default function CampaignBriefForm() {
         minViewsTotal: Number(minViewsTotal) || 0,
         payoutMethod,
         rules: rules.trim(),
+        eligibilityType: eligibility.type,
+        minFollowers: eligibility.type === "followers" ? Number(eligibility.minFollowers) : null,
+        minAvgViews: eligibility.type === "engagement" ? Number(eligibility.minAvgViews) : null,
+        rateTiers: eligibility.rateTiers,
       });
       router.push(`/brand/campaigns/${slug}`);
     } catch (e: any) {
@@ -233,6 +247,10 @@ export default function CampaignBriefForm() {
             placeholder="What should clippers know? (content rules, sound, posting cadence, do's and don'ts…)"
           />
         </Field>
+
+        <div className="border-t border-line/10 pt-5">
+          <EligibilitySection value={eligibility} onChange={setEligibility} />
+        </div>
 
         <div className="flex items-center justify-between gap-4 pt-1">
           <p className="text-xs text-ink-faint">
