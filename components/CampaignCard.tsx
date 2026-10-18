@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowRight, BadgeCheck, Clock, Eye, Trophy, Wallet } from "lucide-react";
+import { ArrowRight, BadgeCheck, Clock, Eye, Lock, TrendingUp, Trophy, Users, Wallet } from "lucide-react";
 import { Badge, Button, Card, Dialog, PlatformDot, ProgressBar } from "./ui";
 import { CAMPAIGN_STATUS_LABELS, PAYOUT_METHOD_LABELS, PLATFORM_LABELS, type Campaign } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
@@ -11,6 +11,45 @@ function toneFor(status: Campaign["status"]) {
   if (status === "paused" || status === "pending") return "warning";
   if (status === "private") return "default";
   return "default";
+}
+
+/** Compact number without trailing ".0" — "5K" not "5.0K". */
+function compactTight(n: number): string {
+  return formatCompact(n).replace(/\.0([KMB])$/, "$1");
+}
+
+/**
+ * Eligibility badge: "Open to all" / "5K+ followers" / "10K+ avg views" / "Invite only".
+ * Monochrome outline pill, sits with the other header badges.
+ */
+function EligibilityBadge({ campaign }: { campaign: Campaign }) {
+  const type = campaign.eligibilityType ?? "open";
+  if (type === "open") {
+    return (
+      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title="Anyone with a verified account can join">
+        <Users size={11} aria-hidden /> Open to all
+      </span>
+    );
+  }
+  if (type === "followers") {
+    return (
+      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title={`Requires ${Number(campaign.minFollowers ?? 0).toLocaleString()}+ followers on a verified account`}>
+        <Users size={11} aria-hidden /> {compactTight(Number(campaign.minFollowers ?? 0))}+ followers
+      </span>
+    );
+  }
+  if (type === "engagement") {
+    return (
+      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title={`Requires ${Number(campaign.minAvgViews ?? 0).toLocaleString()}+ average views per clip`}>
+        <TrendingUp size={11} aria-hidden /> {compactTight(Number(campaign.minAvgViews ?? 0))}+ avg views
+      </span>
+    );
+  }
+  return (
+    <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title="Only invited clippers can join">
+      <Lock size={11} aria-hidden /> Invite only
+    </span>
+  );
 }
 
 export default function CampaignCard({ campaign, funded = false, budgetUsed }: { campaign: Campaign; funded?: boolean; budgetUsed?: number }) {
@@ -49,6 +88,7 @@ export default function CampaignCard({ campaign, funded = false, budgetUsed }: {
                 <BadgeCheck size={11} aria-hidden /> Verified funds
               </span>
             )}
+            <EligibilityBadge campaign={campaign} />
           </div>
         </div>
 
