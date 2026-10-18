@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { getBrand, getUserRole } from "./brand-db";
 import { isAdminUser } from "./admin";
-import type { Platform, PayoutMethod } from "./types";
+import type { Platform, PayoutMethod, EligibilityType, RateTier } from "./types";
 
 /**
  * Throws/redirects unless the caller is a signed-in user with
@@ -112,6 +112,10 @@ export interface CampaignBriefInput {
   payoutMethod: PayoutMethod;
   rules: string;
   bountyPot?: number | null;
+  eligibilityType?: EligibilityType;
+  minFollowers?: number | null;
+  minAvgViews?: number | null;
+  rateTiers?: RateTier[];
 }
 
 /** Sales-led brief: creates the campaign as status='pending' for admin review. */
@@ -151,10 +155,27 @@ export async function createCampaignBrief(input: CampaignBriefInput) {
       min_views_total: Math.max(0, Math.floor(input.minViewsTotal) || 0),
       bounty_pot: input.bountyPot ?? null,
       rules: input.rules ?? "",
+      eligibility_type: input.eligibilityType ?? "open",
+      min_followers: input.minFollowers ?? null,
+      min_avg_views: input.minAvgViews ?? null,
     })
     .select("id, slug")
     .single();
   if (error) throw new Error(error.message);
+
+  // Save rate tiers (optional).
+  const campaignId = (data as any).id as string;
+  if (input.rateTiers && input.rateTiers.length > 0) {
+    const { error: tierError } = await supabase.from("campaign_rate_tiers").insert(
+      input.rateTiers.map((t) => ({
+        campaign_id: campaignId,
+        min_followers: Math.max(0, Math.floor(t.minFollowers)),
+        multiplier: t.multiplier,
+      }))
+    );
+    if (tierError) throw new Error(tierError.message);
+  }
+
   revalidatePath("/brand/campaigns");
   revalidatePath("/admin");
 
@@ -203,6 +224,10 @@ export interface CampaignSettingsPatch {
   rules?: string;
   category?: string;
   daysLeft?: number;
+  eligibilityType?: EligibilityType;
+  minFollowers?: number | null;
+  minAvgViews?: number | null;
+  rateTiers?: RateTier[];
 }
 
 /** Brand edits settings on their own campaign (pending or live). */
@@ -232,9 +257,35 @@ export async function updateCampaignSettings(campaignId: string, patch: Campaign
   if (patch.category !== undefined) update.category = patch.category || "Other";
   if (patch.daysLeft !== undefined)
     update.days_left = Math.max(1, Math.min(365, Math.floor(patch.daysLeft)));
-  if (Object.keys(update).length === 0) return;
-  const { error } = await supabase.from("campaigns").update(update).eq("id", id);
-  if (error) throw new Error(error.message);
+  if (patch.eligibilityType !== undefined) {
+    const valid: EligibilityType[] = ["open", "followers", "engagement", "invite_only"];
+    if (!valid.includes(patch.eligibilityType)) throw new Error("Invalid eligibility type.");
+    update.eligibility_type = patch.eligibilityType;
+  }
+  if (patch.minFollowers !== undefined)
+    update.min_followers = patch.minFollowers == null ? null : Math.max(0, Math.floor(patch.minFollowers));
+  if (patch.minAvgViews !== undefined)
+    update.min_avg_views = patch.minAvgViews == null ? null : Math.max(0, Math.floor(patch.minAvgViews));
+  if (Object.keys(update).length === 0 && patch.rateTiers === undefined) return;
+  if (Object.keys(update).length > 0) {
+    const { error } = await supabase.from("campaigns").update(update).eq("id", id);
+    if (error) throw new Error(error.message);
+  }
+  // Replace rate tiers wholesale (simplest correct semantics for an edit form).
+  if (patch.rateTiers !== undefined) {
+    const { error: delError } = await supabase.from("campaign_rate_tiers").delete().eq("campaign_id", id);
+    if (delError) throw new Error(delError.message);
+    if (patch.rateTiers.length > 0) {
+      const { error: insError } = await supabase.from("campaign_rate_tiers").insert(
+        patch.rateTiers.map((t) => ({
+          campaign_id: id,
+          min_followers: Math.max(0, Math.floor(t.minFollowers)),
+          multiplier: t.multiplier,
+        }))
+      );
+      if (insError) throw new Error(insError.message);
+    }
+  }
   revalidatePath("/brand", "layout");
 }
 
