@@ -15,8 +15,7 @@ export interface Campaign {
   type: CampaignType;
   category: string;
   platforms: Platform[];
-  payoutMethod: PayoutMethod;
-  /** rate per 100k views; per-platform overrides win over global */
+  payoutMethod: PayoutMethod;  /** rate per 100k views; per-platform overrides win over global */
   ratePer100k: number;
   platformRates?: Partial<Record<Platform, number>>;
   minViewsPerPost: number;
@@ -33,6 +32,45 @@ export interface Campaign {
   isJoined?: boolean;
   /** brand that owns the campaign — used for the "Verified funds" badge */
   brandId?: string;
+  /** eligibility gating for joining the campaign */
+  eligibilityType?: EligibilityType;
+  minFollowers?: number | null;
+  minAvgViews?: number | null;
+}
+
+/** How a campaign gates who can join. */
+export type EligibilityType = "open" | "followers" | "engagement" | "invite_only";
+
+export const ELIGIBILITY_LABELS: Record<EligibilityType, string> = {
+  open: "Open to all",
+  followers: "Follower minimum",
+  engagement: "Engagement minimum",
+  invite_only: "Invite only",
+};
+
+export const ELIGIBILITY_DESCRIPTIONS: Record<EligibilityType, string> = {
+  open: "Anyone with a verified account can join instantly.",
+  followers: "Clippers need a verified account with at least X followers.",
+  engagement: "Clippers need a verified account averaging at least X views.",
+  invite_only: "Only clippers you invite can join.",
+};
+
+/** Rate multiplier tier: clippers with >= minFollowers earn rate * multiplier. */
+export interface RateTier {
+  id?: string;
+  minFollowers: number;
+  multiplier: number;
+}
+
+/** An invite to an invite-only campaign. */
+export interface CampaignInvite {
+  id: string;
+  campaignId: string;
+  clipperId: string | null;
+  email: string | null;
+  code: string;
+  status: "pending" | "accepted" | "expired";
+  createdAt: string;
 }
 
 export interface Bounty {
