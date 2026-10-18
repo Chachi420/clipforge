@@ -104,11 +104,7 @@ export default function BrandLoginPage() {
           </div>
         )}
         <p className="mt-6 text-xs text-ink-faint">
-          Brand accounts are provisioned by our team. New here?{" "}
-          <Link href="/brand/request" className="font-semibold text-ink-soft hover:text-ink">
-            Request brand access
-          </Link>
-          .
+          New to ClipForge? Signing in creates your brand account instantly.
         </p>
         {!isLive && (
           <p className="mt-4 rounded-md border border-status-warning/25 bg-status-warning/10 px-3 py-2 text-xs text-ink-soft">
