@@ -1,10 +1,15 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card, Field, inputCls } from "@/components/ui";
 import { updateCampaignSettings, type CampaignSettingsPatch } from "@/lib/brand-actions";
-import { PLATFORM_LABELS, type BrandCampaign, type Platform } from "@/lib/types";
+import { getCampaignRateTiers } from "@/lib/eligibility";
+import EligibilitySection, {
+  emptyEligibility,
+  type EligibilityState,
+} from "@/components/brand/EligibilitySection";
+import { PLATFORM_LABELS, type BrandCampaign, type EligibilityType, type Platform } from "@/lib/types";
 
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
 
@@ -19,8 +24,21 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
   const [category, setCategory] = useState(campaign.category);
   const [platforms, setPlatforms] = useState<Platform[]>(campaign.platforms);
   const [rules, setRules] = useState(campaign.rules);
+  const [eligibility, setEligibility] = useState<EligibilityState>({
+    type: (campaign.eligibilityType ?? "open") as EligibilityType,
+    minFollowers: campaign.minFollowers ? String(campaign.minFollowers) : "",
+    minAvgViews: campaign.minAvgViews ? String(campaign.minAvgViews) : "",
+    rateTiers: [],
+  });
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState<{ tone: "ok" | "err"; text: string } | null>(null);
+
+  // Load existing rate tiers.
+  useEffect(() => {
+    getCampaignRateTiers(campaign.id)
+      .then((tiers) => setEligibility((prev) => ({ ...prev, rateTiers: tiers })))
+      .catch(() => {});
+  }, [campaign.id]);
 
   function togglePlatform(p: Platform) {
     setPlatforms((prev) => (prev.includes(p) ? prev.filter((x) => x !== p) : [...prev, p]));
@@ -30,6 +48,14 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
     e.preventDefault();
     setBusy(true);
     setMessage(null);
+    if (eligibility.type === "followers" && !(Number(eligibility.minFollowers) > 0)) {
+      setBusy(false);
+      return setMessage({ tone: "err", text: "Set a minimum follower count." });
+    }
+    if (eligibility.type === "engagement" && !(Number(eligibility.minAvgViews) > 0)) {
+      setBusy(false);
+      return setMessage({ tone: "err", text: "Set a minimum average view count." });
+    }
     const patch: CampaignSettingsPatch = {
       name,
       ratePer100k: Number(ratePer100k),
@@ -40,6 +66,10 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
       category,
       daysLeft: Number(daysLeft),
       rules,
+      eligibilityType: eligibility.type,
+      minFollowers: eligibility.type === "followers" ? Number(eligibility.minFollowers) : null,
+      minAvgViews: eligibility.type === "engagement" ? Number(eligibility.minAvgViews) : null,
+      rateTiers: eligibility.rateTiers,
     };
     try {
       await updateCampaignSettings(campaign.id, patch);
@@ -144,6 +174,9 @@ export default function CampaignSettingsForm({ campaign }: { campaign: BrandCamp
               placeholder="Guidelines for clippers: content rules, exclusions, payout notes…"
             />
           </Field>
+        </div>
+        <div className="border-t border-line/10 pt-5 sm:col-span-2">
+          <EligibilitySection value={eligibility} onChange={setEligibility} />
         </div>
         {message && (
           <p className={`text-sm sm:col-span-2 ${message.tone === "ok" ? "text-status-success" : "text-status-error"}`}>

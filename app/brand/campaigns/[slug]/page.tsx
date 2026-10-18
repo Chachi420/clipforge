@@ -8,7 +8,7 @@ import {
 } from "@/lib/brand-db";
 import { getBounties } from "@/lib/db";
 import { Badge, NightCard, Stat } from "@/components/ui";
-import { CAMPAIGN_STATUS_LABELS, type CampaignStatus } from "@/lib/types";
+import { CAMPAIGN_STATUS_LABELS, ELIGIBILITY_LABELS, type CampaignStatus } from "@/lib/types";
 import { formatCompact, formatMoney } from "@/lib/format";
 import PauseResumeButton from "./PauseResumeButton";
 import ViewsChart from "./ViewsChart";
@@ -53,6 +53,15 @@ export default async function BrandCampaignDetailPage({
             </Badge>
             <Badge>{campaign.category}</Badge>
             <Badge tone="blue">{campaign.daysLeft} days left</Badge>
+            <Badge tone={campaign.eligibilityType === "open" ? "default" : "amber"}>
+              {ELIGIBILITY_LABELS[campaign.eligibilityType ?? "open"]}
+              {campaign.eligibilityType === "followers" && campaign.minFollowers
+                ? ` · ${campaign.minFollowers.toLocaleString()}+`
+                : ""}
+              {campaign.eligibilityType === "engagement" && campaign.minAvgViews
+                ? ` · ${campaign.minAvgViews.toLocaleString()}+ views`
+                : ""}
+            </Badge>
           </div>
         </div>
         <div className="flex-1" />
