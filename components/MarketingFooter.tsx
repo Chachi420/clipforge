@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ThemeToggle from "@/components/ThemeToggle";
 
-const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] = [
+const COLUMNS: { heading: string; external?: boolean; links: { href: string; label: string }[] }[] = [
   {
     heading: "Product",
     links: [
@@ -36,24 +36,27 @@ const COLUMNS: { heading: string; links: { href: string; label: string }[] }[] =
       { href: "/brand/login", label: "Brand sign in" },
     ],
   },
-];
-
-const ASK_AI_LINKS = [
-  { href: "https://chatgpt.com/?q=What+is+ClipForge+clipping+marketplace", label: "ChatGPT" },
-  { href: "https://claude.ai/new?q=What+is+ClipForge+clipping+marketplace", label: "Claude" },
-  { href: "https://gemini.google.com/share/placeholder?q=What+is+ClipForge", label: "Gemini" },
-  { href: "https://www.perplexity.ai/search?q=What+is+ClipForge+clipping+marketplace", label: "Perplexity" },
+  {
+    heading: "Ask AI",
+    external: true,
+    links: [
+      { href: "https://chatgpt.com/?q=What+is+ClipForge+clipping+marketplace", label: "ChatGPT" },
+      { href: "https://claude.ai/new?q=What+is+ClipForge+clipping+marketplace", label: "Claude" },
+      { href: "https://gemini.google.com/share/placeholder?q=What+is+ClipForge", label: "Gemini" },
+      { href: "https://www.perplexity.ai/search?q=What+is+ClipForge+clipping+marketplace", label: "Perplexity" },
+    ],
+  },
 ];
 
 /**
- * Marketing footer (brief §9.3). Four link columns, monochrome, small type.
+ * Marketing footer (brief §9.3). Five link columns, monochrome, small type.
  * No dead links, no social icons, no newsletter box.
  */
 export default function MarketingFooter() {
   return (
     <footer className="border-t border-white/10 bg-black text-white/60">
       <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
-        <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
           {COLUMNS.map((col) => (
             <nav key={col.heading} aria-label={`Footer — ${col.heading}`}>
               <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-white/40">
@@ -62,12 +65,23 @@ export default function MarketingFooter() {
               <ul className="mt-4 space-y-3">
                 {col.links.map((l) => (
                   <li key={l.href}>
-                    <Link
-                      href={l.href}
-                      className="inline-flex min-h-[32px] items-center text-sm text-white/60 transition-colors hover:text-white"
-                    >
-                      {l.label}
-                    </Link>
+                    {col.external ? (
+                      <a
+                        href={l.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex min-h-[32px] items-center text-sm text-white/60 transition-colors hover:text-white"
+                      >
+                        {l.label}
+                      </a>
+                    ) : (
+                      <Link
+                        href={l.href}
+                        className="inline-flex min-h-[32px] items-center text-sm text-white/60 transition-colors hover:text-white"
+                      >
+                        {l.label}
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -76,20 +90,6 @@ export default function MarketingFooter() {
         </div>
         <div className="mt-12 flex flex-col gap-6 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-white/40">© 2026 ClipForge</p>
-          <nav aria-label="Footer — Ask AI" className="flex items-center gap-5">
-            <span className="text-xs font-semibold uppercase tracking-[0.14em] text-white/40">
-              Ask AI
-            </span>
-            {ASK_AI_LINKS.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="inline-flex min-h-[32px] items-center text-sm text-white/60 transition-colors hover:text-white"
-              >
-                {l.label}
-              </Link>
-            ))}
-          </nav>
           <div className="lg:hidden">
             <ThemeToggle />
           </div>
