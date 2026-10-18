@@ -250,12 +250,9 @@ export async function uploadClips(campaignId: string, urls: string[]) {
 }
 
 export async function joinCampaign(campaignId: string) {
-  const { supabase, userId } = await authed();
-  const { error } = await supabase
-    .from("campaign_members")
-    .upsert({ user_id: userId, campaign_id: campaignId }, { onConflict: "user_id,campaign_id" });
-  if (error) throw new Error(error.message);
-  revalidatePath("/dashboard", "layout");
+  // Eligibility-enforcing join lives in lib/eligibility.ts (single source of truth).
+  const { joinCampaign: eligibleJoin } = await import("./eligibility");
+  return eligibleJoin(campaignId);
 }
 
 export async function addPaymentMethod(type: PayoutMethod, identifier: string) {
