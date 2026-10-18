@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Bell, Menu } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 import { useDashboardMenu } from "./DashboardChrome";
-import { getUnreadNotificationCount } from "@/app/dashboard/notifications/page";
+import { getUnreadNotificationCount } from "@/app/dashboard/notifications/actions";
 
 /**
  * Sticky page header: hamburger (mobile), page H1 + subtitle, then the
