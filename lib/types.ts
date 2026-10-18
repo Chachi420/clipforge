@@ -189,6 +189,7 @@ export interface Brand {
   logoUrl: string;
   contactEmail: string;
   createdAt: string;
+  onboardingCompleted?: boolean;
 }
 
 export interface BrandTopup {

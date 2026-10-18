@@ -496,3 +496,32 @@ export async function getMyBrandRequest() {
     .maybeSingle();
   return data as { status: string; company_name: string; created_at: string } | null;
 }
+
+/**
+ * First-login onboarding: set the brand (company) name and the operator's
+ * own display name separately, then mark onboarding complete. The modal
+ * only appears when brands.onboarding_completed is false.
+ */
+export async function completeBrandOnboarding(brandName: string, userName: string) {
+  const { supabase, brandId } = await requireBrand();
+  const cleanBrand = brandName.trim();
+  const cleanUser = userName.trim();
+  if (!cleanBrand || !cleanUser) throw new Error("Please fill in both names.");
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) throw new Error("Not signed in.");
+
+  const { error: brandError } = await supabase
+    .from("brands")
+    .update({ name: cleanBrand, onboarding_completed: true })
+    .eq("id", brandId);
+  if (brandError) throw new Error(brandError.message);
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .update({ display_name: cleanUser })
+    .eq("id", user.id);
+  if (profileError) throw new Error(profileError.message);
+
+  revalidatePath("/brand");
+}

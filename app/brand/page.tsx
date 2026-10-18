@@ -7,16 +7,19 @@ import { isLive } from "@/lib/db";
 import { formatCompact, formatMoney } from "@/lib/format";
 import CampaignTable from "./_components/CampaignTable";
 import NewCampaignButton from "./_components/NewCampaignButton";
+import BrandOnboardingModal from "@/components/brand/BrandOnboardingModal";
 
 export const dynamic = "force-dynamic";
 
 export default async function BrandOverviewPage() {
   let brandName = "Your brand";
   let brandId = "your-brand";
+  let showOnboarding = false;
   if (isLive()) {
     const ctx = await requireBrand();
     brandName = ctx.brand.name;
     brandId = ctx.brandId;
+    showOnboarding = !ctx.brand.onboardingCompleted;
   }
 
   const [kpis, campaigns] = await Promise.all([
@@ -85,6 +88,7 @@ export default async function BrandOverviewPage() {
           <CampaignTable campaigns={campaigns} />
         </div>
       )}
+      {showOnboarding && <BrandOnboardingModal />}
     </div>
   );
 }

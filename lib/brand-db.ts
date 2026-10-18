@@ -28,6 +28,7 @@ function toBrand(row: any): Brand {
     logoUrl: row.logo_url ?? "",
     contactEmail: row.contact_email ?? "",
     createdAt: (row.created_at ?? "").slice(0, 10),
+    onboardingCompleted: row.onboarding_completed ?? false,
   };
 }
 
