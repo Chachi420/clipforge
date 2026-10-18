@@ -3,7 +3,7 @@
 // so pages never care which backend is active.
 import * as mock from "./mock";
 import type {
-  AuthProvider, Bounty, Campaign, Clip, ClipperProfile, PaymentMethodRow,
+  AuthProvider, Bounty, Campaign, Clip, ClipperProfile, EligibilityType, PaymentMethodRow,
   PayoutCycle, SocialAccount, Team,
 } from "./types";
 
@@ -29,6 +29,9 @@ function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
     bountyPot: row.bounty_pot ?? undefined, accountLimit: row.account_limit ?? undefined,
     rules: row.rules, isJoined: joinedIds ? joinedIds.has(row.id) : (row.is_joined ?? false),
     brandId: row.brand_id ?? undefined,
+    eligibilityType: (row.eligibility_type as EligibilityType) ?? "open",
+    minFollowers: row.min_followers ?? undefined,
+    minAvgViews: row.min_avg_views ?? undefined,
   };
 }
 
