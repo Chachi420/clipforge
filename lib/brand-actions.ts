@@ -116,6 +116,15 @@ export interface CampaignBriefInput {
   minFollowers?: number | null;
   minAvgViews?: number | null;
   rateTiers?: RateTier[];
+  promoFormats?: string[];
+  aspectRatios?: string[];
+  minDurationSec?: number | null;
+  maxDurationSec?: number | null;
+  requiredHashtags?: string[];
+  requiredTags?: string[];
+  sourceMaterialUrl?: string | null;
+  minClipsExpected?: number;
+  requiresPreapproval?: boolean;
 }
 
 /** Sales-led brief: creates the campaign as status='pending' for admin review. */
@@ -158,6 +167,15 @@ export async function createCampaignBrief(input: CampaignBriefInput) {
       eligibility_type: input.eligibilityType ?? "open",
       min_followers: input.minFollowers ?? null,
       min_avg_views: input.minAvgViews ?? null,
+      promo_formats: input.promoFormats ?? ["video"],
+      aspect_ratios: input.aspectRatios ?? ["9:16"],
+      min_duration_sec: input.minDurationSec ?? null,
+      max_duration_sec: input.maxDurationSec ?? null,
+      required_hashtags: input.requiredHashtags ?? [],
+      required_tags: input.requiredTags ?? [],
+      source_material_url: input.sourceMaterialUrl?.trim() || null,
+      min_clips_expected: Math.max(1, Math.floor(input.minClipsExpected ?? 1)),
+      requires_preapproval: input.requiresPreapproval ?? false,
     })
     .select("id, slug")
     .single();

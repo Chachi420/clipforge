@@ -5,6 +5,7 @@ import { Button, Card, Field, inputCls } from "@/components/ui";
 import { createCampaignBrief, type CampaignBriefInput } from "@/lib/brand-actions";
 import { PLATFORM_LABELS, PAYOUT_METHOD_LABELS, type Platform, type PayoutMethod } from "@/lib/types";
 import EligibilitySection, { emptyEligibility, type EligibilityState } from "./EligibilitySection";
+import ContentRequirementsSection, { emptyContentRequirements, type ContentRequirementsState } from "./ContentRequirementsSection";
 
 const CATEGORIES = ["Music", "Lifestyle", "Tech", "Education", "Other"] as const;
 const TYPES: { value: CampaignBriefInput["type"]; label: string }[] = [
@@ -31,6 +32,7 @@ export default function CampaignBriefForm() {
   const [payoutMethod, setPayoutMethod] = useState<PayoutMethod>("paypal");
   const [rules, setRules] = useState("");
   const [eligibility, setEligibility] = useState<EligibilityState>(emptyEligibility);
+  const [content, setContent] = useState<ContentRequirementsState>(emptyContentRequirements);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
@@ -50,6 +52,8 @@ export default function CampaignBriefForm() {
       return setError("Set a minimum follower count.");
     if (eligibility.type === "engagement" && !(Number(eligibility.minAvgViews) > 0))
       return setError("Set a minimum average view count.");
+    if (content.promoFormats.length === 0)
+      return setError("Pick at least one promotion format.");
     for (const t of eligibility.rateTiers) {
       if (!(t.minFollowers > 0) || !(t.multiplier >= 1))
         return setError("Rate tiers need a follower count and a multiplier of 1 or more.");
@@ -74,6 +78,15 @@ export default function CampaignBriefForm() {
         minFollowers: eligibility.type === "followers" ? Number(eligibility.minFollowers) : null,
         minAvgViews: eligibility.type === "engagement" ? Number(eligibility.minAvgViews) : null,
         rateTiers: eligibility.rateTiers,
+        promoFormats: content.promoFormats,
+        aspectRatios: content.aspectRatios.length > 0 ? content.aspectRatios : ["9:16"],
+        minDurationSec: content.minDurationSec.trim() === "" ? null : Number(content.minDurationSec) || null,
+        maxDurationSec: content.maxDurationSec.trim() === "" ? null : Number(content.maxDurationSec) || null,
+        requiredHashtags: content.requiredHashtags.split(",").map((s) => s.trim()).filter(Boolean),
+        requiredTags: content.requiredTags.split(",").map((s) => s.trim()).filter(Boolean),
+        sourceMaterialUrl: content.sourceMaterialUrl.trim() || null,
+        minClipsExpected: Number(content.minClipsExpected) || 1,
+        requiresPreapproval: content.requiresPreapproval,
       });
       router.push(`/brand/campaigns/${slug}`);
     } catch (e: any) {
@@ -257,6 +270,10 @@ export default function CampaignBriefForm() {
 
           <Card className="p-6">
             <EligibilitySection value={eligibility} onChange={setEligibility} />
+          </Card>
+
+          <Card className="p-6">
+            <ContentRequirementsSection value={content} onChange={setContent} />
           </Card>
         </div>
       </div>
