@@ -97,13 +97,13 @@ export default function CampaignBriefForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="mx-auto max-w-3xl">
       {error && (
         <p className="mb-5 rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
       )}
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        {/* Left column: campaign basics */}
+      <div className="space-y-5">
+        {/* Basics */}
         <Card className="space-y-5 p-6">
           <Field label="Campaign name">
             <input
@@ -139,44 +139,46 @@ export default function CampaignBriefForm() {
             </Field>
           </div>
 
-          <Field label="Campaign type">
-            <div className="flex flex-wrap gap-2">
-              {TYPES.map((t) => (
-                <button
-                  key={t.value}
-                  type="button"
-                  onClick={() => setType(t.value)}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                    type === t.value
-                      ? "border-electric-deep/60 bg-electric/20 text-ink"
-                      : "border-line/10 bg-surface text-ink-soft hover:text-ink"
-                  }`}
-                >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </Field>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Field label="Campaign type">
+              <div className="flex flex-wrap gap-2">
+                {TYPES.map((t) => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => setType(t.value)}
+                    className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                      type === t.value
+                        ? "border-electric-deep/60 bg-electric/20 text-ink"
+                        : "border-line/10 bg-surface text-ink-soft hover:text-ink"
+                    }`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </Field>
 
-          <Field label="Platforms">
-            <div className="flex flex-wrap gap-2">
-              {PLATFORMS.map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => togglePlatform(p)}
-                  aria-pressed={platforms.includes(p)}
-                  className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                    platforms.includes(p)
-                      ? "border-electric-deep/60 bg-electric/20 text-ink"
-                      : "border-line/10 bg-surface text-ink-soft hover:text-ink"
-                  }`}
-                >
-                  {PLATFORM_LABELS[p]}
-                </button>
-              ))}
-            </div>
-          </Field>
+            <Field label="Platforms">
+              <div className="flex flex-wrap gap-2">
+                {PLATFORMS.map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => togglePlatform(p)}
+                    aria-pressed={platforms.includes(p)}
+                    className={`rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                      platforms.includes(p)
+                        ? "border-electric-deep/60 bg-electric/20 text-ink"
+                        : "border-line/10 bg-surface text-ink-soft hover:text-ink"
+                    }`}
+                  >
+                    {PLATFORM_LABELS[p]}
+                  </button>
+                ))}
+              </div>
+            </Field>
+          </div>
 
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <Field label="Rate per 100k views (USD)">
@@ -204,64 +206,63 @@ export default function CampaignBriefForm() {
           </div>
         </Card>
 
-        {/* Right column: timing, requirements, eligibility */}
-        <div className="space-y-5">
-          <Card className="space-y-5 p-6">
-            <Field label="Campaign ends by">
-              <div className="flex gap-2">
-                {(["deadline", "budget"] as const).map((m) => (
-                  <button
-                    key={m}
-                    type="button"
-                    onClick={() => setDurationMode(m)}
-                    className={`flex-1 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
-                      durationMode === m
-                        ? "border-electric-deep/60 bg-electric/20 text-ink"
-                        : "border-line/10 bg-surface text-ink-soft hover:text-ink"
-                    }`}
-                  >
-                    {m === "deadline" ? "Deadline" : "Budget runs out"}
-                  </button>
-                ))}
-              </div>
-            </Field>
-
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-              <Field label="Days left">
-                <input
-                  className={inputCls}
-                  type="number"
-                  min="1"
-                  max="365"
-                  value={daysLeft}
-                  onChange={(e) => setDaysLeft(e.target.value)}
-                />
-              </Field>
-              <Field label="Min views per post">
-                <input
-                  className={inputCls}
-                  type="number"
-                  min="0"
-                  value={minViewsPerPost}
-                  onChange={(e) => setMinViewsPerPost(e.target.value)}
-                />
-              </Field>
-              <Field label="Min views total">
-                <input
-                  className={inputCls}
-                  type="number"
-                  min="0"
-                  value={minViewsTotal}
-                  onChange={(e) => setMinViewsTotal(e.target.value)}
-                  placeholder="None"
-                />
-              </Field>
+        {/* Timing & rules */}
+        <Card className="space-y-5 p-6">
+          <Field label="Campaign ends by">
+            <div className="flex gap-2">
+              {(["deadline", "budget"] as const).map((m) => (
+                <button
+                  key={m}
+                  type="button"
+                  onClick={() => setDurationMode(m)}
+                  className={`flex-1 rounded-xl border px-4 py-2 text-sm font-semibold transition ${
+                    durationMode === m
+                      ? "border-electric-deep/60 bg-electric/20 text-ink"
+                      : "border-line/10 bg-surface text-ink-soft hover:text-ink"
+                  }`}
+                >
+                  {m === "deadline" ? "Deadline" : "Budget runs out"}
+                </button>
+              ))}
             </div>
+          </Field>
 
-            <Field label="Rules & requirements">
-              <textarea
-                className={`${inputCls} min-h-[110px] resize-y`}
-                value={rules}
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <Field label="Days left">
+              <input
+                className={inputCls}
+                type="number"
+                min="1"
+                max="365"
+                value={daysLeft}
+                onChange={(e) => setDaysLeft(e.target.value)}
+              />
+            </Field>
+            <Field label="Min views per post">
+              <input
+                className={inputCls}
+                type="number"
+                min="0"
+                value={minViewsPerPost}
+                onChange={(e) => setMinViewsPerPost(e.target.value)}
+              />
+            </Field>
+            <Field label="Min views total">
+              <input
+                className={inputCls}
+                type="number"
+                min="0"
+                value={minViewsTotal}
+                onChange={(e) => setMinViewsTotal(e.target.value)}
+                placeholder="None"
+              />
+            </Field>
+          </div>
+
+          <Field label="Rules & requirements">
+            <textarea
+              className={`${inputCls} min-h-[110px] resize-y`}
+              value={rules}
                 onChange={(e) => setRules(e.target.value)}
                 placeholder="What should clippers know? (content rules, sound, posting cadence, do's and don'ts…)"
               />
@@ -271,21 +272,19 @@ export default function CampaignBriefForm() {
           <Card className="p-6">
             <EligibilitySection value={eligibility} onChange={setEligibility} />
           </Card>
-        </div>
-      </div>
 
-      {/* Content requirements: full width below, it's the tallest section */}
-      <Card className="mt-5 p-6">
-        <ContentRequirementsSection value={content} onChange={setContent} />
-      </Card>
+          <Card className="p-6">
+            <ContentRequirementsSection value={content} onChange={setContent} />
+          </Card>
 
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-xs text-ink-faint">
-          Submitted as a draft — it goes live only after our team approves it.
-        </p>
-        <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
-          {submitting ? "Submitting…" : "Submit brief"}
-        </Button>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-xs text-ink-faint">
+              Submitted as a draft — it goes live only after our team approves it.
+            </p>
+            <Button type="submit" disabled={submitting} className="w-full sm:w-auto">
+              {submitting ? "Submitting…" : "Submit brief"}
+            </Button>
+          </div>
       </div>
     </form>
   );
