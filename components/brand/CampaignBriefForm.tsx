@@ -271,12 +271,13 @@ export default function CampaignBriefForm() {
           <Card className="p-6">
             <EligibilitySection value={eligibility} onChange={setEligibility} />
           </Card>
-
-          <Card className="p-6">
-            <ContentRequirementsSection value={content} onChange={setContent} />
-          </Card>
         </div>
       </div>
+
+      {/* Content requirements: full width below, it's the tallest section */}
+      <Card className="mt-5 p-6">
+        <ContentRequirementsSection value={content} onChange={setContent} />
+      </Card>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-ink-faint">

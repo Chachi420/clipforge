@@ -87,111 +87,117 @@ export default function ContentRequirementsSection({
         </p>
       </div>
 
-      <Field label="Promotion format">
-        <div className="flex flex-wrap gap-2">
-          {PROMO_FORMATS.map((f) => (
-            <Chip
-              key={f.value}
-              active={value.promoFormats.includes(f.value)}
-              onClick={() => set({ promoFormats: toggle(value.promoFormats, f.value) })}
-            >
-              {f.label}
-            </Chip>
-          ))}
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+        <div className="space-y-5">
+          <Field label="Promotion format">
+            <div className="flex flex-wrap gap-2">
+              {PROMO_FORMATS.map((f) => (
+                <Chip
+                  key={f.value}
+                  active={value.promoFormats.includes(f.value)}
+                  onClick={() => set({ promoFormats: toggle(value.promoFormats, f.value) })}
+                >
+                  {f.label}
+                </Chip>
+              ))}
+            </div>
+          </Field>
+
+          <Field label="Aspect ratio">
+            <div className="flex flex-wrap gap-2">
+              {ASPECT_RATIOS.map((r) => (
+                <Chip
+                  key={r.value}
+                  active={value.aspectRatios.includes(r.value)}
+                  onClick={() => set({ aspectRatios: toggle(value.aspectRatios, r.value) })}
+                >
+                  {r.label}
+                </Chip>
+              ))}
+            </div>
+          </Field>
+
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+            <Field label="Min length (sec)">
+              <input
+                type="number"
+                min="0"
+                value={value.minDurationSec}
+                onChange={(e) => set({ minDurationSec: e.target.value })}
+                placeholder="No min"
+                className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
+              />
+            </Field>
+            <Field label="Max length (sec)">
+              <input
+                type="number"
+                min="0"
+                value={value.maxDurationSec}
+                onChange={(e) => set({ maxDurationSec: e.target.value })}
+                placeholder="No max"
+                className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
+              />
+            </Field>
+            <Field label="Min clips expected">
+              <input
+                type="number"
+                min="1"
+                value={value.minClipsExpected}
+                onChange={(e) => set({ minClipsExpected: e.target.value })}
+                className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
+              />
+            </Field>
+          </div>
         </div>
-      </Field>
 
-      <Field label="Aspect ratio">
-        <div className="flex flex-wrap gap-2">
-          {ASPECT_RATIOS.map((r) => (
-            <Chip
-              key={r.value}
-              active={value.aspectRatios.includes(r.value)}
-              onClick={() => set({ aspectRatios: toggle(value.aspectRatios, r.value) })}
-            >
-              {r.label}
-            </Chip>
-          ))}
+        <div className="space-y-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            <Field label="Required hashtags">
+              <input
+                type="text"
+                value={value.requiredHashtags}
+                onChange={(e) => set({ requiredHashtags: e.target.value })}
+                placeholder="#yourbrand, #campaign"
+                className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
+              />
+            </Field>
+            <Field label="Accounts to tag">
+              <input
+                type="text"
+                value={value.requiredTags}
+                onChange={(e) => set({ requiredTags: e.target.value })}
+                placeholder="@yourbrand"
+                className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
+              />
+            </Field>
+          </div>
+
+          <Field label="Source material (optional)">
+            <input
+              type="url"
+              value={value.sourceMaterialUrl}
+              onChange={(e) => set({ sourceMaterialUrl: e.target.value })}
+              placeholder="Drive / YouTube / Dropbox link to content clippers should use"
+              className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
+            />
+          </Field>
+
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line/10 bg-surface p-4">
+            <input
+              type="checkbox"
+              checked={value.requiresPreapproval}
+              onChange={(e) => set({ requiresPreapproval: e.target.checked })}
+              className="mt-0.5 h-4 w-4 accent-ink"
+            />
+            <span>
+              <span className="block text-sm font-semibold text-ink">Review clips before they go live</span>
+              <span className="mt-0.5 block text-xs text-ink-soft">
+                Clippers submit drafts for your approval before posting. Slower, but full control.
+              </span>
+            </span>
+          </label>
         </div>
-      </Field>
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
-        <Field label="Min length (sec)">
-          <input
-            type="number"
-            min="0"
-            value={value.minDurationSec}
-            onChange={(e) => set({ minDurationSec: e.target.value })}
-            placeholder="No min"
-            className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
-          />
-        </Field>
-        <Field label="Max length (sec)">
-          <input
-            type="number"
-            min="0"
-            value={value.maxDurationSec}
-            onChange={(e) => set({ maxDurationSec: e.target.value })}
-            placeholder="No max"
-            className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
-          />
-        </Field>
-        <Field label="Min clips expected">
-          <input
-            type="number"
-            min="1"
-            value={value.minClipsExpected}
-            onChange={(e) => set({ minClipsExpected: e.target.value })}
-            className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
-          />
-        </Field>
       </div>
-
-      <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-        <Field label="Required hashtags">
-          <input
-            type="text"
-            value={value.requiredHashtags}
-            onChange={(e) => set({ requiredHashtags: e.target.value })}
-            placeholder="#yourbrand, #campaign"
-            className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
-          />
-        </Field>
-        <Field label="Accounts to tag">
-          <input
-            type="text"
-            value={value.requiredTags}
-            onChange={(e) => set({ requiredTags: e.target.value })}
-            placeholder="@yourbrand"
-            className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
-          />
-        </Field>
-      </div>
-
-      <Field label="Source material (optional)">
-        <input
-          type="url"
-          value={value.sourceMaterialUrl}
-          onChange={(e) => set({ sourceMaterialUrl: e.target.value })}
-          placeholder="Drive / YouTube / Dropbox link to content clippers should use"
-          className="w-full rounded-lg border border-line/15 bg-paper px-3 py-2.5 text-base text-ink outline-none transition-colors placeholder:text-ink-faint focus:border-ink/40"
-        />
-      </Field>
-
-      <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-line/10 bg-surface p-4">
-        <input
-          type="checkbox"
-          checked={value.requiresPreapproval}
-          onChange={(e) => set({ requiresPreapproval: e.target.checked })}
-          className="mt-0.5 h-4 w-4 accent-ink"
-        />
-        <span>
-          <span className="block text-sm font-semibold text-ink">Review clips before they go live</span>
-          <span className="mt-0.5 block text-xs text-ink-soft">
-            Clippers submit drafts for your approval before posting. Slower, but full control.
-          </span>
-        </span>
-      </label>
     </div>
   );
 }
