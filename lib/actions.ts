@@ -227,7 +227,15 @@ export async function uploadClips(campaignId: string, urls: string[]) {
       let igStats: { views: number | null; likes: number | null; comments: number | null } | undefined;
       try {
         const { fetchInstagramStats } = await import("./apify");
-        const stats = await fetchInstagramStats([url]);
+        // Bound the Apify call: the actor poll can run up to 4 minutes, but
+        // this is a server action — a slow scrape must not hang the upload.
+        // On timeout the clip falls through to manual review below.
+        const stats = await Promise.race([
+          fetchInstagramStats([url]),
+          new Promise<never>((_, reject) =>
+            setTimeout(() => reject(new Error("apify-timeout")), 25000)
+          ),
+        ]);
         const s = stats.get(url);
         if (s?.ownerUsername) {
           owner = s.ownerUsername.toLowerCase();
@@ -299,7 +307,11 @@ export async function uploadClips(campaignId: string, urls: string[]) {
         }
       }
       if (snapshots.length > 0) {
-        await supabase.from("clip_metric_snapshots").insert(snapshots);
+        // clip_metric_snapshots has no user INSERT policy (service-role writes
+        // only, per migration 006) — the session client would be RLS-rejected.
+        // The server action itself is the trust boundary, so use svc.
+        const { error: snapError } = await svc.from("clip_metric_snapshots").insert(snapshots);
+        if (snapError) throw snapError;
       }
     } catch {
       /* best-effort; the daily scan cron picks up anything missed */
