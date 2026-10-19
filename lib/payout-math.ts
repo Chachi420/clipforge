@@ -68,7 +68,7 @@ export interface PayoutOpts {
 }
 
 /**
- * Platform take: the DEFAULT cut retained by ClipForge (20%). The actual take
+ * Platform take: the DEFAULT cut retained by Wondeed (20%). The actual take
  * is negotiated per client and stored on campaigns.platform_take_rate —
  * this constant is only the fallback.
  * Clippers earn (1 - take). Brands are charged the full ratePer100k.

@@ -3,7 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Card, Button, Field, inputCls } from "@/components/ui";
 
-const SUPPORT_EMAIL = "support@clipforge.example";
+const SUPPORT_EMAIL = "support@wondeed.com";
 
 const TOPICS = ["General", "Support", "Partnership", "Brand inquiry"] as const;
 
@@ -18,7 +18,7 @@ const FAQS = [
   },
   {
     q: "How are views verified?",
-    a: "ClipForge reads official view counts from the platform (e.g. YouTube's public API), and snapshots them over time. For platforms without a free API, views are counted from a manual review queue rather than estimated. Only genuine, organically served views count — bought, botted, or otherwise fake engagement is removed and can get an account banned.",
+    a: "Wondeed reads official view counts from the platform (e.g. YouTube's public API), and snapshots them over time. For platforms without a free API, views are counted from a manual review queue rather than estimated. Only genuine, organically served views count — bought, botted, or otherwise fake engagement is removed and can get an account banned.",
   },
   {
     q: "When do payouts happen?",

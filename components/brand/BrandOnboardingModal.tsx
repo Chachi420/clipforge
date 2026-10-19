@@ -49,7 +49,7 @@ export default function BrandOnboardingModal() {
       aria-label="Set up your brand account"
     >
       <div className="w-full max-w-md rounded-2xl border border-line/10 bg-paper p-6 shadow-xl sm:p-8">
-        <h2 className="display text-2xl">Welcome to ClipForge</h2>
+        <h2 className="display text-2xl">Welcome to Wondeed</h2>
         <p className="mt-2 text-sm text-ink-soft">
           Two quick things before you start running campaigns.
         </p>

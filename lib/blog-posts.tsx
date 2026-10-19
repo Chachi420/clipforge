@@ -41,7 +41,7 @@ export const BLOG_POSTS: BlogPost[] = [
         </p>
         <h2 className={h2}>The path from sign-up to payout</h2>
         <p className={p}>
-          On ClipForge the whole loop looks like this:
+          On Wondeed the whole loop looks like this:
         </p>
         <ol className="mt-4 list-decimal space-y-3 pl-6 text-ink-soft marker:font-bold marker:text-electric-deep">
           <li>
@@ -50,7 +50,7 @@ export const BLOG_POSTS: BlogPost[] = [
           </li>
           <li>
             <strong className="text-ink">Verify your accounts.</strong> Add the social
-            accounts you post from (TikTok, Instagram, YouTube, X). ClipForge gives you a
+            accounts you post from (TikTok, Instagram, YouTube, X). Wondeed gives you a
             unique verification code to put in each account&apos;s bio; a bot checks the
             bio for the code. Once verified, the account shows as Active.
           </li>
@@ -66,7 +66,7 @@ export const BLOG_POSTS: BlogPost[] = [
           </li>
           <li>
             <strong className="text-ink">Submit the URL.</strong> Paste the link to each
-            published post into ClipForge. It has to come from one of your Active,
+            published post into Wondeed. It has to come from one of your Active,
             verified accounts — links from unverified accounts are rejected automatically.
           </li>
           <li>
@@ -125,7 +125,7 @@ export const BLOG_POSTS: BlogPost[] = [
         </p>
         <h2 className={h2}>Rate tiers: what campaigns pay per 100K views</h2>
         <p className={p}>
-          ClipForge campaigns price payouts per 100,000 verified views. Across the
+          Wondeed campaigns price payouts per 100,000 verified views. Across the
           industry, rates tend to fall into rough bands. These are <strong className="text-ink">ranges, not promises</strong> — every
           campaign sets its own rate, and the rate is shown up front before you join:
         </p>
@@ -282,7 +282,7 @@ export const BLOG_POSTS: BlogPost[] = [
     content: (
       <>
         <p className={p}>
-          Of the four platforms ClipForge supports, TikTok has the highest upside for
+          Of the four platforms Wondeed supports, TikTok has the highest upside for
           clippers starting from zero. Its recommendation system will show a brand-new
           account&apos;s video to thousands of strangers if the video performs — no
           follower base required. That discovery engine is exactly what pay-per-view
@@ -326,7 +326,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <h2 className={h2}>Keep posts public until payout</h2>
         <p className={p}>
           This is the rule that protects your money: <strong className="text-ink">do not delete, privatize, or
-          unlist a submitted clip until the payout cycle closes.</strong> ClipForge
+          unlist a submitted clip until the payout cycle closes.</strong> Wondeed
           re-scans views periodically to verify earnings, and a clip it can&apos;t see
           is a clip it can&apos;t pay you for. Leave every submitted post public until
           the earnings are confirmed in your dashboard.

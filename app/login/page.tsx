@@ -59,7 +59,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-paper px-4 py-10">
       <Card className="w-full max-w-md p-8 text-center">
         <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
-          CLIPFORGE
+          WONDEED
         </Link>
         <h1 className="display mt-4 text-2xl">Sign in as a clipper</h1>
         <p className="mt-2 text-sm leading-relaxed text-ink-soft">

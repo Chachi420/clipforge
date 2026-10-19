@@ -7,9 +7,9 @@ import { Card } from "@/components/ui";
 import { Reveal } from "@/components/motion";
 
 export const metadata: Metadata = {
-  title: "Trust & Safety — ClipForge",
+  title: "Trust & Safety — Wondeed",
   description:
-    "How ClipForge keeps views honest and money safe: verified accounts, official view sources, admin clip review, fraud detection, and monthly payout cycles.",
+    "How Wondeed keeps views honest and money safe: verified accounts, official view sources, admin clip review, fraud detection, and monthly payout cycles.",
   alternates: { canonical: "/trust" },
 };
 

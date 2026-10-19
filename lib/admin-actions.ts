@@ -559,7 +559,7 @@ export async function approveBrandRequest(id: string) {
     user_id: (row as any).user_id,
     type: "brand_approved",
     title: "Your brand application was approved",
-    body: `Welcome to ClipForge, ${(row as any).company_name ?? "brand"}! You can now create campaigns from your brand dashboard.`,
+    body: `Welcome to Wondeed, ${(row as any).company_name ?? "brand"}! You can now create campaigns from your brand dashboard.`,
   });
 
   revalidatePath("/admin");
@@ -1055,8 +1055,8 @@ export async function setClipperStatus(id: string, status: "active" | "suspended
     status === "suspended" ? "account_suspended" : "account_reactivated",
     status === "suspended" ? "Your account is suspended" : "Your account is active again",
     status === "suspended"
-      ? "Your ClipForge account has been suspended. You cannot upload new clips while suspended. Contact support if you think this is a mistake."
-      : "Your ClipForge account has been reactivated. You can upload clips again."
+      ? "Your Wondeed account has been suspended. You cannot upload new clips while suspended. Contact support if you think this is a mistake."
+      : "Your Wondeed account has been reactivated. You can upload clips again."
   );
   revalidatePath("/admin/clippers");
   revalidatePath("/admin");

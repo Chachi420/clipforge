@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { h2Cls, pCls, listCls } from "../styles";
 
 export const metadata: Metadata = {
-  title: "Terms of Service — ClipForge",
-  description: "The terms governing use of the ClipForge clipping marketplace.",
+  title: "Terms of Service — Wondeed",
+  description: "The terms governing use of the Wondeed clipping marketplace.",
   alternates: { canonical: "/policies/terms-of-service" },
 };
 
@@ -15,7 +15,7 @@ export default function TermsOfServicePage() {
 
       <h2 className={h2Cls}>1. The service</h2>
       <p className={pCls}>
-        ClipForge is a marketplace that connects brands with clippers (content creators).
+        Wondeed is a marketplace that connects brands with clippers (content creators).
         Brands run pay-per-view campaigns; clippers post original short-form clips and earn
         based on verified views. The service is in beta: features, rates, and workflows may
         change, and some functionality may be unavailable while we iterate.
@@ -24,7 +24,7 @@ export default function TermsOfServicePage() {
       <h2 className={h2Cls}>2. Accounts &amp; eligibility</h2>
       <p className={pCls}>
         You must be at least 13 years old (or the minimum age required by your jurisdiction)
-        to use ClipForge. Accounts are personal and non-transferable. You are responsible
+        to use Wondeed. Accounts are personal and non-transferable. You are responsible
         for keeping your sign-in credentials safe and for all activity under your account.
         Clippers are additionally bound by the Clipper Terms.
       </p>
@@ -61,7 +61,7 @@ export default function TermsOfServicePage() {
 
       <h2 className={h2Cls}>6. Liability &amp; beta disclaimer</h2>
       <p className={pCls}>
-        ClipForge is provided &quot;as is&quot;, without warranties of any kind. Campaign
+        Wondeed is provided &quot;as is&quot;, without warranties of any kind. Campaign
         budgets, view counts, and earnings are estimates until verified and paid. To the
         maximum extent permitted by law, we are not liable for indirect, incidental, or
         consequential damages arising from your use of the service. During beta, we may
@@ -70,7 +70,7 @@ export default function TermsOfServicePage() {
 
       <h2 className={h2Cls}>7. Changes to these terms</h2>
       <p className={pCls}>
-        We may update these terms as the product evolves. Continued use of ClipForge after
+        We may update these terms as the product evolves. Continued use of Wondeed after
         changes take effect constitutes acceptance of the updated terms.
       </p>
     </article>

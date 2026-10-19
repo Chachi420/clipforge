@@ -12,9 +12,9 @@ import {
 } from "@/components/home-sections";
 
 export const metadata: Metadata = {
-  title: "ClipForge — Get Paid for Every View Your Clips Earn",
+  title: "Wondeed — Get Paid for Every View Your Clips Earn",
   description:
-    "ClipForge is a pay-per-view clipping marketplace. Brands post campaigns with a per-view rate; clippers post clips and earn per verified view.",
+    "Wondeed is a pay-per-view clipping marketplace. Brands post campaigns with a per-view rate; clippers post clips and earn per verified view.",
   alternates: { canonical: "/" },
 };
 

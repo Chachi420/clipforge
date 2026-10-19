@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Check, X } from "lucide-react";
 import { Card } from "./ui";
 
-const STORAGE_KEY = "clipforge-onboarding-dismissed";
+const STORAGE_KEY = "wondeed-onboarding-dismissed";
 
 export default function OnboardingBanner({
   hasConnectedAccount,

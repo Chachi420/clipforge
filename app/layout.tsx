@@ -10,30 +10,30 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://clipforge-pied-rho.vercel.app"),
-  title: "ClipForge — The Pay-Per-View Clipping Marketplace",
+  metadataBase: new URL("https://wondeed.com"),
+  title: "Wondeed — The Pay-Per-View Clipping Marketplace",
   description:
     "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view. Real rates up front, hard budget caps, 1,000+ followers to verify.",
   alternates: { canonical: "/" },
   openGraph: {
-    title: "ClipForge — The Pay-Per-View Clipping Marketplace",
+    title: "Wondeed — The Pay-Per-View Clipping Marketplace",
     description:
       "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view.",
     url: "/",
-    siteName: "ClipForge",
+    siteName: "Wondeed",
     type: "website",
     images: [
       {
         url: "/opengraph-image",
         width: 1200,
         height: 630,
-        alt: "ClipForge — Clip. Post. Get Paid.",
+        alt: "Wondeed — Clip. Post. Get Paid.",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "ClipForge — The Pay-Per-View Clipping Marketplace",
+    title: "Wondeed — The Pay-Per-View Clipping Marketplace",
     description:
       "Brands run pay-per-view clipping campaigns; clippers post clips and earn per verified view.",
     images: ["/opengraph-image"],

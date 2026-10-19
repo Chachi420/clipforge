@@ -49,7 +49,7 @@ const FLOW_NODES: Node[] = [
 
 /**
  * Money-flow diagram — the documented path money takes through
- * ClipForge. Horizontal on desktop, vertical on mobile; the connector
+ * Wondeed. Horizontal on desktop, vertical on mobile; the connector
  * line draws itself when scrolled into view.
  */
 export function MoneyFlowDiagram() {

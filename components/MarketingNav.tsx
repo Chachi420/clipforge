@@ -47,9 +47,9 @@ export default function MarketingNav({
         <Link
           href="/"
           className="font-display text-lg font-bold tracking-tight text-ink"
-          aria-label="ClipForge home"
+          aria-label="Wondeed home"
         >
-          CLIPFORGE
+          WONDEED
         </Link>
 
         {/* Desktop links — fixed order per brief §9.1 */}

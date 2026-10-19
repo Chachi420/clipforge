@@ -3,8 +3,8 @@ import { Card } from "./ui";
 
 /**
  * Honest competitor comparison for the pricing page.
- * Only claims ClipForge can verify from its own codebase are marked
- * as ClipForge strengths. Competitor figures come from their public
+ * Only claims Wondeed can verify from its own codebase are marked
+ * as Wondeed strengths. Competitor figures come from their public
  * marketing pages (Oct 2026) — labeled as reported, not audited.
  */
 
@@ -12,7 +12,7 @@ type Cell = { text: string; tone: "good" | "neutral" | "bad" } | { check: true }
 
 interface Row {
   label: string;
-  clipforge: Cell;
+  wondeed: Cell;
   clipaffiliates: Cell;
   whop: Cell;
   vyro: Cell;
@@ -21,56 +21,56 @@ interface Row {
 const ROWS: Row[] = [
   {
     label: "Platform fee",
-    clipforge: { text: "20% of brand rate", tone: "neutral" },
+    wondeed: { text: "20% of brand rate", tone: "neutral" },
     clipaffiliates: { text: "9% on deposits", tone: "good" },
     whop: { text: "15–30%", tone: "bad" },
     vyro: { text: "Varies by campaign", tone: "neutral" },
   },
   {
     label: "View verification",
-    clipforge: { text: "API-verified (YouTube); fraud checks", tone: "good" },
+    wondeed: { text: "API-verified (YouTube); fraud checks", tone: "good" },
     clipaffiliates: { text: "API-verified", tone: "good" },
     whop: { text: "Campaign-dependent", tone: "neutral" },
     vyro: { text: "API-verified + fraud checks", tone: "good" },
   },
   {
     label: "Campaign setup time",
-    clipforge: { text: "Minutes", tone: "good" },
+    wondeed: { text: "Minutes", tone: "good" },
     clipaffiliates: { text: "Minutes", tone: "good" },
     whop: { text: "Minutes", tone: "good" },
     vyro: { text: "Minutes", tone: "good" },
   },
   {
     label: "Minimum campaign budget",
-    clipforge: { text: "No minimum", tone: "good" },
+    wondeed: { text: "No minimum", tone: "good" },
     clipaffiliates: { text: "No published minimum", tone: "neutral" },
     whop: { text: "Campaign-dependent", tone: "neutral" },
     vyro: { text: "$1,000", tone: "bad" },
   },
   {
     label: "Clipper payout methods",
-    clipforge: { text: "PayPal, crypto", tone: "neutral" },
+    wondeed: { text: "PayPal, crypto", tone: "neutral" },
     clipaffiliates: { text: "Crypto", tone: "neutral" },
     whop: { text: "Varies", tone: "neutral" },
     vyro: { text: "Stripe, PayPal", tone: "good" },
   },
   {
     label: "Minimum payout",
-    clipforge: { text: "$10", tone: "neutral" },
+    wondeed: { text: "$10", tone: "neutral" },
     clipaffiliates: { text: "Not published", tone: "neutral" },
     whop: { text: "Campaign-dependent", tone: "neutral" },
     vyro: { text: "No minimum", tone: "good" },
   },
   {
     label: "Brand approval window",
-    clipforge: { text: "Admin-reviewed", tone: "good" },
+    wondeed: { text: "Admin-reviewed", tone: "good" },
     clipaffiliates: { text: "72 hours", tone: "good" },
     whop: { text: "Campaign-dependent", tone: "neutral" },
     vyro: { text: "Pre-publication review", tone: "good" },
   },
   {
     label: "India-first (₹, UPI)",
-    clipforge: { check: true },
+    wondeed: { check: true },
     clipaffiliates: { cross: true },
     whop: { cross: true },
     vyro: { cross: true },
@@ -111,7 +111,7 @@ export default function ComparisonTable() {
                 Feature
               </th>
               <th className="bg-ink px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-paper">
-                ClipForge
+                Wondeed
               </th>
               <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
                 ClipAffiliates
@@ -129,7 +129,7 @@ export default function ComparisonTable() {
               <tr key={row.label} className="transition-colors duration-micro hover:bg-ink/[0.02]">
                 <td className="px-5 py-3.5 text-sm font-medium text-ink">{row.label}</td>
                 <td className="bg-ink/[0.04] px-5 py-3.5">
-                  <CellView cell={row.clipforge} />
+                  <CellView cell={row.wondeed} />
                 </td>
                 <td className="px-5 py-3.5">
                   <CellView cell={row.clipaffiliates} />
@@ -147,7 +147,7 @@ export default function ComparisonTable() {
       </div>
       <p className="border-t border-line/10 px-5 py-3 text-xs text-ink-faint">
         Competitor figures from their public pages, Oct 2026 — reported, not audited.
-        ClipForge figures from our live product.
+        Wondeed figures from our live product.
       </p>
     </Card>
   );

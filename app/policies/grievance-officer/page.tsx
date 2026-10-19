@@ -9,9 +9,9 @@ import { h2Cls, pCls, listCls } from "../styles";
 const GRIEVANCE_EMAIL = "abhinavsinghiitkanpur@gmail.com";
 
 export const metadata: Metadata = {
-  title: "Grievance Officer — ClipForge",
+  title: "Grievance Officer — Wondeed",
   description:
-    "How to raise a complaint with ClipForge's Grievance Officer under the IT Act 2000 and DPDP Act 2023.",
+    "How to raise a complaint with Wondeed's Grievance Officer under the IT Act 2000 and DPDP Act 2023.",
   alternates: { canonical: "/policies/grievance-officer" },
 };
 
@@ -24,7 +24,7 @@ export default function GrievanceOfficerPage() {
       </p>
 
       <p className={pCls}>
-        If you have a complaint about content on ClipForge, how your data is handled,
+        If you have a complaint about content on Wondeed, how your data is handled,
         or any decision we&apos;ve made about your account, you can raise it directly
         with our Grievance Officer. We acknowledge every complaint within 24 hours
         and resolve it within 30 days of receipt.
@@ -33,7 +33,7 @@ export default function GrievanceOfficerPage() {
       <h2 className={h2Cls}>Grievance Officer details</h2>
       <ul className={listCls}>
         <li>
-          <strong className="text-ink">Designation:</strong> Grievance Officer, ClipForge
+          <strong className="text-ink">Designation:</strong> Grievance Officer, Wondeed
         </li>
         <li>
           <strong className="text-ink">Email:</strong>{" "}
@@ -54,11 +54,11 @@ export default function GrievanceOfficerPage() {
 
       <h2 className={h2Cls}>How to file a complaint</h2>
       <p className={pCls}>
-        Email the Grievance Officer from the address tied to your ClipForge account and
+        Email the Grievance Officer from the address tied to your Wondeed account and
         include:
       </p>
       <ul className={listCls}>
-        <li>Your name and the email address on your ClipForge account.</li>
+        <li>Your name and the email address on your Wondeed account.</li>
         <li>What happened, with dates — what you saw, what decision was made, or what content concerns you.</li>
         <li>Links to the relevant clips, campaigns, or pages where applicable.</li>
         <li>What outcome you&apos;re asking for.</li>

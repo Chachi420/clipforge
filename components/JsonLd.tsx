@@ -11,16 +11,16 @@ export function JsonLd({ data }: { data: Record<string, unknown> }) {
   );
 }
 
-export const SITE_URL = "https://clipforge-pied-rho.vercel.app";
+export const SITE_URL = "https://wondeed.com";
 
 export function organizationSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "ClipForge",
+    name: "Wondeed",
     url: SITE_URL,
     description:
-      "ClipForge is a pay-per-view clipping marketplace. Brands run clipping campaigns; clippers post clips and earn per verified view.",
+      "Wondeed is a pay-per-view clipping marketplace. Brands run clipping campaigns; clippers post clips and earn per verified view.",
   };
 }
 
@@ -28,7 +28,7 @@ export function websiteSchema() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "ClipForge",
+    name: "Wondeed",
     url: SITE_URL,
   };
 }

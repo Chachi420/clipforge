@@ -71,11 +71,11 @@ export default function BrandLoginPage() {
       </div>
       <Card className="w-full max-w-md p-8 text-center">
         <Link href="/" className="font-display text-lg font-bold tracking-tight text-ink">
-          CLIPFORGE
+          WONDEED
         </Link>
         <h1 className="display mt-4 text-2xl">Brand sign in</h1>
         <p className="mt-2 text-sm text-ink-soft">
-          Access your ClipForge brand dashboard — campaigns, verified views, billing.
+          Access your Wondeed brand dashboard — campaigns, verified views, billing.
         </p>
         {checking ? (
           <div className="mt-8 flex justify-center py-3">
@@ -104,7 +104,7 @@ export default function BrandLoginPage() {
           </div>
         )}
         <p className="mt-6 text-xs text-ink-faint">
-          New to ClipForge? Signing in creates your brand account instantly.
+          New to Wondeed? Signing in creates your brand account instantly.
         </p>
         {!isLive && (
           <p className="mt-4 rounded-md border border-status-warning/25 bg-status-warning/10 px-3 py-2 text-xs text-ink-soft">

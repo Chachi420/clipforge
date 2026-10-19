@@ -4,8 +4,8 @@ import { MarketingFooter } from "@/components/marketing";
 import { ContactForm, FaqAccordion, ContactCards } from "./ContactClient";
 
 export const metadata: Metadata = {
-  title: "Contact — ClipForge",
-  description: "Questions, partnerships, or campaign inquiries — reach the ClipForge team.",
+  title: "Contact — Wondeed",
+  description: "Questions, partnerships, or campaign inquiries — reach the Wondeed team.",
   alternates: { canonical: "/contact" },
 };
 

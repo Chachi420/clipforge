@@ -84,7 +84,7 @@ export default async function BrandCampaignDetailPage({
       <p className="text-sm text-ink-faint">
         Paying {formatMoney(campaign.ratePer100k)} per 100K verified views
         <span className="mx-2">·</span>
-        ClipForge platform fee: {campaign.platformTakeRate != null ? `${Math.round(campaign.platformTakeRate * 100)}%` : "20%"}
+        Wondeed platform fee: {campaign.platformTakeRate != null ? `${Math.round(campaign.platformTakeRate * 100)}%` : "20%"}
       </p>
 
       {/* Views chart */}

@@ -20,10 +20,10 @@ export async function generateMetadata({
   params: { id: string };
 }): Promise<Metadata> {
   const profile = await getPublicProfile(params.id).catch(() => null);
-  if (!profile?.displayName) return { title: "Clipper — ClipForge" };
+  if (!profile?.displayName) return { title: "Clipper — Wondeed" };
   return {
-    title: `${profile.displayName} — Clipper on ClipForge`,
-    description: `Clips and verified-view stats from ${profile.displayName}, a clipper on the ClipForge pay-per-view marketplace.`,
+    title: `${profile.displayName} — Clipper on Wondeed`,
+    description: `Clips and verified-view stats from ${profile.displayName}, a clipper on the Wondeed pay-per-view marketplace.`,
     alternates: { canonical: `/u/${params.id}` },
   };
 }

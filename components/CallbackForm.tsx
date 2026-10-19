@@ -113,7 +113,7 @@ export default function CallbackForm() {
           {saving ? "Sending…" : "Request a callback"}
         </Button>
         <p className="text-xs text-ink-faint">
-          By submitting, you agree to be contacted about ClipForge brand campaigns.
+          By submitting, you agree to be contacted about Wondeed brand campaigns.
         </p>
       </form>
     </Card>

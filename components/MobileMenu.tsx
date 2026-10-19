@@ -110,7 +110,7 @@ export default function MobileMenu({
           >
           <div className="flex items-center justify-between px-5 py-3">
             <span className="font-display text-lg font-bold tracking-tight text-ink">
-              CLIPFORGE
+              WONDEED
             </span>
             <button
               type="button"

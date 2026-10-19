@@ -5,9 +5,9 @@ import { Card } from "@/components/ui";
 import { Reveal } from "@/components/motion";
 
 export const metadata: Metadata = {
-  title: "Get started — ClipForge",
+  title: "Get started — Wondeed",
   description:
-    "Join ClipForge as a clipper and earn per verified view, or as a brand running pay-per-view campaigns.",
+    "Join Wondeed as a clipper and earn per verified view, or as a brand running pay-per-view campaigns.",
   alternates: { canonical: "/onboard" },
 };
 
@@ -36,7 +36,7 @@ export default function OnboardPage() {
       <nav aria-label="Onboarding" className="border-b border-ink/10">
         <div className="mx-auto flex max-w-6xl items-center px-6 py-4">
           <Link href="/" className="font-display text-xl font-bold tracking-tight">
-            CLIPFORGE
+            WONDEED
           </Link>
         </div>
       </nav>

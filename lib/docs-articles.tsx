@@ -22,7 +22,7 @@ export const DOCS_NAV: DocsSection[] = [
   {
     title: "Getting Started",
     articles: [
-      { slug: "welcome", title: "Welcome to ClipForge" },
+      { slug: "welcome", title: "Welcome to Wondeed" },
       { slug: "quickstart", title: "Quickstart: first payout" },
     ],
   },
@@ -63,11 +63,11 @@ export const DOCS_ARTICLES: DocsArticle[] = [
   {
     slug: "welcome",
     section: "Getting Started",
-    title: "Welcome to ClipForge",
+    title: "Welcome to Wondeed",
     body: (
       <>
         <p className={p}>
-          ClipForge is a two-sided marketplace: brands run pay-per-view campaigns, and
+          Wondeed is a two-sided marketplace: brands run pay-per-view campaigns, and
           clippers post short videos about those campaigns on TikTok, Instagram Reels,
           YouTube Shorts, and X. Clippers earn for every verified view their clips get —
           no follower count required beyond account verification.
@@ -129,7 +129,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
           </li>
           <li>
             <strong className={strong}>Post and submit.</strong> Publish your clip, then
-            paste the post URL into ClipForge. Submissions must come from a verified,
+            paste the post URL into Wondeed. Submissions must come from a verified,
             Active account.
           </li>
           <li>
@@ -164,7 +164,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
             a social account (TikTok, Instagram, YouTube, or X) with its handle or URL.
           </li>
           <li>
-            ClipForge issues a <strong className={strong}>unique verification code</strong>{" "}
+            Wondeed issues a <strong className={strong}>unique verification code</strong>{" "}
             for that account.
           </li>
           <li>
@@ -244,7 +244,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
     body: (
       <>
         <p className={p}>
-          Submitting a clip tells ClipForge to start tracking a post&apos;s views. The
+          Submitting a clip tells Wondeed to start tracking a post&apos;s views. The
           flow is deliberately simple: paste the URL, and the system handles the rest.
         </p>
         <h2 className={h2}>The submission flow</h2>
@@ -255,7 +255,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
             In the dashboard, open the campaign and paste the URL into the submit box.
           </li>
           <li>
-            ClipForge checks that the URL belongs to one of your{" "}
+            Wondeed checks that the URL belongs to one of your{" "}
             <strong className={strong}>Active, verified accounts</strong>. If it
             doesn&apos;t, the submission is rejected — this is the most common reason
             submissions fail.
@@ -282,7 +282,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
     body: (
       <>
         <p className={p}>
-          After you submit a clip, ClipForge re-scans its view count on a schedule —
+          After you submit a clip, Wondeed re-scans its view count on a schedule —
           roughly daily — and records each reading. Your earnings for the clip are
           calculated from these verified readings, not from the number you see in the
           social app.
@@ -291,7 +291,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
         <p className={p}>
           Where a platform offers an official API (YouTube does), view counts are pulled
           directly and recorded as snapshots over time. For platforms without an
-          accessible API, views are counted through ClipForge&apos;s review process
+          accessible API, views are counted through Wondeed&apos;s review process
           rather than estimated or fabricated — what you see in your dashboard is what
           was actually observed.
         </p>
@@ -325,7 +325,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
     body: (
       <>
         <p className={p}>
-          These rules apply to every campaign on ClipForge. Break them and the
+          These rules apply to every campaign on Wondeed. Break them and the
           system enforces itself — most violations are caught automatically,
           and the rest go to manual review.
         </p>

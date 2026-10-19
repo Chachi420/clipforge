@@ -58,7 +58,7 @@ export default async function BrandRequestPage() {
       </div>
       <Card className="w-full max-w-xl p-8">
         <Link href="/" className="mx-auto block w-fit font-display text-lg font-bold tracking-tight text-ink">
-          CLIPFORGE
+          WONDEED
         </Link>
         <h1 className="display mt-4 text-center text-2xl">Request brand access</h1>
         {isClipper && (

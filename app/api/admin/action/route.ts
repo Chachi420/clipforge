@@ -49,7 +49,7 @@ function page(title: string, message: string, ok: boolean): Response {
     `<div style="font-size:44px;margin-bottom:16px;">${ok ? "✓" : "✕"}</div>` +
     `<h1 style="font-size:22px;margin:0 0 12px;">${escHtml(title)}</h1>` +
     `<p style="font-size:15px;color:#555;line-height:1.6;">${escHtml(message)}</p>` +
-    `<p style="margin-top:32px;font-size:12px;color:#999;">ClipForge admin · this link was for ${ADMIN_EMAIL}</p>` +
+    `<p style="margin-top:32px;font-size:12px;color:#999;">Wondeed admin · this link was for ${ADMIN_EMAIL}</p>` +
     `</div></body></html>`;
   return new Response(html, {
     status: ok ? 200 : 400,
@@ -65,7 +65,7 @@ function confirmPage(
 ): Response {
   const html =
     `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>` +
-    `<title>${escHtml(summary)} — ClipForge admin</title></head>` +
+    `<title>${escHtml(summary)} — Wondeed admin</title></head>` +
     `<body style="margin:0;background:#fafafa;color:#111;font-family:-apple-system,Segoe UI,Roboto,sans-serif;">` +
     `<div style="max-width:520px;margin:0 auto;padding:64px 24px;text-align:center;">` +
     `<h1 style="font-size:22px;margin:0 0 12px;">${escHtml(summary)}</h1>` +
@@ -74,7 +74,7 @@ function confirmPage(
     `<input type="hidden" name="t" value="${escHtml(token)}"/>` +
     `<button type="submit" style="display:inline-block;padding:14px 40px;background:#111;color:#fff;border:0;border-radius:8px;font-weight:600;font-size:16px;cursor:pointer;font-family:inherit;">${escHtml(buttonLabel)}</button>` +
     `</form>` +
-    `<p style="margin-top:24px;font-size:12px;color:#999;">ClipForge admin · confirm to proceed · this link was for ${ADMIN_EMAIL}</p>` +
+    `<p style="margin-top:24px;font-size:12px;color:#999;">Wondeed admin · confirm to proceed · this link was for ${ADMIN_EMAIL}</p>` +
     `</div></body></html>`;
   return new Response(html, {
     status: 200,

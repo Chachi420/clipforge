@@ -6,9 +6,9 @@ import { JsonLd, faqPageSchema } from "@/components/JsonLd";
 import { FaqGroup } from "./FaqGroup";
 
 export const metadata: Metadata = {
-  title: "FAQ — ClipForge",
+  title: "FAQ — Wondeed",
   description:
-    "Straight answers about how ClipForge works — for clippers and brands. Verification, payouts, pricing, and view tracking.",
+    "Straight answers about how Wondeed works — for clippers and brands. Verification, payouts, pricing, and view tracking.",
   alternates: { canonical: "/faq" },
 };
 
@@ -52,7 +52,7 @@ const CLIPPER_FAQ: { q: string; a: string }[] = [
 const BRAND_FAQ: { q: string; a: string }[] = [
   {
     q: "How do campaigns get priced?",
-    a: "You set a budget cap and a per-view rate for your campaign. Clippers earn based on verified views at your rate, and ClipForge's platform fee is agreed per campaign (standard rate 20% of spend). There are no setup fees, subscriptions, or seat charges — money only moves when views happen.",
+    a: "You set a budget cap and a per-view rate for your campaign. Clippers earn based on verified views at your rate, and Wondeed's platform fee is agreed per campaign (standard rate 20% of spend). There are no setup fees, subscriptions, or seat charges — money only moves when views happen.",
   },
   {
     q: "Do I pay before the campaign runs?",

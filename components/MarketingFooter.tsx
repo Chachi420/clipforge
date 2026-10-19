@@ -40,10 +40,10 @@ const COLUMNS: { heading: string; external?: boolean; links: { href: string; lab
     heading: "Ask AI",
     external: true,
     links: [
-      { href: "https://chatgpt.com/?q=What+is+ClipForge+clipping+marketplace", label: "ChatGPT" },
-      { href: "https://claude.ai/new?q=What+is+ClipForge+clipping+marketplace", label: "Claude" },
+      { href: "https://chatgpt.com/?q=What+is+Wondeed+clipping+marketplace", label: "ChatGPT" },
+      { href: "https://claude.ai/new?q=What+is+Wondeed+clipping+marketplace", label: "Claude" },
       { href: "https://gemini.google.com/", label: "Gemini" },
-      { href: "https://www.perplexity.ai/search?q=What+is+ClipForge+clipping+marketplace", label: "Perplexity" },
+      { href: "https://www.perplexity.ai/search?q=What+is+Wondeed+clipping+marketplace", label: "Perplexity" },
     ],
   },
 ];
@@ -89,7 +89,7 @@ export default function MarketingFooter() {
           ))}
         </div>
         <div className="mt-12 flex flex-col gap-6 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm text-white/40">© 2026 ClipForge</p>
+          <p className="text-sm text-white/40">© 2026 Wondeed</p>
           <div className="lg:hidden">
             <ThemeToggle />
           </div>

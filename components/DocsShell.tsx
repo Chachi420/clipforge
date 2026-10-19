@@ -85,10 +85,10 @@ export default function DocsShell({ slug }: { slug: string }) {
               <BookOpen size={14} aria-hidden /> Docs
             </div>
             {isIndex ? (
-              <h1 className="display mt-3 text-3xl md:text-4xl">ClipForge guides</h1>
+              <h1 className="display mt-3 text-3xl md:text-4xl">Wondeed guides</h1>
             ) : (
               <div className="display mt-3 text-3xl md:text-4xl">
-                ClipForge guides
+                Wondeed guides
               </div>
             )}
           </div>

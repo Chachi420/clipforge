@@ -8,7 +8,7 @@ export default function PoliciesLayout({ children }: { children: React.ReactNode
       <nav className="border-b border-line/10" aria-label="Policies">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link href="/" className="font-display text-xl font-bold tracking-tight">
-            CLIPFORGE
+            WONDEED
           </Link>
           <ThemeToggle />
         </div>

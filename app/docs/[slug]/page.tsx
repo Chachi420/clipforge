@@ -12,10 +12,10 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const article = getDocsArticle(params.slug);
-  if (!article) return { title: "Doc not found — ClipForge" };
+  if (!article) return { title: "Doc not found — Wondeed" };
   return {
-    title: `${article.title} — ClipForge Docs`,
-    description: `ClipForge documentation: ${article.title}.`,
+    title: `${article.title} — Wondeed Docs`,
+    description: `Wondeed documentation: ${article.title}.`,
     alternates: { canonical: `/docs/${article.slug}` },
   };
 }

@@ -7,7 +7,7 @@ import { Faq, MarketingFooter } from "@/components/marketing";
 import { Reveal } from "@/components/motion";
 
 export const metadata: Metadata = {
-  title: "ClipForge for Brands — Pay Per Verified View",
+  title: "Wondeed for Brands — Pay Per Verified View",
   description:
     "Run clipping campaigns and pay only for verified views. Set your rate, cap your budget, and track every clip on a live dashboard.",
   alternates: { canonical: "/brands" },
@@ -55,7 +55,7 @@ const WHY = [
 ];
 
 /* Honest comparison — describes typical sponsored-post buying as it
-   actually works, against ClipForge's documented mechanics. No strawmen. */
+   actually works, against Wondeed's documented mechanics. No strawmen. */
 const OLD_WAY = [
   { title: "Pay a flat fee per post", body: "The price is locked before anyone knows the reach." },
   { title: "Reach is a hope", body: "You find out what a post did after it goes live." },
@@ -63,7 +63,7 @@ const OLD_WAY = [
   { title: "Budgets are lump sums", body: "Negotiated up front, spent whether it works or not." },
 ];
 
-const CLIPFORGE_WAY = [
+const WONDEED_WAY = [
   { title: "Pay per verified view", body: "The rate is set by you, published before anyone posts." },
   { title: "Reach is the product", body: "You only pay for views that actually happened." },
   { title: "Live dashboard", body: "Every clip, its views, and your spend — right now." },
@@ -156,7 +156,7 @@ export default function BrandsLanding() {
         {/* Why — editorial list */}
         <section aria-labelledby="brand-why" className="mx-auto max-w-4xl px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
-            Why ClipForge
+            Why Wondeed
           </Reveal>
           <Reveal as="h2" delay={80} id="brand-why" className="display mt-4 text-[clamp(2rem,5vw,3.5rem)]">
             Reach you can audit.
@@ -176,7 +176,7 @@ export default function BrandsLanding() {
           </div>
         </section>
 
-        {/* Old way vs ClipForge — one honest comparison */}
+        {/* Old way vs Wondeed — one honest comparison */}
         <section aria-labelledby="brand-compare" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             Why switch
@@ -200,10 +200,10 @@ export default function BrandsLanding() {
             </Reveal>
             <Reveal delay={200} className="rounded-card border border-ink bg-surface p-8">
               <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink">
-                ClipForge
+                Wondeed
               </p>
               <ul className="mt-6 space-y-6">
-                {CLIPFORGE_WAY.map((r) => (
+                {WONDEED_WAY.map((r) => (
                   <li key={r.title} className="flex items-start gap-3">
                     <Check size={18} className="mt-0.5 shrink-0 text-ink" aria-hidden />
                     <div>

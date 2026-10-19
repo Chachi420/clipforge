@@ -61,7 +61,7 @@ function chip(active: boolean) {
   }`;
 }
 
-const BANNER_KEY = "clipforge-campaigns-banner";
+const BANNER_KEY = "wondeed-campaigns-banner";
 
 export default function CampaignsExplorer({ initial }: { initial: Campaign[] }) {
   const [filters, setFilters] = useState<Filters>(DEFAULTS);

@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { h2Cls, pCls, listCls } from "../styles";
 
 export const metadata: Metadata = {
-  title: "Clipper Terms — ClipForge",
-  description: "The terms for clippers earning on ClipForge: verification, content rules, and payouts.",
+  title: "Clipper Terms — Wondeed",
+  description: "The terms for clippers earning on Wondeed: verification, content rules, and payouts.",
   alternates: { canonical: "/policies/clipper-terms" },
 };
 
@@ -13,7 +13,7 @@ export default function ClipperTermsPage() {
       <h1 className="display text-4xl">Clipper Terms</h1>
       <p className="mt-3 text-sm text-ink-faint">Last updated: October 2026 · Beta terms</p>
       <p className={pCls}>
-        These terms apply to everyone earning as a clipper on ClipForge, on top of the
+        These terms apply to everyone earning as a clipper on Wondeed, on top of the
         general Terms of Service.
       </p>
 

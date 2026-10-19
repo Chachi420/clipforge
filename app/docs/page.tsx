@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import DocsShell from "@/components/DocsShell";
 
 export const metadata: Metadata = {
-  title: "ClipForge Docs — How Clipping Campaigns Work",
+  title: "Wondeed Docs — How Clipping Campaigns Work",
   description:
     "Guides for brands and clippers: launching campaigns, submitting clips, view verification, and getting paid.",
   alternates: { canonical: "/docs" },

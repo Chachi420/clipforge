@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { h2Cls, pCls, listCls } from "../styles";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy — ClipForge",
-  description: "How ClipForge collects, uses, and protects your data.",
+  title: "Privacy Policy — Wondeed",
+  description: "How Wondeed collects, uses, and protects your data.",
   alternates: { canonical: "/policies/privacy-policy" },
 };
 
@@ -58,8 +58,8 @@ export default function PrivacyPolicyPage() {
       <p className={pCls}>
         You can update your profile at any time from your dashboard. To request a copy or
         deletion of your data, email{" "}
-        <a href="mailto:support@clipforge.example" className="font-semibold text-electric-deep hover:underline">
-          support@clipforge.example
+        <a href="mailto:support@wondeed.com" className="font-semibold text-electric-deep hover:underline">
+          support@wondeed.com
         </a>{" "}
         from your account email. We&apos;ll respond within 2 business days. Note that we may
         retain records required for payout, tax, or fraud-prevention purposes.
@@ -67,7 +67,7 @@ export default function PrivacyPolicyPage() {
 
       <h2 className={h2Cls}>Beta note</h2>
       <p className={pCls}>
-        ClipForge is in beta. This policy may change as the product evolves; we&apos;ll
+        Wondeed is in beta. This policy may change as the product evolves; we&apos;ll
         update the date above when it does.
       </p>
     </article>

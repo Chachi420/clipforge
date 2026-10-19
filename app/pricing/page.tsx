@@ -7,9 +7,9 @@ import { Card, Stat } from "@/components/ui";
 import { Reveal } from "@/components/motion";
 
 export const metadata: Metadata = {
-  title: "Pricing — ClipForge",
+  title: "Pricing — Wondeed",
   description:
-    "How ClipForge pricing works: brands fund campaigns, clippers earn per verified view, and the platform take is agreed per campaign. No subscriptions, no hidden fees.",
+    "How Wondeed pricing works: brands fund campaigns, clippers earn per verified view, and the platform take is agreed per campaign. No subscriptions, no hidden fees.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -31,7 +31,7 @@ const FLOW = [
   {
     icon: Percent,
     step: "02",
-    title: "ClipForge takes a standard cut",
+    title: "Wondeed takes a standard cut",
     body: `The platform take is agreed per campaign — the standard rate is 20% of campaign spend. That's the whole business model — no subscriptions, no seat fees, no setup costs for anyone.`,
   },
   {
@@ -73,7 +73,7 @@ export default function PricingPage() {
             when views do.
           </Reveal>
           <Reveal as="p" className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-ink-soft md:text-lg">
-            Brands pay for verified views. Clippers earn for producing them. ClipForge
+            Brands pay for verified views. Clippers earn for producing them. Wondeed
             keeps a standard cut for running the marketplace. That&apos;s the entire
             pricing model.
           </Reveal>

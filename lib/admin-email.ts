@@ -95,7 +95,7 @@ async function siteOrigin(): Promise<string> {
     /* headers() unavailable outside a request */
   }
   return (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://clipforge-pied-rho.vercel.app"
+    process.env.NEXT_PUBLIC_SITE_URL || "https://wondeed.com"
   );
 }
 
@@ -132,7 +132,7 @@ export async function sendAdminEmail(
   }
   try {
     const { error } = await r.emails.send({
-      from: "ClipForge Admin <onboarding@resend.dev>",
+      from: "Wondeed Admin <onboarding@resend.dev>",
       to: ADMIN_EMAIL,
       subject,
       html,
@@ -229,7 +229,7 @@ export async function notifyClipsSubmitted(
       )
   );
   await sendAdminEmail(
-    `[ClipForge] ${clips.length} clip${clips.length === 1 ? "" : "s"} to review`,
+    `[Wondeed] ${clips.length} clip${clips.length === 1 ? "" : "s"} to review`,
     html
   );
 }
@@ -256,7 +256,7 @@ export async function notifyAccountVerification(input: {
         "background:#fff;color:#111;border:1px solid #ccc"
       )
   );
-  await sendAdminEmail("[ClipForge] Verify social account", html);
+  await sendAdminEmail("[Wondeed] Verify social account", html);
 }
 
 export async function notifyBrandRequest(input: {
@@ -287,7 +287,7 @@ export async function notifyBrandRequest(input: {
         "background:#fff;color:#111;border:1px solid #ccc"
       )
   );
-  await sendAdminEmail(`[ClipForge] Brand request: ${input.company}`, html);
+  await sendAdminEmail(`[Wondeed] Brand request: ${input.company}`, html);
 }
 
 export async function notifyCampaignSubmitted(input: {
@@ -319,7 +319,7 @@ export async function notifyCampaignSubmitted(input: {
         "background:#fff;color:#111;border:1px solid #ccc"
       )
   );
-  await sendAdminEmail(`[ClipForge] Approve campaign: ${input.name}`, html);
+  await sendAdminEmail(`[Wondeed] Approve campaign: ${input.name}`, html);
 }
 
 /**
@@ -346,7 +346,7 @@ export async function notifyTopupRequest(input: {
       btn(`Record ${formatUsd(input.amount)} top-up`, recordUrl, "#111")
   );
   await sendAdminEmail(
-    `[ClipForge] Top-up request: ${input.brandName} — ${formatUsd(input.amount)}`,
+    `[Wondeed] Top-up request: ${input.brandName} — ${formatUsd(input.amount)}`,
     html
   );
 }
@@ -398,7 +398,7 @@ export async function notifyPayoutsReady(input: {
       `<p style="font-size:14px;color:#555;">Send the money, then mark each payout as paid. The clipper is notified automatically.</p>`
   );
   await sendAdminEmail(
-    `[ClipForge] ${input.payouts.length} payout${input.payouts.length === 1 ? "" : "s"} ready: ${input.campaignName} — ${input.cycleLabel}`,
+    `[Wondeed] ${input.payouts.length} payout${input.payouts.length === 1 ? "" : "s"} ready: ${input.campaignName} — ${input.cycleLabel}`,
     html
   );
 }

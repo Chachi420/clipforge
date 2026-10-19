@@ -49,7 +49,7 @@ export default function PaymentsView({
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const a = document.createElement("a");
     a.href = url;
-    a.download = "clipforge-payout-history.csv";
+    a.download = "wondeed-payout-history.csv";
     a.click();
     URL.revokeObjectURL(url);
   }

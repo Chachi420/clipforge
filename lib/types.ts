@@ -1,4 +1,4 @@
-// Domain types for ClipForge. Mirrors the Supabase schema 1:1.
+// Domain types for Wondeed. Mirrors the Supabase schema 1:1.
 
 export type Platform = "tiktok" | "instagram" | "youtube" | "x";
 export type CampaignStatus = "active" | "paused" | "private" | "pending";

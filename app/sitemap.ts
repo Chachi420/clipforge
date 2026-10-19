@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/blog-posts";
 import { getAllDocsSlugs } from "@/lib/docs-articles";
 
-const SITE_URL = "https://clipforge-pied-rho.vercel.app";
+const SITE_URL = "https://wondeed.com";
 
 // Public marketing routes only — /dashboard, /admin, /login, /auth are excluded.
 // Note: /policies has no index page; the four policy documents are listed instead.

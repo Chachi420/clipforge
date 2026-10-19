@@ -85,7 +85,7 @@ export function EarningsCalculator() {
   const [clipsPerMonth, setClipsPerMonth] = useState(20);
 
   const viewsPerClip = Math.round(Math.pow(10, viewsExp) / 1000) * 1000;
-  // Gross estimate — ClipForge's platform fee is set per campaign, so the
+  // Gross estimate — Wondeed's platform fee is set per campaign, so the
   // dashboard shows each clipper's net. Keep the calculator honest: no take applied.
   const earnings = (viewsPerClip / 100_000) * ratePer100k * clipsPerMonth;
   const perClip = (viewsPerClip / 100_000) * ratePer100k;
@@ -184,7 +184,7 @@ export function EarningsCalculator() {
           {clipsPerMonth} clips
         </div>
         <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-white/40">
-          Estimates only, before ClipForge&apos;s platform fee (set per campaign) — actual earnings depend on campaign rates and verified views.
+          Estimates only, before Wondeed&apos;s platform fee (set per campaign) — actual earnings depend on campaign rates and verified views.
         </p>
       </div>
     </Card>

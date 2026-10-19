@@ -16,9 +16,9 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const post = getBlogPost(params.slug);
-  if (!post) return { title: "Post not found — ClipForge" };
+  if (!post) return { title: "Post not found — Wondeed" };
   return {
-    title: `${post.title} — ClipForge Blog`,
+    title: `${post.title} — Wondeed Blog`,
     description: post.excerpt,
     alternates: { canonical: `/blog/${post.slug}` },
   };

@@ -41,12 +41,12 @@ export default function BrandMobileNav() {
     <>
       <div className="sticky top-0 z-40 border-b border-line/10 bg-paper lg:hidden">
         <div className="flex h-14 items-center justify-between px-4">
-          <Link href="/brand" className="flex items-center gap-2" aria-label="ClipForge brand home">
+          <Link href="/brand" className="flex items-center gap-2" aria-label="Wondeed brand home">
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-sm font-black text-paper">
               C
             </span>
             <span className="text-sm font-bold tracking-tight text-ink">
-              CLIPFORGE <span className="micro-label ml-1">Brand</span>
+              WONDEED <span className="micro-label ml-1">Brand</span>
             </span>
           </Link>
           <div className="flex items-center gap-1">
@@ -69,7 +69,7 @@ export default function BrandMobileNav() {
           <div className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col bg-paper px-4 py-6 shadow-none">
             <div className="mb-6 flex items-center justify-between px-2">
               <span className="text-sm font-bold tracking-tight text-ink">
-                CLIPFORGE <span className="micro-label ml-1">Brand</span>
+                WONDEED <span className="micro-label ml-1">Brand</span>
               </span>
               <button
                 onClick={() => setOpen(false)}

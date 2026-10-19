@@ -65,7 +65,7 @@ export default async function ActivityFeed() {
       ...toItems(
         signups.data,
         "signup",
-        (r) => `${r.display_name || "A new clipper"} joined ClipForge`,
+        (r) => `${r.display_name || "A new clipper"} joined Wondeed`,
         (r) => r.created_at
       ),
       ...toItems(
