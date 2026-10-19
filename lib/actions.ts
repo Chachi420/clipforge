@@ -166,7 +166,7 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   }
   const byPlatform = (p: Platform) => verified.filter((a: any) => a.platform === p);
 
-  type Prepared = { url: string; platform: Platform; handle: string; status: string };
+  type Prepared = { url: string; platform: Platform; handle: string; status: string; igStats?: { views: number | null; likes: number | null; comments: number | null } };
   const prepared: Prepared[] = [];
   for (const url of clean) {
     assertValidClipUrl(url);
@@ -221,9 +221,33 @@ export async function uploadClips(campaignId: string, urls: string[]) {
         prepared.push({ url, platform, handle: (acct as any).handle, status: "pending_review" });
       }
     } else {
-      // Instagram: the reel URL carries no author info and resolving it needs a
-      // Meta app token — hold for manual review rather than guessing.
-      prepared.push({ url, platform, handle: "", status: "pending_review" });
+      // Instagram: resolve the reel's author via Apify and bind it to one of
+      // the clipper's verified accounts. This is the authorship check — a
+      // clipper can't earn on someone else's viral reel.
+      let owner: string | null = null;
+      let igStats: { views: number | null; likes: number | null; comments: number | null } | undefined;
+      try {
+        const { fetchInstagramStats } = await import("./apify");
+        const stats = await fetchInstagramStats([url]);
+        const s = stats.get(url);
+        if (s?.ownerUsername) {
+          owner = s.ownerUsername.toLowerCase();
+          igStats = { views: s.views, likes: s.likes, comments: s.comments };
+        }
+      } catch {
+        /* Apify failure falls through to manual review below */
+      }
+      if (!owner) {
+        // Couldn't read the author (private/deleted post, Apify hiccup) —
+        // hold for manual review rather than guessing.
+        prepared.push({ url, platform, handle: "", status: "pending_review" });
+      } else if (!mine.some((a: any) => norm(a.handle) === owner)) {
+        throw new Error(
+          `This reel is from @${owner}, which is not one of your verified Instagram accounts. Connect and verify @${owner} first, or upload from a verified account.`
+        );
+      } else {
+        prepared.push({ url, platform, handle: `@${owner}`, status: "pending_review", igStats });
+      }
     }
   }
 
@@ -266,10 +290,12 @@ export async function uploadClips(campaignId: string, urls: string[]) {
         }
       }
       if (ig.length > 0) {
-        const { fetchInstagramStats } = await import("./apify");
-        const stats = await fetchInstagramStats(ig.map((c) => c.post_url as string));
+        // Reuse the stats already fetched during the authorship check above —
+        // no second Apify call. Clips held for review (no igStats) get their
+        // first snapshot from the daily scan cron after approval.
+        const byUrl = new Map(prepared.filter((p) => p.igStats).map((p) => [p.url, p.igStats!]));
         for (const c of ig) {
-          const s = stats.get(c.post_url as string);
+          const s = byUrl.get(c.post_url as string);
           if (s) snapshots.push({ clip_id: c.id as string, views: s.views ?? 0, likes: s.likes ?? 0, comments: s.comments ?? 0 });
         }
       }

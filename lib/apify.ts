@@ -34,6 +34,8 @@ export interface InstagramStats {
   views: number | null;
   likes: number | null;
   comments: number | null;
+  /** The post author's Instagram username (no @), for authorship checks. */
+  ownerUsername: string | null;
 }
 
 async function api(path: string, t: string, init?: RequestInit): Promise<any> {
@@ -134,6 +136,7 @@ export async function fetchInstagramStats(
       views: num(item.videoViewCount ?? item.videoPlayCount),
       likes: num(item.likesCount),
       comments: num(item.commentsCount),
+      ownerUsername: item.ownerUsername ? String(item.ownerUsername).replace(/^@/, "") : null,
     });
   }
   return out;
