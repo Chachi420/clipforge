@@ -81,7 +81,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
           </li>
           <li>
             <strong className={strong}>Accounts</strong> — your social accounts, verified
-            once via a code in your bio plus a 1,000-follower minimum.
+            once via a code in your bio.
           </li>
           <li>
             <strong className={strong}>Clips</strong> — your submitted posts. Views are
@@ -172,11 +172,10 @@ export const DOCS_ARTICLES: DocsArticle[] = [
             (profile description). It can sit alongside your normal bio text.
           </li>
           <li>
-            The verification checker looks for the code in your bio and confirms the
-            account has <strong className={strong}>at least 1,000 followers</strong>.
+            The verification checker looks for the code in your bio.
           </li>
           <li>
-            Once both checks pass, the account status flips to{" "}
+            Once the code is found, the account status flips to{" "}
             <strong className={strong}>Active</strong>. You can remove the code from your
             bio afterward, though leaving it is harmless.
           </li>
@@ -357,11 +356,6 @@ export const DOCS_ARTICLES: DocsArticle[] = [
           <li>
             Each verification code is unique to one account — don&apos;t reuse
             codes across accounts.
-          </li>
-          <li>
-            Accounts need at least 1,000 followers to hold Active status. If the
-            count drops below that, the account loses Active status until it
-            recovers.
           </li>
           <li>
             You can connect multiple accounts across platforms; verify each one

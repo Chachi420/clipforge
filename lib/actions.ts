@@ -5,7 +5,6 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { PLATFORM_LABELS, type Platform, type PayoutMethod } from "./types";
 import {
-  MIN_FOLLOWERS,
   extractTikTokHandle,
   extractXHandle,
   extractYouTubeVideoId,
@@ -429,10 +428,9 @@ export type VerifyResult =
 
 /**
  * Verify a social account with the bio-code bot.
- * YouTube is checked live via the YouTube Data API (bio must contain the code,
- * channel needs >= MIN_FOLLOWERS subscribers). Instagram is checked via an
- * Apify bio scrape once the code has been issued for 3+ minutes (same bar:
- * code in bio + >= MIN_FOLLOWERS followers). TikTok / X have no automated
+ * YouTube is checked live via the YouTube Data API (bio must contain the code).
+ * Instagram is checked via an Apify bio scrape once the code has been issued
+ * for 3+ minutes (code must be in bio). TikTok / X have no automated
  * bio source, so those stay pending for manual review.
  */
 export async function verifySocialAccount(id: string): Promise<VerifyResult> {
@@ -519,13 +517,6 @@ async function verifyInstagramAccount(
     };
   }
   const followers = profile.followers ?? 0;
-  if (followers < MIN_FOLLOWERS) {
-    return {
-      ok: false,
-      reason: `This account has ${followers.toLocaleString()} followers — at least ${MIN_FOLLOWERS.toLocaleString()} are required.`,
-    };
-  }
-
   const { error } = await supabase
     .from("social_accounts")
     .update({

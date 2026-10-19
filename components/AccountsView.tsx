@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import { Badge, Button, Card, Dialog, EmptyState, Field, PlatformDot, inputCls } from "@/components/ui";
 import { connectSocialAccount, removeSocialAccount, verifySocialAccount } from "@/lib/actions";
 import type { VerifyResult } from "@/lib/actions";
-import { MIN_FOLLOWERS } from "@/lib/youtube";
 import { PLATFORM_LABELS, type Platform, type SocialAccount } from "@/lib/types";
 
 const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
@@ -145,8 +144,7 @@ function AccountCard({ account }: { account: SocialAccount }) {
             ) : (
               <p className="mt-2 text-xs leading-relaxed text-ink-soft">
                 Our review bot checks YouTube and Instagram automatically. For {PLATFORM_LABELS[account.platform]},
-                add the code to your bio — the account is activated by manual review
-                (needs {MIN_FOLLOWERS.toLocaleString()}+ followers).
+                add the code to your bio — the account is activated once the code is found.
               </p>
             )}
           </div>
@@ -213,8 +211,7 @@ export default function AccountsView({ initial }: { initial: SocialAccount[] }) 
         <div className="mb-6">
           <p className="max-w-xl text-sm text-ink-faint">
             Only clips posted from <span className="font-semibold text-ink">verified accounts</span> count
-            toward payouts. Add an account, put your verification code in its bio, and verify —
-            accounts need at least {MIN_FOLLOWERS.toLocaleString()} followers.
+            toward payouts. Add an account, put your verification code in its bio, and verify.
           </p>
         </div>
         {initial.length === 0 ? (

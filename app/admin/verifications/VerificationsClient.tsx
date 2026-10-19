@@ -122,8 +122,8 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
         </table>
       </Card>
       <p className="text-xs text-ink-faint">
-        Approve only after confirming the code is in the account&apos;s bio and it has at
-        least 1,000 followers. Rejecting removes the account; the user can re-add it.
+        Approve only after confirming the code is in the account&apos;s bio.
+        Rejecting removes the account; the user can re-add it.
       </p>
     </div>
   );

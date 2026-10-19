@@ -14,8 +14,7 @@ export const metadata: Metadata = {
 
 /**
  * Every answer below is grounded in real platform behavior:
- * - Bio-code verification, 1,000 follower minimum — lib/youtube.ts (MIN_FOLLOWERS),
- *   lib/actions.ts (connectSocialAccount / verifySocialAccount)
+ * - Bio-code verification — lib/actions.ts (connectSocialAccount / verifySocialAccount)
  * - Clips held in pending_review until admin approves — lib/actions.ts (uploadClips)
  * - Monthly payout cycles, $10 minimum, carryover — lib/payout-math.ts
  *   (MIN_PAYOUT_USD), app/api/cron/close-payout-cycle/route.ts
@@ -26,11 +25,7 @@ export const metadata: Metadata = {
 const CLIPPER_FAQ: { q: string; a: string }[] = [
   {
     q: "How do I get my account verified?",
-    a: "Connect your account from your dashboard and you'll get a unique verification code. Put that code in the account's bio. For YouTube, our bot checks the bio and your subscriber count automatically — you need at least 1,000 subscribers. For TikTok, Instagram, and X there's no free official API for reading bios, so those go through a quick manual review.",
-  },
-  {
-    q: "Why 1,000 followers?",
-    a: "It's the line between a real posting account and a throwaway. Campaigns pay for reach, and brands need to know the accounts posting their clips have an actual audience. The 1,000-follower minimum applies across every platform.",
+    a: "Connect your account from your dashboard and you'll get a unique verification code. Put that code in the account's bio. For YouTube, our bot checks the bio automatically. For Instagram, our bot checks the bio too. TikTok and X go through a quick manual review.",
   },
   {
     q: "What happens after I submit a clip?",
@@ -65,7 +60,7 @@ const BRAND_FAQ: { q: string; a: string }[] = [
   },
   {
     q: "How do I know the views are real?",
-    a: "Three layers. First, clippers can only post from verified accounts with at least 1,000 followers. Second, views come from official sources — the YouTube Data API for YouTube, our tracking integration for Instagram — not self-reported numbers. Third, spike detection flags unnatural view patterns for manual review before they count toward your spend.",
+    a: "Three layers. First, clippers can only post from verified accounts — accounts they proved they own with a bio code. Second, views come from official sources — the YouTube Data API for YouTube, our tracking integration for Instagram — not self-reported numbers. Third, spike detection flags unnatural view patterns for manual review before they count toward your spend.",
   },
   {
     q: "Who approves the clips?",

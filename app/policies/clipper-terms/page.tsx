@@ -28,9 +28,9 @@ export default function ClipperTermsPage() {
       <p className={pCls}>Before you can submit clips, each social account must be verified:</p>
       <ul className={listCls}>
         <li>Adding an account issues a unique verification code — place it in that account&apos;s bio.</li>
-        <li>Our checker confirms the code is present and that the account has at least 1,000 followers.</li>
+        <li>Our checker confirms the code is present in the bio.</li>
         <li>Clip links are only accepted from your verified, Active accounts (X, TikTok, Instagram, YouTube Shorts).</li>
-        <li>Removing the code or dropping below the follower minimum can return the account to unverified.</li>
+        <li>Removing the code from your bio can return the account to unverified.</li>
       </ul>
 
       <h2 className={h2Cls}>3. Content rules</h2>

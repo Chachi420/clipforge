@@ -10,7 +10,7 @@ const TOPICS = ["General", "Support", "Partnership", "Brand inquiry"] as const;
 const FAQS = [
   {
     q: "How do I become a clipper?",
-    a: "Sign in with Google, then add your social accounts under Dashboard → Accounts. Each account gets a unique verification code — put it in that account's bio so our checker can confirm it's yours, and make sure the account has at least 1,000 followers. Once an account is verified as Active, you can join campaigns and submit clip links from it.",
+    a: "Sign in with Google, then add your social accounts under Dashboard → Accounts. Each account gets a unique verification code — put it in that account's bio so our checker can confirm it's yours. Once an account is verified as Active, you can join campaigns and submit clip links from it.",
   },
   {
     q: "How do brands start?",

@@ -2,7 +2,6 @@
 // Requires YOUTUBE_API_KEY (free quota). All functions return null when the
 // key is missing so callers can degrade gracefully.
 const API = "https://www.googleapis.com/youtube/v3";
-export const MIN_FOLLOWERS = 1000;
 
 function apiKey(): string | null {
   return process.env.YOUTUBE_API_KEY || null;
@@ -49,8 +48,7 @@ export async function resolveVideoChannel(videoId: string): Promise<string | nul
 }
 
 /**
- * Verify a YouTube account: bio must contain the verification code and the
- * channel must have >= MIN_FOLLOWERS subscribers.
+ * Verify a YouTube account: bio must contain the verification code.
  */
 export async function verifyYouTubeAccount(
   handle: string,
@@ -67,12 +65,6 @@ export async function verifyYouTubeAccount(
     return {
       ok: false,
       reason: `The code ${code} was not found in the channel bio. Add it to your YouTube channel description, wait a minute, then try again.`,
-    };
-  }
-  if (channel.subscribers < MIN_FOLLOWERS) {
-    return {
-      ok: false,
-      reason: `This channel has ${channel.subscribers.toLocaleString()} subscribers — at least ${MIN_FOLLOWERS.toLocaleString()} are required.`,
     };
   }
   return { ok: true, channel };

@@ -52,8 +52,7 @@ export const BLOG_POSTS: BlogPost[] = [
             <strong className="text-ink">Verify your accounts.</strong> Add the social
             accounts you post from (TikTok, Instagram, YouTube, X). ClipForge gives you a
             unique verification code to put in each account&apos;s bio; a bot checks the
-            bio for the code and confirms the account has at least 1,000 followers. Once
-            verified, the account shows as Active.
+            bio for the code. Once verified, the account shows as Active.
           </li>
           <li>
             <strong className="text-ink">Join a campaign.</strong> Browse live campaigns
@@ -80,7 +79,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <p className={p}>
           This is the part most people get wrong. You are paid per verified view, not per
           follower — a clip from a small account that the algorithm picks up can
-          out-earn a clip from a large one. The 1,000-follower minimum exists so brands
+          out-earn a clip from a large one. The bio-code check exists so brands
           know the account is real and active, not a throwaway; beyond that, it&apos;s
           the clip&apos;s performance that matters, not your follower count.
         </p>
@@ -334,7 +333,7 @@ export const BLOG_POSTS: BlogPost[] = [
         </p>
         <h2 className={h2}>A starter checklist</h2>
         <ul className={ul}>
-          <li>Verify your TikTok account (code in bio + 1,000 followers) before posting for campaigns.</li>
+          <li>Verify your TikTok account (code in bio) before posting for campaigns.</li>
           <li>Read the campaign brief — allowed content, banned content, required hashtags or mentions.</li>
           <li>Film vertical, caption everything, hook in the first 2 seconds.</li>
           <li>Post 1–3x daily, submit each URL from your verified account.</li>

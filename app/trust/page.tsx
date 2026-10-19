@@ -15,7 +15,6 @@ export const metadata: Metadata = {
 
 /**
  * All claims below reflect real platform behavior:
- * - MIN_FOLLOWERS = 1000 — lib/youtube.ts
  * - Bio-code verification; YouTube live via YouTube Data API; TikTok/IG/X manual review — lib/actions.ts
  * - Clips held in pending_review until admin approves — lib/actions.ts (uploadClips)
  * - View sources: YouTube Data API (lib/youtube.ts), Instagram via Apify (lib/apify.ts)
@@ -27,7 +26,7 @@ const PILLARS = [
   {
     icon: UserCheck,
     title: "Verified accounts only",
-    body: "Clippers post only from accounts they've proven they own — a unique code in the bio, checked by our bot. Every account needs at least 1,000 followers. No verified account, no earnings. Throwaway accounts can't get in.",
+    body: "Clippers post only from accounts they've proven they own — a unique code in the bio, checked by our bot. No verified account, no earnings. Throwaway accounts can't get in.",
   },
   {
     icon: Eye,

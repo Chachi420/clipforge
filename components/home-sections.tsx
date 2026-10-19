@@ -274,7 +274,7 @@ const FAQ_ITEMS = [
   },
   {
     q: "How do my social accounts get verified?",
-    a: "When you add an account, we give you a unique code to put in that account's bio. Our system checks the bio for the code and confirms the account has at least 1,000 followers before it goes Active. Only clips from your Active accounts earn.",
+    a: "When you add an account, we give you a unique code to put in that account's bio. Our system checks the bio for the code before it goes Active. Only clips from your Active accounts earn.",
   },
   {
     q: "Which platforms can I post clips to?",
