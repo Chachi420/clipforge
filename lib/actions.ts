@@ -244,6 +244,43 @@ export async function uploadClips(campaignId: string, urls: string[]) {
   revalidatePath("/dashboard", "layout");
   const held = prepared.filter((p) => p.status === "pending_review").length;
 
+  // Initial view snapshot at upload time: fetch stats for the new clips right
+  // away so the clipper sees real numbers immediately instead of waiting for
+  // the daily scan cron (which only covers tracking-status clips anyway).
+  // Fire-and-forget like the admin email below — the daily cron backstops it.
+  (async () => {
+    try {
+      const newClips = (inserted ?? []) as any[];
+      const yt = newClips.filter((c) => c.platform === "youtube");
+      const ig = newClips.filter((c) => c.platform === "instagram");
+      const snapshots: { clip_id: string; views: number; likes: number; comments: number }[] = [];
+      if (yt.length > 0) {
+        const { fetchVideoStats } = await import("./youtube");
+        const ids = yt
+          .map((c) => ({ id: c.id as string, videoId: extractYouTubeVideoId(c.post_url as string) }))
+          .filter((c) => c.videoId);
+        const stats = await fetchVideoStats(ids.map((c) => c.videoId as string));
+        for (const c of ids) {
+          const s = stats.get(c.videoId as string);
+          if (s) snapshots.push({ clip_id: c.id, views: s.views ?? 0, likes: s.likes ?? 0, comments: s.comments ?? 0 });
+        }
+      }
+      if (ig.length > 0) {
+        const { fetchInstagramStats } = await import("./apify");
+        const stats = await fetchInstagramStats(ig.map((c) => c.post_url as string));
+        for (const c of ig) {
+          const s = stats.get(c.post_url as string);
+          if (s) snapshots.push({ clip_id: c.id as string, views: s.views ?? 0, likes: s.likes ?? 0, comments: s.comments ?? 0 });
+        }
+      }
+      if (snapshots.length > 0) {
+        await supabase.from("clip_metric_snapshots").insert(snapshots);
+      }
+    } catch {
+      /* best-effort; the daily scan cron picks up anything missed */
+    }
+  })();
+
   // Email the admin one-click review links (fire-and-forget for the user).
   try {
     const [{ data: camp }, { data: prof }] = await Promise.all([
