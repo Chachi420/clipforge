@@ -15,7 +15,7 @@ import ContentRequirementsSection, {
 } from "@/components/brand/ContentRequirementsSection";
 import { PLATFORM_LABELS, type BrandCampaign, type EligibilityType, type Platform } from "@/lib/types";
 
-const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
+const PLATFORMS: Platform[] = ["instagram", "youtube"];
 
 export default function CampaignSettingsForm({ campaign }: { campaign: BrandCampaign }) {
   const router = useRouter();

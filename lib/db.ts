@@ -22,6 +22,7 @@ function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
     platforms: row.platforms, payoutMethod: row.payout_method,
     ratePer100k: Number(row.rate_per_100k),
     platformRates: row.platform_rates ?? undefined,
+    platformTakeRate: row.platform_take_rate != null ? Number(row.platform_take_rate) : null,
     minViewsPerPost: row.min_views_per_post, minViewsTotal: row.min_views_total,
     daysLeft: row.days_left, startDate: row.start_date,
     budgetCap: row.budget_cap ?? undefined, durationMode: row.duration_mode,

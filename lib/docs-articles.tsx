@@ -51,7 +51,7 @@ export const DOCS_NAV: DocsSection[] = [
   },
   {
     title: "Teams",
-    articles: [{ slug: "teams", title: "Teams & commissions" }],
+    articles: [{ slug: "teams", title: "Teams" }],
   },
   {
     title: "Settings",
@@ -438,7 +438,7 @@ export const DOCS_ARTICLES: DocsArticle[] = [
   {
     slug: "teams",
     section: "Teams",
-    title: "Teams & commissions",
+    title: "Teams",
     body: (
       <>
         <p className={p}>
@@ -447,18 +447,11 @@ export const DOCS_ARTICLES: DocsArticle[] = [
           reliably, which trends to ride. Joining a team is optional and never reduces
           your pay.
         </p>
-        <h2 className={h2}>How commissions work</h2>
-        <p className={p}>
-          Captains earn a commission — a small percentage based on their team&apos;s
-          total earnings. The commission comes out of the platform&apos;s side,{" "}
-          <strong className={strong}>not out of your earnings</strong>. Your rate per
-          view is exactly the same whether you&apos;re on a team or solo.
-        </p>
         <h2 className={h2}>Joining and leaving</h2>
         <ul className={ul}>
           <li>Browse teams in the dashboard and request to join, or join via a captain&apos;s invite link.</li>
           <li>You can leave a team at any time from the Teams page.</li>
-          <li>Earnings you made while on a team stay yours; commission only applies to earnings during your membership.</li>
+          <li>Earnings you made while on a team stay yours.</li>
         </ul>
         <h2 className={h2}>Running a team</h2>
         <p className={p}>

@@ -18,6 +18,8 @@ export interface Campaign {
   payoutMethod: PayoutMethod;  /** rate per 100k views; per-platform overrides win over global */
   ratePer100k: number;
   platformRates?: Partial<Record<Platform, number>>;
+  /** platform take for this campaign (0-1), negotiated per client; defaults to 0.2 */
+  platformTakeRate?: number | null;
   minViewsPerPost: number;
   minViewsTotal: number;
   daysLeft: number;

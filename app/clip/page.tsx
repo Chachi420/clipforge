@@ -10,7 +10,7 @@ import { EarningsCalculator } from "./calculator";
 export const metadata: Metadata = {
   title: "ClipForge for Clippers — Get Paid Per View",
   description:
-    "Post clips for real brand campaigns and earn per verified view. 1,000+ followers to verify, no sign-up fee — payouts via PayPal or crypto.",
+    "Post clips for real brand campaigns and earn per verified view. No sign-up fee — payouts via UPI, PayPal, or crypto.",
   alternates: { canonical: "/clip" },
 };
 
@@ -23,12 +23,12 @@ const STEPS = [
   {
     n: "02",
     title: "Connect your accounts",
-    body: "Link the TikTok, Reels, Shorts, or X accounts you post from. One verification per account: a code in your bio, 1,000+ followers.",
+    body: "Link the TikTok, Reels, Shorts, or X accounts you post from. One verification per account: a code in your bio.",
   },
   {
     n: "03",
     title: "Add your payout method",
-    body: "PayPal or crypto (USDC / USDT). Earnings are calculated at cycle close; admins review before payout.",
+    body: "UPI, PayPal, or crypto (USDC / USDT). Earnings are calculated at cycle close; admins review before payout.",
   },
   {
     n: "04",
@@ -55,8 +55,8 @@ const WHY = [
   },
   {
     icon: Wallet,
-    title: "PayPal or crypto",
-    body: "USDC / USDT or PayPal. Add your method once; payouts go there after each monthly cycle.",
+    title: "UPI, PayPal, or crypto",
+    body: "UPI, USDC / USDT, or PayPal. Add your method once; payouts go there after each monthly cycle.",
   },
   {
     icon: ShieldCheck,
@@ -66,10 +66,10 @@ const WHY = [
 ];
 
 const FAQ_ITEMS = [
-  { q: "Is joining free?", a: "Yes — completely free. No sign-up fee, no subscription, no cut taken from you. You join, pick a campaign, and post." },
+  { q: "Is joining free?", a: "Yes — completely free. No sign-up fee, no subscription. ClipForge takes a platform fee from campaign payouts (set per campaign, standard rate 20%) — you keep the rest of the published rate. You join, pick a campaign, and post." },
   { q: "Do I need a big following?", a: "No. Campaigns pay per verified view, not per follower. A sharp clip on a small account earns the same per view as one on a big account." },
   { q: "How much can I earn per clip?", a: "It depends on the campaign's rate and your verified views. Try the calculator above with a real campaign rate to see what your clips could be worth. The calculator shows estimates only — actual earnings depend on campaign rates and verified views." },
-  { q: "When do I get paid?", a: "Campaigns pay out in monthly cycles. When a cycle closes, your verified views are converted to earnings at the published rate. An admin reviews every cycle, then the payout goes to your PayPal or crypto wallet." },
+  { q: "When do I get paid?", a: "Campaigns pay out in monthly cycles. When a cycle closes, your verified views are converted to earnings at the published rate (after ClipForge's per-campaign platform fee). An admin reviews every cycle, then the payout goes to your UPI, PayPal, or crypto wallet." },
   { q: "What counts as a verified view?", a: "Views pulled directly from the platform, filtered through viewbot detection and spot-checked by manual review. Only genuine views count toward your earnings." },
 ];
 

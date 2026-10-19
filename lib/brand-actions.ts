@@ -102,7 +102,7 @@ function slugify(name: string): string {
 export interface CampaignBriefInput {
   name: string;
   category: string;
-  type: "per_view" | "bounty" | "pot";
+  type: "per_view" | "bounty";
   platforms: Platform[];
   ratePer100k: number;
   platformRates?: Partial<Record<Platform, number>>;
@@ -160,7 +160,7 @@ export async function createCampaignBrief(input: CampaignBriefInput) {
       platform_rates: input.platformRates ?? null,
       budget_cap: input.budgetCap ?? null,
       duration_mode: input.durationMode,
-      payout_mode: input.type === "pot" ? "pot" : "payrate",
+      payout_mode: "payrate",
       days_left: Math.max(1, Math.min(365, Math.floor(input.daysLeft) || 30)),
       min_views_per_post: Math.max(0, Math.floor(input.minViewsPerPost) || 0),
       min_views_total: Math.max(0, Math.floor(input.minViewsTotal) || 0),

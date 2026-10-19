@@ -65,7 +65,10 @@ export default async function DashboardHome() {
   // each campaign's rate per 100k. Recomputed on every load — independent of
   // the stored month-end payout estimates shown above.
   const liveEstimates = liveCycles.map((p) => {
-    const rate = campaigns.find((c) => c.id === p.campaignId)?.ratePer100k ?? 0;
+    const camp = campaigns.find((c) => c.id === p.campaignId);
+    const rate = camp?.ratePer100k ?? 0;
+    // Platform take is negotiated per campaign (migration 020); default 20%.
+    const takeRate = camp?.platformTakeRate != null ? camp.platformTakeRate : 0.2;
     const views = clips
       .filter((c) => c.campaignId === p.campaignId && c.trackingStatus === "tracking")
       .reduce((sum, c) => sum + c.views, 0);
@@ -73,8 +76,7 @@ export default async function DashboardHome() {
       campaignId: p.campaignId,
       campaignName: p.campaignName,
       views,
-      // Clippers earn 80% — platform takes 20% (matches pricing page).
-      estimated: (views / 100000) * rate * 0.8,
+      estimated: (views / 100000) * rate * (1 - takeRate),
     };
   });
   const liveEstimateTotal = liveEstimates.reduce((sum, e) => sum + e.estimated, 0);
@@ -105,7 +107,7 @@ export default async function DashboardHome() {
     },
     methods.length === 0 && {
       tone: "error" as const,
-      text: "You don't have a payout method yet. Add PayPal or a crypto wallet so we can pay you.",
+      text: "You don't have a payout method yet. Add UPI, PayPal, or a crypto wallet so we can pay you.",
       href: "/dashboard/payments",
     },
     newCampaigns.length > 0 && {

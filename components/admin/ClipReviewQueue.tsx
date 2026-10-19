@@ -184,7 +184,7 @@ export default function ClipReviewQueue({ initial }: { initial: AdminClip[] }) {
           />
         </div>
         {selected.size > 0 && (
-          <div className="flex items-center gap-2 rounded-full border border-line/20 bg-paper px-3 py-1.5">
+          <div className="flex flex-wrap items-center gap-2 rounded-full border border-line/20 bg-paper px-3 py-1.5">
             <span className="text-sm font-medium text-ink">{selected.size} selected</span>
             <Button
               onClick={() => runBulk("approve")}

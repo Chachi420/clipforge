@@ -60,18 +60,25 @@ export interface PayoutOpts {
    * < minViewsPerTotal are dropped (no payout row, no carryover).
    */
   minViewsPerTotal?: number;
+  /**
+   * Platform take for this campaign (e.g. 0.2 = 20%). Negotiated per client,
+   * stored on campaigns.platform_take_rate. Defaults to PLATFORM_TAKE_RATE.
+   */
+  takeRate?: number;
 }
 
 /**
- * Platform take: 20% of the brand's per-100k rate is retained by ClipForge.
- * Clippers earn 80%. Brands are charged the full ratePer100k.
+ * Platform take: the DEFAULT cut retained by ClipForge (20%). The actual take
+ * is negotiated per client and stored on campaigns.platform_take_rate —
+ * this constant is only the fallback.
+ * Clippers earn (1 - take). Brands are charged the full ratePer100k.
  */
 export const PLATFORM_TAKE_RATE = 0.2;
 
 /**
  * Aggregate per-clipper earnings from PER-CLIP PERIOD view counts.
  *
- * Earnings = (period views / 100,000) * ratePer100k * (1 - PLATFORM_TAKE_RATE),
+ * Earnings = (period views / 100,000) * ratePer100k * (1 - takeRate),
  * summed per user, rounded to cents. Clips with zero views contribute zero.
  * Rows with a zero (or negative) estimated amount are dropped — no $0 noise
  * rows for admin review (there is no dismiss action, only "mark paid").
@@ -86,6 +93,7 @@ export function computePayouts(
 ): PayoutRow[] {
   const minPost = opts?.minViewsPerPost ?? 0;
   const minTotal = opts?.minViewsPerTotal ?? 0;
+  const takeRate = opts?.takeRate ?? PLATFORM_TAKE_RATE;
   const byUser = new Map<string, { views: number; clips: number }>();
   for (const clip of clips) {
     if (clip.views < minPost) continue; // dropped entirely, not counted
@@ -100,7 +108,7 @@ export function computePayouts(
       userId,
       views: agg.views,
       clips: agg.clips,
-      estimatedAmount: roundCents((agg.views / 100000) * ratePer100k * (1 - PLATFORM_TAKE_RATE)),
+      estimatedAmount: roundCents((agg.views / 100000) * ratePer100k * (1 - takeRate)),
     }))
     .filter((r) => r.estimatedAmount > 0);
 }

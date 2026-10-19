@@ -41,7 +41,7 @@ export default function MarketingNav({
   return (
     <nav
       aria-label="Primary"
-      className="sticky top-0 z-40 border-b border-line/[0.08] bg-paper/70 backdrop-blur-2xl backdrop-saturate-150"
+      className="sticky top-0 z-40 border-b border-line/[0.08] bg-paper/70 backdrop-blur-md backdrop-saturate-100 sm:backdrop-blur-2xl sm:backdrop-saturate-150"
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 lg:px-6">
         <Link

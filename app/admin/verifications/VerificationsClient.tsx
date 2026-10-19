@@ -54,7 +54,8 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
         <p className="rounded-md bg-status-error/10 px-4 py-2.5 text-sm text-status-error">{error}</p>
       )}
       <Card className="overflow-hidden">
-        <table className="w-full text-left text-sm">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[800px] text-left text-sm">
           <thead>
             <tr className="border-b border-line/10 bg-ink/[0.03] text-[11px] uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3">Account</th>
@@ -119,7 +120,8 @@ export default function VerificationsClient({ initial }: { initial: PendingVerif
               </tr>
             ))}
           </tbody>
-        </table>
+          </table>
+        </div>
       </Card>
       <p className="text-xs text-ink-faint">
         Approve only after confirming the code is in the account&apos;s bio.

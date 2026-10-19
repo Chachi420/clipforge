@@ -9,7 +9,7 @@ import { Reveal } from "@/components/motion";
 export const metadata: Metadata = {
   title: "Pricing — ClipForge",
   description:
-    "How ClipForge pricing works: brands fund campaigns, clippers earn per verified view, and the platform takes a standard 20% cut. No subscriptions, no hidden fees.",
+    "How ClipForge pricing works: brands fund campaigns, clippers earn per verified view, and the platform take is agreed per campaign. No subscriptions, no hidden fees.",
   alternates: { canonical: "/pricing" },
 };
 
@@ -18,9 +18,8 @@ export const metadata: Metadata = {
  * - MIN_PAYOUT_USD = 10 — lib/payout-math.ts
  * - Payout cycles are monthly (calendar-month periods) — app/api/cron/close-payout-cycle/route.ts
  * - Brand budget ranges: under_1k / 1k_5k / 5k_25k / 25k_plus USD — lib/brand-actions.ts
- * - Platform take rate: not yet in code; 20% is the standard rate (labeled as such)
+ * - Platform take: negotiated per campaign (campaigns.platform_take_rate), 20% default
  */
-const STANDARD_TAKE_RATE = "20%";
 
 const FLOW = [
   {
@@ -33,7 +32,7 @@ const FLOW = [
     icon: Percent,
     step: "02",
     title: "ClipForge takes a standard cut",
-    body: `The platform keeps a ${STANDARD_TAKE_RATE} standard rate on campaign spend. That's the whole business model — no subscriptions, no seat fees, no setup costs for anyone.`,
+    body: `The platform take is agreed per campaign — the standard rate is 20% of campaign spend. That's the whole business model — no subscriptions, no seat fees, no setup costs for anyone.`,
   },
   {
     icon: Coins,
@@ -44,7 +43,7 @@ const FLOW = [
 ];
 
 const RATE_CARD = [
-  { label: "Platform take", value: `${STANDARD_TAKE_RATE}`, sub: "standard rate on brand spend" },
+  { label: "Platform take", value: "20%", sub: "standard rate, agreed per campaign" },
   { label: "Brand signup", value: "$0", sub: "no setup, no subscription" },
   { label: "Clipper signup", value: "$0", sub: "free forever" },
   { label: "Payout minimum", value: "$10", sub: "sub-minimum balances carry forward" },

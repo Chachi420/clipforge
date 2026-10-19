@@ -249,5 +249,21 @@ describe("computePayouts", () => {
       );
       assert.deepEqual(rows, []);
     });
+
+    it("honors a per-campaign take rate", () => {
+      // 100k views @ $50/100k with a 30% take → $35.
+      const rows = computePayouts(
+        [{ userId: "u1", views: 100000 }],
+        50,
+        { takeRate: 0.3 }
+      );
+      assert.equal(rows[0].estimatedAmount, 35);
+    });
+
+    it("defaults to the 20% platform take", () => {
+      // 100k views @ $50/100k with no takeRate → $40.
+      const rows = computePayouts([{ userId: "u1", views: 100000 }], 50);
+      assert.equal(rows[0].estimatedAmount, 40);
+    });
   });
 });

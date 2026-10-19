@@ -90,7 +90,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
             { label: "Verified accounts", value: String(verified.length) },
           ].map((s) => (
             <div key={s.label}>
-              <dd className="display tnum text-3xl md:text-4xl">{s.value}</dd>
+              <dd className="display tnum text-2xl sm:text-3xl md:text-4xl">{s.value}</dd>
               <dt className="mt-1 text-xs font-semibold uppercase tracking-wider text-ink-faint">
                 {s.label}
               </dt>

@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Pencil } from "lucide-react";
 import { Badge, Button, Card, Dialog, EmptyState, Field, PlatformDot } from "@/components/ui";
-import { approveCampaign, rejectCampaign, updateCampaignRate, type AdminCampaign } from "@/lib/admin-actions";
+import { approveCampaign, rejectCampaign, updateCampaignRate, updateCampaignTakeRate, type AdminCampaign } from "@/lib/admin-actions";
 import { PLATFORM_LABELS } from "@/lib/types";
 import { formatMoney } from "@/lib/format";
 
@@ -25,6 +25,8 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
   const [error, setError] = useState<string | null>(null);
   const [editingRate, setEditingRate] = useState<string | null>(null);
   const [rateValue, setRateValue] = useState("");
+  const [editingTake, setEditingTake] = useState<string | null>(null);
+  const [takeValue, setTakeValue] = useState("");
   const [rejecting, setRejecting] = useState<{ id: string; name: string } | null>(null);
   const [reason, setReason] = useState("");
   const router = useRouter();
@@ -54,6 +56,25 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
       setBusy(null);
       setRejecting(null);
       setReason("");
+    }
+  }
+
+  async function handleTake(id: string) {
+    const take = Number(takeValue) / 100;
+    if (!(take >= 0 && take < 1)) {
+      setError("Take must be between 0% and 99%.");
+      return;
+    }
+    setBusy(id);
+    setError(null);
+    try {
+      await updateCampaignTakeRate(id, take);
+      setEditingTake(null);
+      router.refresh();
+    } catch (e: any) {
+      setError(e.message ?? "Take update failed.");
+    } finally {
+      setBusy(null);
     }
   }
 
@@ -94,6 +115,7 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
                 <th className="px-4 py-3">Brand</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3 text-right">Rate / 100k</th>
+                <th className="px-4 py-3 text-right">Take</th>
                 <th className="px-4 py-3 text-right">Budget cap</th>
                 <th className="px-4 py-3 text-right">Clips</th>
                 <th className="px-4 py-3">Platforms</th>
@@ -142,7 +164,43 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
                             setEditingRate(c.id);
                             setRateValue(String(c.ratePer100k));
                           }}
-                          className="text-ink-faint hover:text-ink"
+                          className="-m-2 p-2 text-ink-faint hover:text-ink"
+                        >
+                          <Pencil size={13} />
+                        </button>
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {editingTake === c.id ? (
+                      <span className="inline-flex items-center gap-1.5">
+                        <input
+                          type="number"
+                          min={0}
+                          max={99}
+                          step={1}
+                          value={takeValue}
+                          onChange={(e) => setTakeValue(e.target.value)}
+                          className="w-16 rounded-md border border-line/10 bg-paper px-2 py-1 text-sm text-ink"
+                        />
+                        <span className="text-sm text-ink-faint">%</span>
+                        <Button onClick={() => handleTake(c.id)} disabled={busy === c.id} className="!px-2 !py-1 text-xs">
+                          Save
+                        </Button>
+                        <Button onClick={() => setEditingTake(null)} variant="outline" className="!px-2 !py-1 text-xs">
+                          Cancel
+                        </Button>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1.5 font-semibold text-ink">
+                        {c.platformTakeRate != null ? `${Math.round(c.platformTakeRate * 100)}%` : "20%"}
+                        <button
+                          aria-label="Edit platform take"
+                          onClick={() => {
+                            setEditingTake(c.id);
+                            setTakeValue(String(Math.round((c.platformTakeRate ?? 0.2) * 100)));
+                          }}
+                          className="-m-2 p-2 text-ink-faint hover:text-ink"
                         >
                           <Pencil size={13} />
                         </button>

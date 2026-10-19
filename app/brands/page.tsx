@@ -22,7 +22,7 @@ const STEPS = [
   {
     n: "02",
     title: "Managed",
-    body: "Clippers post across TikTok, Reels, Shorts, and X. Viewbot detection plus manual review keeps the numbers honest.",
+    body: "Clippers post across Reels and Shorts. Viewbot detection plus manual review keeps the numbers honest.",
   },
   {
     n: "03",

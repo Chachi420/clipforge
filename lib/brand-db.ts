@@ -125,6 +125,7 @@ function toBrandCampaign(row: any, agg?: CampaignAgg): BrandCampaign {
     payoutMethod: row.payout_method,
     ratePer100k: Number(row.rate_per_100k),
     platformRates: row.platform_rates ?? undefined,
+    platformTakeRate: row.platform_take_rate != null ? Number(row.platform_take_rate) : null,
     minViewsPerPost: row.min_views_per_post,
     minViewsTotal: row.min_views_total,
     daysLeft: row.days_left,
@@ -319,12 +320,13 @@ export async function getCampaignClippers(
   const supabase = await sb();
   const { data: camp } = await supabase
     .from("campaigns")
-    .select("id, rate_per_100k")
+    .select("id, rate_per_100k, platform_take_rate")
     .eq("id", campaignId)
     .eq("brand_id", brandId)
     .single();
   if (!camp) return [];
   const rate = Number((camp as any).rate_per_100k ?? 0);
+  const takeRate = Math.min(0.99, Math.max(0, Number((camp as any).platform_take_rate ?? 0.2)));
   // NOTE: clipper emails are deliberately NOT selected — brands get display
   // names only (PII minimization). Admin handles payouts via the admin panel.
   // Names resolve through the PII-safe public_profiles view (a direct join
@@ -370,8 +372,8 @@ export async function getCampaignClippers(
       email: "",
       clips: u.clips,
       views: u.views,
-      // Clippers earn 80% — platform takes 20% (matches pricing page).
-      earnings: (u.views / 100000) * rate * 0.8,
+      // Clippers earn (1 - take) — platform take is per-campaign.
+      earnings: (u.views / 100000) * rate * (1 - takeRate),
     }))
     .sort((a, b) => b.views - a.views);
 }

@@ -6,6 +6,7 @@ import {
   roundCents,
   computePayouts,
   MIN_PAYOUT_USD,
+  PLATFORM_TAKE_RATE,
 } from "@/lib/payout-math";
 import { formatMoney } from "@/lib/format";
 
@@ -64,8 +65,11 @@ export const maxDuration = 300;
  *     updates are skipped when the stored carry row was already written
  *     by the current run (updated_at >= run start) — so a crash between
  *     the carry write and the cycle close never double-adds carry.
- *  8. Bounty-specific rates (bounties.rate_per_100k) are NOT applied — the
- *     campaign rate is used for every clip.
+ *  8. Bounty rates ARE honored: each clip is paid at its bounty's
+ *     rate_per_100k when the clip belongs to a bounty with a rate set;
+ *     clips without a bounty (or whose bounty has no rate) fall back to
+ *     the campaign rate. The 20% platform take and tier multipliers apply
+ *     on top of the effective rate exactly as before.
  *  9. Campaigns with payout_mode='pot' get the same payrate formula; they
  *     are flagged in the summary because pot distribution is a separate
  *     product decision (NOT implemented — no new pot campaigns should be
@@ -150,7 +154,7 @@ export async function GET(request: NextRequest) {
   const { data: campaigns, error: campError } = await supabase
     .from("campaigns")
     .select(
-      "id, name, rate_per_100k, payout_mode, budget_cap, brand_id, min_views_per_post, min_views_total"
+      "id, name, rate_per_100k, payout_mode, budget_cap, brand_id, min_views_per_post, min_views_total, platform_take_rate"
     )
     .eq("status", "active");
 
@@ -160,6 +164,9 @@ export async function GET(request: NextRequest) {
 
   for (const campaign of campaigns ?? []) {
     const rate = Number(campaign.rate_per_100k ?? 0);
+    // Per-client platform take, negotiated manually (migration 020).
+    // NULL → default. Clamp to [0, 1) for safety.
+    const takeRate = Math.min(0.99, Math.max(0, Number(campaign.platform_take_rate ?? PLATFORM_TAKE_RATE)));
     const summary: CampaignSummary = {
       campaignId: campaign.id,
       campaignName: campaign.name,
@@ -239,10 +246,27 @@ export async function GET(request: NextRequest) {
 
       const { data: clips, error: clipsError } = await supabase
         .from("clips")
-        .select("id, user_id")
+        .select("id, user_id, bounty_id")
         .eq("campaign_id", campaign.id)
         .eq("tracking_status", "tracking");
       if (clipsError) throw new Error(`clips fetch failed: ${clipsError.message}`);
+
+      // Bounty rates: a clip is paid at its bounty's rate_per_100k when it
+      // belongs to a bounty with a rate set; otherwise the campaign rate.
+      const bountyRateById = new Map<string, number>();
+      {
+        const { data: bounties, error: bountyError } = await supabase
+          .from("bounties")
+          .select("id, rate_per_100k")
+          .eq("campaign_id", campaign.id);
+        if (bountyError) throw new Error(`bounties fetch failed: ${bountyError.message}`);
+        for (const b of (bounties ?? []) as any[]) {
+          const br = Number(b.rate_per_100k ?? 0);
+          if (br > 0) bountyRateById.set(b.id as string, br);
+        }
+      }
+      const clipRate = (clip: any): number =>
+        (clip.bounty_id ? bountyRateById.get(clip.bounty_id as string) : undefined) ?? rate;
 
       // Per-clip period deltas. Snapshots ordered desc → the first row per
       // clip is the latest (viewsNow); the first row with scanned_at <=
@@ -273,17 +297,56 @@ export async function GET(request: NextRequest) {
 
       // Pure math lives in lib/payout-math.ts — covered by tests/.
       // ClipViews.views here is the PERIOD delta, not cumulative.
-      const payoutCandidates = computePayouts(
-        (clips ?? []).map((c: any) => ({
-          userId: c.user_id as string,
-          views: Math.max(0, (viewsNow.get(c.id) ?? 0) - (viewsPrev.get(c.id) ?? 0)),
-        })),
-        rate,
-        {
-          minViewsPerPost: Number(campaign.min_views_per_post ?? 0),
-          minViewsPerTotal: Number(campaign.min_views_total ?? 0),
+      // computePayouts prices a single rate, so clips are grouped by their
+      // effective rate (bounty rate or campaign fallback) and priced per
+      // group. The per-clip min-views threshold applies within each group;
+      // the per-user total-views threshold is applied after merging, so a
+      // clipper's views count in full regardless of which bounties they span.
+      const clipViews = (clips ?? []).map((c: any) => ({
+        userId: c.user_id as string,
+        views: Math.max(0, (viewsNow.get(c.id) ?? 0) - (viewsPrev.get(c.id) ?? 0)),
+        ratePer100k: clipRate(c),
+      }));
+      const byRate = new Map<number, typeof clipViews>();
+      for (const cv of clipViews) {
+        const arr = byRate.get(cv.ratePer100k) ?? [];
+        arr.push(cv);
+        byRate.set(cv.ratePer100k, arr);
+      }
+      const minViewsPerPost = Number(campaign.min_views_per_post ?? 0);
+      const mergedByUser = new Map<
+        string,
+        { views: number; clips: number; estimatedAmount: number }
+      >();
+      for (const [r, group] of byRate) {
+        const rows = computePayouts(
+          group.map(({ userId, views }) => ({ userId, views })),
+          r,
+          { minViewsPerPost, takeRate }
+        );
+        for (const row of rows) {
+          const m = mergedByUser.get(row.userId) ?? {
+            views: 0,
+            clips: 0,
+            estimatedAmount: 0,
+          };
+          m.views += row.views;
+          m.clips += row.clips;
+          m.estimatedAmount = roundCents(m.estimatedAmount + row.estimatedAmount);
+          mergedByUser.set(row.userId, m);
         }
-      );
+      }
+      const minViewsTotal = Number(campaign.min_views_total ?? 0);
+      const payoutCandidates = [...mergedByUser.entries()]
+        .filter(
+          ([, m]) => m.views >= minViewsTotal && m.estimatedAmount > 0
+        )
+        .map(([userId, m]) => ({
+          userId,
+          views: m.views,
+          clips: m.clips,
+          estimatedAmount: m.estimatedAmount,
+        }));
 
       // Rate tiers: brands can configure follower-band multipliers
       // (campaign_rate_tiers). Look up each clipper's best verified follower
@@ -435,7 +498,7 @@ export async function GET(request: NextRequest) {
           const mult = tierMultiplierByUser.get(c.user_id) ?? 1.0;
           clipPayouts.push({
             id: c.id,
-            payout: roundCents((periodViews / 100000) * rate * 0.8 * mult),
+            payout: roundCents((periodViews / 100000) * clipRate(c) * (1 - takeRate) * mult),
           });
         }
         // Chunked parallel updates; each is idempotent for this cycle.

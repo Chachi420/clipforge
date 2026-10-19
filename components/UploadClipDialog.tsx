@@ -65,7 +65,7 @@ export default function UploadClipDialog({
         aria-label="Clip URLs, one per line"
         className={inputCls}
       />
-      <p className="mt-2 text-xs text-ink-faint">Supports TikTok, Instagram, YouTube, X.</p>
+      <p className="mt-2 text-xs text-ink-faint">Supports Instagram and YouTube.</p>
       {error && (
         <p role="alert" className="mt-3 rounded-card border border-status-error/25 bg-status-error/10 px-3 py-2 text-sm text-status-error">
           {error}

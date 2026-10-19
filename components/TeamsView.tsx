@@ -40,7 +40,7 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
     <>
       <Header
         title="Teams"
-        subtitle="Create a team and earn commissions"
+        subtitle="Create a team"
         action={
           <Button variant="primary" onClick={() => setShowCreate(true)}>
             <Plus size={15} /> Create team
@@ -51,7 +51,7 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
         {initial.length === 0 ? (
           <EmptyState
             title="No team created"
-            body="Create a team to start earning commissions from referrals. Share your referral link and earn a cut of everything your team earns."
+            body="Create a team to organize clippers under one banner. Share your referral link to invite new clippers."
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -68,7 +68,7 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
                   </button>
                 </div>
                 <div className="mt-3 text-xs text-ink-faint">
-                  Share this referral link with new clippers to earn commissions.
+                  Share this referral link with new clippers.
                 </div>
               </Card>
             ))}
@@ -77,7 +77,7 @@ export default function TeamsView({ initial }: { initial: Team[] }) {
       </div>
 
       {showCreate && (
-        <Dialog title="Create team" subtitle="Teams earn commission on referred clippers" onClose={() => setShowCreate(false)}>
+        <Dialog title="Create team" subtitle="Invite clippers to your team" onClose={() => setShowCreate(false)}>
           <Field label="Team name">
             <input className={inputCls} value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Night Shift Clippers" />
           </Field>

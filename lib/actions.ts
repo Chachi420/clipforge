@@ -5,10 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { PLATFORM_LABELS, type Platform, type PayoutMethod } from "./types";
 import {
-  extractTikTokHandle,
-  extractXHandle,
   extractYouTubeVideoId,
-  resolveTikTokAuthor,
   resolveVideoChannel,
   verifyYouTubeAccount,
 } from "./youtube";
@@ -183,23 +180,9 @@ export async function uploadClips(campaignId: string, urls: string[]) {
         `No verified ${PLATFORM_LABELS[platform]} account. Verify one on the Accounts page before uploading ${PLATFORM_LABELS[platform]} links.`
       );
     }
-    if (platform === "tiktok") {
-      const handle = extractTikTokHandle(url) ?? (await resolveTikTokAuthor(url));
-      if (!handle) throw new Error(`Could not read the author of this TikTok link: ${url}`);
-      if (!mine.some((a: any) => norm(a.handle) === handle)) {
-        throw new Error(
-          `This TikTok link is from @${handle}, which is not one of your verified accounts.`
-        );
-      }
-      prepared.push({ url, platform, handle: `@${handle}`, status: "pending_review" });
-    } else if (platform === "x") {
-      const handle = extractXHandle(url);
-      if (!handle) throw new Error(`Could not read the author of this X link: ${url}`);
-      if (!mine.some((a: any) => norm(a.handle) === handle)) {
-        throw new Error(`This X link is from @${handle}, which is not one of your verified accounts.`);
-      }
-      prepared.push({ url, platform, handle: `@${handle}`, status: "pending_review" });
-    } else if (platform === "youtube") {
+    // Note: TikTok/X URLs are rejected above (tracking not built for them), so
+    // only YouTube and Instagram reach the author-matching branches below.
+    if (platform === "youtube") {
       const videoId = extractYouTubeVideoId(url);
       if (!videoId) throw new Error(`Could not parse this YouTube link: ${url}`);
       const channelId = await resolveVideoChannel(videoId);

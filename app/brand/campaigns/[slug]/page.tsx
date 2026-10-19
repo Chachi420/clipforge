@@ -80,6 +80,13 @@ export default async function BrandCampaignDetailPage({
         <Stat dark label="Clippers" value={String(campaign.clipperCount)} />
       </NightCard>
 
+      {/* Terms strip: rate + platform take (transparency — the take is per-client) */}
+      <p className="text-sm text-ink-faint">
+        Paying {formatMoney(campaign.ratePer100k)} per 100K verified views
+        <span className="mx-2">·</span>
+        ClipForge platform fee: {campaign.platformTakeRate != null ? `${Math.round(campaign.platformTakeRate * 100)}%` : "20%"}
+      </p>
+
       {/* Views chart */}
       <ViewsChart data={timeseries} />
 

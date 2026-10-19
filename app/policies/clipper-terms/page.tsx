@@ -29,7 +29,7 @@ export default function ClipperTermsPage() {
       <ul className={listCls}>
         <li>Adding an account issues a unique verification code — place it in that account&apos;s bio.</li>
         <li>Our checker confirms the code is present in the bio.</li>
-        <li>Clip links are only accepted from your verified, Active accounts (X, TikTok, Instagram, YouTube Shorts).</li>
+        <li>Clip links are only accepted from your verified, Active accounts (Instagram, YouTube Shorts).</li>
         <li>Removing the code from your bio can return the account to unverified.</li>
       </ul>
 
@@ -60,10 +60,8 @@ export default function ClipperTermsPage() {
 
       <h2 className={h2Cls}>6. Team commissions</h2>
       <p className={pCls}>
-        If you belong to a clipper team, the team&apos;s agreed commission is deducted from
-        your earnings and paid to the team. Commission rates are set by the team and shown
-        to you before you join — leaving a team stops future commissions but doesn&apos;t
-        change already-processed payouts.
+        Team commissions aren&apos;t live yet. Teams exist for organizing clippers,
+        and this section will be updated when commissions launch.
       </p>
 
       <h2 className={h2Cls}>7. Changes</h2>

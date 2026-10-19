@@ -4,8 +4,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui";
 import { CountUp } from "@/components/motion";
 
-/** Slider-maximum earnings: 1M views/clip × $300/100K × 100 clips. */
-const MAX_EARNINGS = 300_000;
+/** Slider-maximum earnings (gross, before per-campaign platform fee): 1M views/clip × $300/100K × 100 clips. */
+const MAX_EARNINGS = 240_000;
 
 const PLATFORMS = ["TikTok", "Instagram Reels", "YouTube Shorts", "X"];
 
@@ -85,6 +85,8 @@ export function EarningsCalculator() {
   const [clipsPerMonth, setClipsPerMonth] = useState(20);
 
   const viewsPerClip = Math.round(Math.pow(10, viewsExp) / 1000) * 1000;
+  // Gross estimate — ClipForge's platform fee is set per campaign, so the
+  // dashboard shows each clipper's net. Keep the calculator honest: no take applied.
   const earnings = (viewsPerClip / 100_000) * ratePer100k * clipsPerMonth;
   const perClip = (viewsPerClip / 100_000) * ratePer100k;
 
@@ -175,14 +177,14 @@ export function EarningsCalculator() {
         </div>
         <div className="mx-auto mt-2 flex max-w-md justify-between text-[11px] text-white/40 tnum">
           <span>$0</span>
-          <span>$300K — the slider maximums</span>
+          <span>$240K — the slider maximums</span>
         </div>
         <div className="mt-2 text-sm text-white/60">
           ≈ ${perClip.toLocaleString("en-US", { maximumFractionDigits: 2 })} per clip ×{" "}
           {clipsPerMonth} clips
         </div>
         <p className="mx-auto mt-4 max-w-md text-xs leading-relaxed text-white/40">
-          Estimates only — actual earnings depend on campaign rates and verified views.
+          Estimates only, before ClipForge&apos;s platform fee (set per campaign) — actual earnings depend on campaign rates and verified views.
         </p>
       </div>
     </Card>

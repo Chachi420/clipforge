@@ -8,7 +8,7 @@ import { connectSocialAccount, removeSocialAccount, verifySocialAccount } from "
 import type { VerifyResult } from "@/lib/actions";
 import { PLATFORM_LABELS, type Platform, type SocialAccount } from "@/lib/types";
 
-const PLATFORMS: Platform[] = ["tiktok", "instagram", "youtube", "x"];
+const PLATFORMS: Platform[] = ["instagram", "youtube"];
 
 const BIO_INSTRUCTIONS: Record<Platform, string> = {
   tiktok: "Open TikTok → profile → Edit profile → Bio. Paste the code anywhere in your bio.",
@@ -175,7 +175,7 @@ function AccountCard({ account }: { account: SocialAccount }) {
 
 export default function AccountsView({ initial }: { initial: SocialAccount[] }) {
   const [showAdd, setShowAdd] = useState(false);
-  const [platform, setPlatform] = useState<Platform>("tiktok");
+  const [platform, setPlatform] = useState<Platform>("instagram");
   const [handle, setHandle] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -217,7 +217,7 @@ export default function AccountsView({ initial }: { initial: SocialAccount[] }) 
         {initial.length === 0 ? (
           <EmptyState
             title="No accounts connected"
-            body="Connect the TikTok, Instagram, YouTube, or X accounts you post clips from, then verify each one with its bio code."
+            body="Connect the Instagram or YouTube accounts you post clips from, then verify each one with its bio code."
           />
         ) : (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">

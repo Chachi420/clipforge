@@ -53,7 +53,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           </div>
           <div className="flex shrink-0 items-center gap-3">
             <ThemeToggle />
-            <Link href="/" className="text-sm font-medium text-ink-soft hover:text-ink">
+            <Link href="/" className="hidden text-sm font-medium text-ink-soft hover:text-ink sm:inline">
               Homepage
             </Link>
             <form action={signOutAction}>

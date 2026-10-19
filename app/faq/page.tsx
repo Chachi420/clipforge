@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 const CLIPPER_FAQ: { q: string; a: string }[] = [
   {
     q: "How do I get my account verified?",
-    a: "Connect your account from your dashboard and you'll get a unique verification code. Put that code in the account's bio. For YouTube, our bot checks the bio automatically. For Instagram, our bot checks the bio too. TikTok and X go through a quick manual review.",
+    a: "Connect your account from your dashboard and you'll get a unique verification code. Put that code in the account's bio. For YouTube, our bot checks the bio automatically. For Instagram, our bot checks the bio too. Only YouTube and Instagram are supported at launch — TikTok and X aren't available yet.",
   },
   {
     q: "What happens after I submit a clip?",
@@ -52,7 +52,7 @@ const CLIPPER_FAQ: { q: string; a: string }[] = [
 const BRAND_FAQ: { q: string; a: string }[] = [
   {
     q: "How do campaigns get priced?",
-    a: "You set a budget cap and a per-view rate for your campaign. Clippers earn based on verified views at your rate, and ClipForge keeps a standard 20% cut on spend. There are no setup fees, subscriptions, or seat charges — money only moves when views happen.",
+    a: "You set a budget cap and a per-view rate for your campaign. Clippers earn based on verified views at your rate, and ClipForge's platform fee is agreed per campaign (standard rate 20% of spend). There are no setup fees, subscriptions, or seat charges — money only moves when views happen.",
   },
   {
     q: "Do I pay before the campaign runs?",

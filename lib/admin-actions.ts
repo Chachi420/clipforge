@@ -554,6 +554,14 @@ export async function approveBrandRequest(id: string) {
     summary: `Approved brand request from “${(row as any).company_name ?? id}”`,
   });
 
+  // Notify the brand applicant.
+  await db.from("notifications").insert({
+    user_id: (row as any).user_id,
+    type: "brand_approved",
+    title: "Your brand application was approved",
+    body: `Welcome to ClipForge, ${(row as any).company_name ?? "brand"}! You can now create campaigns from your brand dashboard.`,
+  });
+
   revalidatePath("/admin");
 }
 
@@ -1203,6 +1211,7 @@ export interface AdminCampaign {
   category: string;
   status: string;
   ratePer100k: number;
+  platformTakeRate: number | null;
   budgetCap: number | null;
   platforms: string[];
   brandName: string;
@@ -1215,7 +1224,7 @@ export async function getAdminCampaigns(statusFilter?: string): Promise<AdminCam
   const db = adminDb();
   let q = db
     .from("campaigns")
-    .select("id, slug, name, type, category, status, rate_per_100k, budget_cap, platforms, created_at, brands(name)")
+    .select("id, slug, name, type, category, status, rate_per_100k, platform_take_rate, budget_cap, platforms, created_at, brands(name)")
     .order("created_at", { ascending: false })
     .limit(500);
   if (statusFilter && statusFilter !== "all") q = q.eq("status", statusFilter);
@@ -1233,6 +1242,7 @@ export async function getAdminCampaigns(statusFilter?: string): Promise<AdminCam
     category: r.category,
     status: r.status,
     ratePer100k: Number(r.rate_per_100k ?? 0),
+    platformTakeRate: r.platform_take_rate != null ? Number(r.platform_take_rate) : null,
     budgetCap: r.budget_cap != null ? Number(r.budget_cap) : null,
     platforms: r.platforms ?? [],
     brandName: r.brands?.name ?? "—",
@@ -1261,6 +1271,32 @@ export async function updateCampaignRate(id: string, ratePer100k: number) {
     targetId: id,
     summary: `Changed rate on “${(camp as any)?.name ?? id}”: $${Number((camp as any)?.rate_per_100k ?? 0)} → $${rate} / 100k`,
     metadata: { from: Number((camp as any)?.rate_per_100k ?? 0), to: rate },
+  });
+  revalidatePath("/admin/campaigns");
+  revalidatePath("/admin");
+  revalidatePath("/brand", "layout");
+}
+
+/** Change the platform take on a campaign (per-client negotiated cut, 0-1). */
+export async function updateCampaignTakeRate(id: string, takeRate: number) {
+  await requireAdmin();
+  const take = Number(takeRate);
+  if (!(take >= 0 && take < 1)) throw new Error("Take must be between 0% and 99%.");
+  const db = adminDb();
+  const { data: camp } = await db.from("campaigns").select("name, platform_take_rate").eq("id", id).single();
+  const { error } = await db
+    .from("campaigns")
+    .update({ platform_take_rate: take })
+    .eq("id", id)
+    .in("status", ["active", "paused", "pending"]);
+  if (error) throw new Error(error.message);
+  await logAdminActionInternal({
+    actor: PANEL_ACTOR,
+    action: "campaign.take_change",
+    targetType: "campaign",
+    targetId: id,
+    summary: `Changed platform take on “${(camp as any)?.name ?? id}”: ${Math.round(Number((camp as any)?.platform_take_rate ?? 0.2) * 100)}% → ${Math.round(take * 100)}%`,
+    metadata: { from: Number((camp as any)?.platform_take_rate ?? 0.2), to: take },
   });
   revalidatePath("/admin/campaigns");
   revalidatePath("/admin");
