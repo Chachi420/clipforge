@@ -6,7 +6,7 @@ import { h2Cls, pCls, listCls } from "../styles";
  * Required under the IT Act 2000 and DPDP Act 2023 for platforms
  * operating in India.
  */
-const GRIEVANCE_EMAIL = "REPLACE-BEFORE-LAUNCH";
+const GRIEVANCE_EMAIL = "abhinavsinghiitkanpur@gmail.com";
 
 export const metadata: Metadata = {
   title: "Grievance Officer — ClipForge",
