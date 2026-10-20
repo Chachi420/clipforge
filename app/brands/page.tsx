@@ -154,20 +154,20 @@ export default function BrandsLanding() {
         </section>
 
         {/* Why — editorial list */}
-        <section aria-labelledby="brand-why" className="mx-auto max-w-4xl px-6 py-10 md:py-16">
+        <section aria-labelledby="brand-why" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             Why Wondeed
           </Reveal>
           <Reveal as="h2" delay={80} id="brand-why" className="display mt-4 text-[clamp(2rem,5vw,3.5rem)]">
             Reach you can audit.
           </Reveal>
-          <div className="mt-8 border-t border-line/10">
+          <div className="mt-8 grid gap-px overflow-hidden rounded-card border border-line/10 bg-line/10 sm:grid-cols-2">
             {WHY.map((w, i) => (
-              <Reveal key={w.title} delay={i * 60} className="flex gap-5 border-b border-line/10 py-6">
+              <Reveal key={w.title} delay={i * 60} className="flex gap-5 bg-black p-6 md:p-8">
                 <w.icon size={24} className="mt-1 shrink-0 text-ink" aria-hidden />
                 <div>
                   <h3 className="display text-xl">{w.title}</h3>
-                  <p className="mt-1.5 max-w-2xl text-[15px] leading-relaxed text-ink-soft">
+                  <p className="mt-1.5 text-[15px] leading-relaxed text-ink-soft">
                     {w.body}
                   </p>
                 </div>

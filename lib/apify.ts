@@ -166,7 +166,7 @@ export async function fetchInstagramProfile(handle: string): Promise<InstagramPr
     t,
     {
       directUrls: [`https://www.instagram.com/${h}/`],
-      resultsType: "profiles",
+      resultsType: "details",
       resultsLimit: 1,
     },
     1
