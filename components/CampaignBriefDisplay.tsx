@@ -7,7 +7,7 @@ import {
   type Campaign,
 } from "@/lib/types";
 import { formatMoney } from "@/lib/format";
-import { PROMO_FORMATS } from "@/components/brand/ContentRequirementsSection";
+import { PROMO_FORMATS } from "@/lib/content-options";
 
 const PROMO_LABELS: Record<string, string> = Object.fromEntries(
   PROMO_FORMATS.map((f) => [f.value, f.label])

@@ -5,8 +5,7 @@ import { insertNotificationInternal, logAdminActionInternal } from "./admin-inte
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "./auth";
 import { isAdminUser, ADMIN_EMAIL } from "./admin";
-import { toBounty, toCampaign } from "./db";
-import type { Bounty, Campaign } from "./types";
+import type { Bounty, Campaign, EligibilityType } from "./types";
 
 /** Actor label for panel actions — the gate guarantees this is the admin. */
 const PANEL_ACTOR = ADMIN_EMAIL;
@@ -1283,13 +1282,43 @@ export interface AdminCampaignDetail {
 }
 
 /** Full campaign record for the admin detail view. Service-role read, so
- *  every status (including pending briefs) is visible to the admin. */
+ *  every status (including pending briefs) is visible to the admin.
+ *  Row mapping is inline to keep this server-action module self-contained
+ *  (it must not depend on the session-scoped data layer in lib/db.ts).
+ *  Keep the shape in sync with toCampaign/toBounty in lib/db.ts. */
 export async function getAdminCampaignDetail(slug: string): Promise<AdminCampaignDetail | null> {
   await requireAdmin();
   const db = adminDb();
   const { data, error } = await db.from("campaigns").select("*").eq("slug", slug).single();
   if (error || !data) return null;
-  const campaign = toCampaign(data);
+  const r: any = data;
+  const campaign: Campaign = {
+    id: r.id, slug: r.slug, name: r.name, iconUrl: r.icon_url ?? "",
+    status: r.status, type: r.type, category: r.category,
+    platforms: r.platforms, payoutMethod: r.payout_method,
+    ratePer100k: Number(r.rate_per_100k),
+    platformRates: r.platform_rates ?? undefined,
+    platformTakeRate: r.platform_take_rate != null ? Number(r.platform_take_rate) : null,
+    minViewsPerPost: r.min_views_per_post, minViewsTotal: r.min_views_total,
+    daysLeft: r.days_left, startDate: r.start_date,
+    budgetCap: r.budget_cap ?? undefined, durationMode: r.duration_mode,
+    payoutMode: r.payout_mode, potValue: r.pot_value ?? undefined,
+    bountyPot: r.bounty_pot ?? undefined, accountLimit: r.account_limit ?? undefined,
+    rules: r.rules, isJoined: false,
+    brandId: r.brand_id ?? undefined,
+    eligibilityType: (r.eligibility_type as EligibilityType) ?? "open",
+    minFollowers: r.min_followers ?? undefined,
+    minAvgViews: r.min_avg_views ?? undefined,
+    promoFormats: r.promo_formats ?? ["video"],
+    aspectRatios: r.aspect_ratios ?? ["9:16"],
+    minDurationSec: r.min_duration_sec ?? null,
+    maxDurationSec: r.max_duration_sec ?? null,
+    requiredHashtags: r.required_hashtags ?? [],
+    requiredTags: r.required_tags ?? [],
+    sourceMaterialUrl: r.source_material_url ?? null,
+    minClipsExpected: r.min_clips_expected ?? 1,
+    requiresPreapproval: r.requires_preapproval ?? false,
+  };
   const { data: bountyRows } = await db
     .from("bounties")
     .select("*")
@@ -1303,7 +1332,13 @@ export async function getAdminCampaignDetail(slug: string): Promise<AdminCampaig
   const { data: clips } = await db.from("clips").select("id").eq("campaign_id", campaign.id);
   return {
     campaign,
-    bounties: (bountyRows ?? []).map(toBounty),
+    bounties: (bountyRows ?? []).map((row: any): Bounty => ({
+      id: row.id, campaignId: row.campaign_id, name: row.name,
+      ratePer100k: Number(row.rate_per_100k), requirements: row.requirements,
+      isActive: row.is_active, clipCount: row.clip_count ?? 0,
+      totalViews: row.total_views ?? 0, budgetCap: row.budget_cap ?? undefined,
+      budgetUsedPct: Number(row.budget_used_pct ?? 0),
+    })),
     brandName,
     clipCount: (clips ?? []).length,
   };

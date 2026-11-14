@@ -1,14 +1,9 @@
 "use client";
 
 import { Field } from "@/components/ui";
+import { PROMO_FORMATS } from "@/lib/content-options";
 
-export const PROMO_FORMATS = [
-  { value: "video", label: "Video clip", hint: "Clipper cuts/edits video featuring your brand" },
-  { value: "logo_overlay", label: "Logo overlay", hint: "Your logo appears as watermark/overlay" },
-  { value: "banner", label: "Banner / cover", hint: "Branded banner or cover frame on the clip" },
-  { value: "voiceover", label: "Voiceover mention", hint: "Clipper mentions your brand in audio" },
-  { value: "caption", label: "Caption + hashtags", hint: "Brand mention in caption/text only" },
-] as const;
+export { PROMO_FORMATS };
 
 export const ASPECT_RATIOS = [
   { value: "9:16", label: "9:16 Vertical" },
