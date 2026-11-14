@@ -5,6 +5,8 @@ import { insertNotificationInternal, logAdminActionInternal } from "./admin-inte
 import { revalidatePath } from "next/cache";
 import { getSessionUser } from "./auth";
 import { isAdminUser, ADMIN_EMAIL } from "./admin";
+import { toBounty, toCampaign } from "./db";
+import type { Bounty, Campaign } from "./types";
 
 /** Actor label for panel actions — the gate guarantees this is the admin. */
 const PANEL_ACTOR = ADMIN_EMAIL;
@@ -1271,6 +1273,40 @@ export async function getAdminCampaigns(statusFilter?: string): Promise<AdminCam
     clipCount: clipCount[r.id] ?? 0,
     createdAt: (r.created_at ?? "").slice(0, 10),
   }));
+}
+
+export interface AdminCampaignDetail {
+  campaign: Campaign;
+  bounties: Bounty[];
+  brandName: string;
+  clipCount: number;
+}
+
+/** Full campaign record for the admin detail view. Service-role read, so
+ *  every status (including pending briefs) is visible to the admin. */
+export async function getAdminCampaignDetail(slug: string): Promise<AdminCampaignDetail | null> {
+  await requireAdmin();
+  const db = adminDb();
+  const { data, error } = await db.from("campaigns").select("*").eq("slug", slug).single();
+  if (error || !data) return null;
+  const campaign = toCampaign(data);
+  const { data: bountyRows } = await db
+    .from("bounties")
+    .select("*")
+    .eq("campaign_id", campaign.id)
+    .order("rate_per_100k", { ascending: false });
+  let brandName = "—";
+  if (campaign.brandId) {
+    const { data: brand } = await db.from("brands").select("name").eq("id", campaign.brandId).single();
+    if ((brand as any)?.name) brandName = (brand as any).name;
+  }
+  const { data: clips } = await db.from("clips").select("id").eq("campaign_id", campaign.id);
+  return {
+    campaign,
+    bounties: (bountyRows ?? []).map(toBounty),
+    brandName,
+    clipCount: (clips ?? []).length,
+  };
 }
 
 /** Change the pay rate on a live/paused/pending campaign (Wondeed's CPM editor). */

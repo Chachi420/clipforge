@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Pencil } from "lucide-react";
@@ -127,7 +128,9 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
               {initial.map((c) => (
                 <tr key={c.id} className="transition hover:bg-ink/[0.03]">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-ink">{c.name}</div>
+                    <Link href={`/admin/campaigns/${c.slug}`} className="font-medium text-ink hover:underline">
+                      {c.name}
+                    </Link>
                     <div className="mt-1 flex items-center gap-1.5">
                       <Badge tone="blue">{c.category}</Badge>
                       <Badge>{TYPE_LABELS[c.type] ?? c.type}</Badge>
@@ -223,8 +226,15 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
                   </td>
                   <td className="px-4 py-3 text-ink-soft">{c.createdAt}</td>
                   <td className="px-4 py-3 text-right">
-                    {c.status === "pending" && (
-                      <div className="inline-flex items-center gap-2">
+                    <div className="inline-flex items-center gap-2">
+                      <Link
+                        href={`/admin/campaigns/${c.slug}`}
+                        className="rounded-full border border-line/20 px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:border-ink/40"
+                      >
+                        View
+                      </Link>
+                      {c.status === "pending" && (
+                        <>
                         <Button
                           onClick={() => setRejecting({ id: c.id, name: c.name })}
                           disabled={busy === c.id}
@@ -236,8 +246,9 @@ export default function CampaignAdminTable({ initial }: { initial: AdminCampaign
                         <Button onClick={() => handleApprove(c.id)} disabled={busy === c.id} className="!px-3 !py-1.5 text-xs">
                           <Check size={14} /> {busy === c.id ? "…" : "Approve"}
                         </Button>
-                      </div>
-                    )}
+                        </>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

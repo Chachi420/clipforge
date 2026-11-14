@@ -15,7 +15,7 @@ export function isLive() {
   return useSupabase;
 }
 
-function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
+export function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
   return {
     id: row.id, slug: row.slug, name: row.name, iconUrl: row.icon_url ?? "",
     status: row.status, type: row.type, category: row.category,
@@ -45,7 +45,7 @@ function toCampaign(row: any, joinedIds?: Set<string>): Campaign {
   };
 }
 
-function toBounty(row: any): Bounty {
+export function toBounty(row: any): Bounty {
   return {
     id: row.id, campaignId: row.campaign_id, name: row.name,
     ratePer100k: Number(row.rate_per_100k), requirements: row.requirements,
