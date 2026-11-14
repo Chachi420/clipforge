@@ -154,7 +154,7 @@ export async function GET(request: NextRequest) {
   const { data: campaigns, error: campError } = await supabase
     .from("campaigns")
     .select(
-      "id, name, rate_per_100k, payout_mode, budget_cap, brand_id, min_views_per_post, min_views_total, platform_take_rate"
+      "id, name, rate_per_100k, payout_mode, budget_cap, brand_id, min_views_per_post, min_views_total"
     )
     .eq("status", "active");
 
@@ -162,11 +162,23 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: campError.message }, { status: 500 });
   }
 
+  // Per-campaign take, best-effort: platform_take_rate comes from migration
+  // 020, which may not be applied live. Missing column → every campaign
+  // uses the engine default instead of failing the whole cycle close.
+  const takeById: Record<string, number> = {};
+  const { data: takes } = await supabase
+    .from("campaigns")
+    .select("id, platform_take_rate")
+    .eq("status", "active");
+  for (const t of (takes ?? []) as any[]) {
+    if (t.platform_take_rate != null) takeById[t.id] = Number(t.platform_take_rate);
+  }
+
   for (const campaign of campaigns ?? []) {
     const rate = Number(campaign.rate_per_100k ?? 0);
     // Per-client platform take, negotiated manually (migration 020).
-    // NULL → default. Clamp to [0, 1) for safety.
-    const takeRate = Math.min(0.99, Math.max(0, Number(campaign.platform_take_rate ?? PLATFORM_TAKE_RATE)));
+    // Missing column / NULL → default. Clamp to [0, 1) for safety.
+    const takeRate = Math.min(0.99, Math.max(0, Number(takeById[campaign.id] ?? PLATFORM_TAKE_RATE)));
     const summary: CampaignSummary = {
       campaignId: campaign.id,
       campaignName: campaign.name,

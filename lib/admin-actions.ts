@@ -1222,19 +1222,41 @@ export interface AdminCampaign {
 export async function getAdminCampaigns(statusFilter?: string): Promise<AdminCampaign[]> {
   await requireAdmin();
   const db = adminDb();
+  // Primary select uses only columns guaranteed by migration 001 (+ brand_id,
+  // proven live). platform_take_rate (020) and the brands() embed are fetched
+  // best-effort below: a live database whose migrations lag the code must
+  // degrade the list, never crash it.
   let q = db
     .from("campaigns")
-    .select("id, slug, name, type, category, status, rate_per_100k, platform_take_rate, budget_cap, platforms, created_at, brands(name)")
+    .select("id, slug, name, type, category, status, rate_per_100k, budget_cap, platforms, created_at, brand_id")
     .order("created_at", { ascending: false })
     .limit(500);
   if (statusFilter && statusFilter !== "all") q = q.eq("status", statusFilter);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
-  const ids = (data ?? []).map((r: any) => r.id);
+  const rows = (data ?? []) as any[];
+  const ids = rows.map((r) => r.id);
+  const brandNameById: Record<string, string> = {};
+  const brandIds = [...new Set(rows.map((r) => r.brand_id).filter(Boolean))];
+  if (brandIds.length > 0) {
+    const { data: brands, error: brandsError } = await db.from("brands").select("id, name").in("id", brandIds);
+    if (!brandsError) {
+      for (const b of (brands ?? []) as any[]) brandNameById[b.id] = b.name;
+    }
+  }
+  const takeById: Record<string, number> = {};
+  if (ids.length > 0) {
+    const { data: takes, error: takesError } = await db.from("campaigns").select("id, platform_take_rate").in("id", ids);
+    if (!takesError) {
+      for (const t of (takes ?? []) as any[]) {
+        if (t.platform_take_rate != null) takeById[t.id] = Number(t.platform_take_rate);
+      }
+    }
+  }
   const { data: clips } = await db.from("clips").select("campaign_id").in("campaign_id", ids);
   const clipCount: Record<string, number> = {};
   for (const c of (clips ?? []) as any[]) clipCount[c.campaign_id] = (clipCount[c.campaign_id] ?? 0) + 1;
-  return (data ?? []).map((r: any) => ({
+  return rows.map((r: any) => ({
     id: r.id,
     slug: r.slug,
     name: r.name,
@@ -1242,10 +1264,10 @@ export async function getAdminCampaigns(statusFilter?: string): Promise<AdminCam
     category: r.category,
     status: r.status,
     ratePer100k: Number(r.rate_per_100k ?? 0),
-    platformTakeRate: r.platform_take_rate != null ? Number(r.platform_take_rate) : null,
+    platformTakeRate: takeById[r.id] ?? null,
     budgetCap: r.budget_cap != null ? Number(r.budget_cap) : null,
     platforms: r.platforms ?? [],
-    brandName: r.brands?.name ?? "—",
+    brandName: (r.brand_id && brandNameById[r.brand_id]) || "—",
     clipCount: clipCount[r.id] ?? 0,
     createdAt: (r.created_at ?? "").slice(0, 10),
   }));

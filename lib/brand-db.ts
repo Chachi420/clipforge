@@ -318,12 +318,26 @@ export async function getCampaignClippers(
 ): Promise<CampaignClipperRow[]> {
   if (!isLive()) return [];
   const supabase = await sb();
-  const { data: camp } = await supabase
+  // Platform take comes from migration 020, which may not be applied live.
+  // Try with it first (keeps negotiated takes); fall back to a take-less
+  // select so a missing column degrades to the default instead of an
+  // empty rollup.
+  const withTake = await supabase
     .from("campaigns")
     .select("id, rate_per_100k, platform_take_rate")
     .eq("id", campaignId)
     .eq("brand_id", brandId)
     .single();
+  let camp: any = withTake.data;
+  if (withTake.error) {
+    const fallback = await supabase
+      .from("campaigns")
+      .select("id, rate_per_100k")
+      .eq("id", campaignId)
+      .eq("brand_id", brandId)
+      .single();
+    camp = fallback.data;
+  }
   if (!camp) return [];
   const rate = Number((camp as any).rate_per_100k ?? 0);
   const takeRate = Math.min(0.99, Math.max(0, Number((camp as any).platform_take_rate ?? 0.2)));

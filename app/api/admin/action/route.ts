@@ -544,15 +544,22 @@ async function actionSummary(
     if (action === "approve_campaign" || action === "reject_campaign") {
       const { data: row } = await db
         .from("campaigns")
-        .select("name, status, rate_per_100k, brands(name)")
+        .select("name, status, rate_per_100k, brand_id")
         .eq("id", id)
         .single();
       if (!row)
         return { summary: actionTitle(action), details: "This campaign no longer exists — nothing to do.", button };
+      // Brand name, best-effort: never let a brands-table/embed failure
+      // misreport a live campaign as missing.
+      let brandName = "—";
+      if ((row as any).brand_id) {
+        const { data: brand } = await db.from("brands").select("name").eq("id", (row as any).brand_id).single();
+        if ((brand as any)?.name) brandName = (brand as any).name;
+      }
       return {
         summary: `${actionTitle(action)} — ${(row as any).name}`,
         details:
-          `Brand: ${(row as any).brands?.name ?? "—"} · Rate: ${formatUsd(Number((row as any).rate_per_100k ?? 0))} / 100k views. ` +
+          `Brand: ${brandName} · Rate: ${formatUsd(Number((row as any).rate_per_100k ?? 0))} / 100k views. ` +
           `Currently: ${(row as any).status}.`,
         button,
       };
