@@ -90,7 +90,7 @@ export default function BrandsLanding() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 py-12 text-center md:py-24">
+        <section className="mx-auto max-w-site px-6 py-12 text-center md:py-24">
           <Reveal as="p" className="micro-label">
             For brands
           </Reveal>
@@ -103,7 +103,7 @@ export default function BrandsLanding() {
           <Reveal delay={240} className="mt-10">
             <Link
               href="/brand/request"
-              className="group pill btn-liquid min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+              className="group glass-btn-primary min-h-[52px] px-9 py-4 text-base"
             >
               Start a campaign{" "}
               <ArrowRight
@@ -123,7 +123,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Steps — editorial rows */}
-        <section aria-labelledby="brand-steps" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
+        <section aria-labelledby="brand-steps" className="mx-auto max-w-site px-6 py-10 md:py-16">
           <div className="grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] md:gap-16">
             <div className="md:sticky md:top-24 md:self-start">
               <Reveal as="p" className="micro-label">
@@ -154,7 +154,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Why — editorial list */}
-        <section aria-labelledby="brand-why" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
+        <section aria-labelledby="brand-why" className="mx-auto max-w-site px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             Why Wondeed
           </Reveal>
@@ -177,7 +177,7 @@ export default function BrandsLanding() {
         </section>
 
         {/* Old way vs Wondeed — one honest comparison */}
-        <section aria-labelledby="brand-compare" className="mx-auto max-w-6xl px-6 py-10 md:py-16">
+        <section aria-labelledby="brand-compare" className="mx-auto max-w-site px-6 py-10 md:py-16">
           <Reveal as="p" className="micro-label">
             Why switch
           </Reveal>
@@ -236,7 +236,7 @@ export default function BrandsLanding() {
 
         {/* Final CTA — black */}
         <section className="bg-black py-14 text-center text-white md:py-28">
-          <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-site px-6">
             <Reveal as="h2" className="display mx-auto max-w-3xl text-[clamp(2.5rem,7vw,5rem)] leading-[1.0] text-white">
               Buy reach, not promises.
             </Reveal>
@@ -247,7 +247,7 @@ export default function BrandsLanding() {
             <Reveal delay={180} className="mt-10">
               <Link
                 href="/brand/request"
-                className="group pill btn-liquid min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
+                className="group glass-btn-primary glass-light min-h-[52px] px-9 py-4 text-base"
               >
                 Start a campaign{" "}
                 <ArrowRight

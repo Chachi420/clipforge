@@ -43,7 +43,7 @@ export default function MarketingNav({
       aria-label="Primary"
       className="sticky top-0 z-40 border-b border-line/[0.08] bg-paper/70 backdrop-blur-md backdrop-saturate-100 sm:backdrop-blur-2xl sm:backdrop-saturate-150"
     >
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3 lg:px-6">
+      <div className="mx-auto flex max-w-site items-center justify-between px-5 py-3 lg:px-6">
         <Link
           href="/"
           className="font-display text-lg font-bold tracking-tight text-ink"
@@ -83,7 +83,7 @@ export default function MarketingNav({
           </Link>
           <Link
             href={effCtaHref}
-            className="pill btn-liquid hidden min-h-[44px] whitespace-nowrap bg-ink px-4 py-2 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft min-[500px]:inline-flex sm:px-5 sm:py-2.5"
+            className="glass-btn-primary hidden min-h-[44px] whitespace-nowrap px-4 py-2 text-sm min-[500px]:inline-flex sm:px-5 sm:py-2.5"
           >
             {effCtaLabel}
           </Link>

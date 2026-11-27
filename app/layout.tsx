@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces } from "next/font/google";
 import "./globals.css";
+import GlassPointer from "@/components/GlassPointer";
 
 const display = Fraunces({
   subsets: ["latin"],
@@ -56,7 +57,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: themeInit }} />
         <script dangerouslySetInnerHTML={{ __html: jsInit }} />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <GlassPointer />
+      </body>
     </html>
   );
 }

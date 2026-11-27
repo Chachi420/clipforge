@@ -62,7 +62,7 @@ export default function TrustPage() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 py-12 text-center md:py-20">
+        <section className="mx-auto max-w-site px-6 py-12 text-center md:py-20">
           <Reveal as="p" className="micro-label">
             Trust &amp; Safety
           </Reveal>
@@ -78,7 +78,7 @@ export default function TrustPage() {
         </section>
 
         {/* Pillars */}
-        <section className="mx-auto max-w-6xl px-6 pb-12 md:pb-20">
+        <section className="mx-auto max-w-site px-6 pb-12 md:pb-20">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {PILLARS.map((p, i) => (
               <Reveal key={p.title} delay={Math.min(i * 0.06, 0.24)} className="h-full">
@@ -106,7 +106,7 @@ export default function TrustPage() {
                 <div className="mt-6 flex flex-wrap gap-3">
                   <Link
                     href="/pricing"
-                    className="pill inline-flex min-h-[44px] items-center gap-2 bg-paper px-5 text-sm font-semibold text-ink"
+                    className="glass-btn-primary glass-light inline-flex min-h-[44px] items-center gap-2 px-5 text-sm"
                   >
                     Pricing <ArrowRight size={15} aria-hidden="true" />
                   </Link>

@@ -18,7 +18,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-paper text-ink">
       <MarketingNav />
 
-      <main className="mx-auto max-w-6xl px-6 py-14 md:py-20">
+      <main className="mx-auto max-w-site px-6 py-14 md:py-20">
         <h1 className="display text-[clamp(2.5rem,7vw,4.5rem)] leading-[0.95]">
           Talk to a human.
         </h1>

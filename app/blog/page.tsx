@@ -22,7 +22,7 @@ export default function BlogIndex() {
     <div className="min-h-screen bg-paper text-ink">
       <MarketingNav />
 
-      <main className="mx-auto max-w-6xl px-6 pb-24">
+      <main className="mx-auto max-w-site px-6 pb-24">
         <header className="py-14 md:py-20">
           <h1 className="display text-[clamp(2.75rem,8vw,5.5rem)] leading-[0.95]">Blog</h1>
           <p className="mt-4 max-w-xl text-lg leading-relaxed text-ink-soft">

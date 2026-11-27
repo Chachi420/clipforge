@@ -78,7 +78,7 @@ export default function DocsShell({ slug }: { slug: string }) {
     <div className="min-h-screen bg-paper text-ink">
       <MarketingNav />
 
-      <main className="mx-auto max-w-6xl px-6 pb-20">
+      <main className="mx-auto max-w-site px-6 pb-20">
         <header className="flex items-center justify-between py-10">
           <div>
             <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.3em] text-ink-faint">

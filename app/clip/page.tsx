@@ -82,7 +82,7 @@ export default function ClipLanding() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 py-16 text-center md:py-24">
+        <section className="mx-auto max-w-site px-6 py-16 text-center md:py-24">
           <Reveal as="p" className="micro-label">
             For clippers
           </Reveal>
@@ -96,7 +96,7 @@ export default function ClipLanding() {
           <Reveal delay={240} className="mt-10">
             <Link
               href="/login"
-              className="group pill min-h-[52px] bg-ink px-9 py-4 text-base font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+              className="group glass-btn-primary min-h-[52px] px-9 py-4 text-base"
             >
               Start clipping{" "}
               <ArrowRight
@@ -116,7 +116,7 @@ export default function ClipLanding() {
         </section>
 
         {/* How it works — editorial rows */}
-        <section aria-labelledby="clip-how" className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <section aria-labelledby="clip-how" className="mx-auto max-w-site px-6 py-12 md:py-16">
           <Reveal as="p" className="micro-label">
             How it works
           </Reveal>
@@ -143,7 +143,7 @@ export default function ClipLanding() {
         </section>
 
         {/* Payout rhythm — the monthly cycle, visualized */}
-        <section aria-labelledby="clip-cycle" className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <section aria-labelledby="clip-cycle" className="mx-auto max-w-site px-6 py-12 md:py-16">
           <Reveal as="p" className="micro-label">
             The payout rhythm
           </Reveal>
@@ -159,7 +159,7 @@ export default function ClipLanding() {
         </section>
 
         {/* Calculator */}
-        <section aria-labelledby="clip-calc" className="mx-auto max-w-6xl px-6 py-12 md:py-16">
+        <section aria-labelledby="clip-calc" className="mx-auto max-w-site px-6 py-12 md:py-16">
           <Reveal as="p" className="micro-label text-center">
             Do the math
           </Reveal>
@@ -210,14 +210,14 @@ export default function ClipLanding() {
 
         {/* Final CTA — black */}
         <section className="bg-black py-20 text-center text-white md:py-28">
-          <div className="mx-auto max-w-6xl px-6">
+          <div className="mx-auto max-w-site px-6">
             <Reveal as="h2" className="display mx-auto max-w-3xl text-[clamp(2.5rem,7vw,5rem)] leading-[1.0] text-white">
               Your next clip could pay for itself.
             </Reveal>
             <Reveal delay={120} className="mt-10">
               <Link
                 href="/login"
-                className="group pill min-h-[52px] bg-white px-9 py-4 text-base font-semibold text-black transition-colors duration-micro hover:bg-white/85"
+                className="group glass-btn-primary glass-light min-h-[52px] px-9 py-4 text-base"
               >
                 Start clipping{" "}
                 <ArrowRight

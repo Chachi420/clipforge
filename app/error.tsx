@@ -17,13 +17,13 @@ export default function Error({
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <button
           onClick={() => reset()}
-          className="pill bg-ink px-6 py-3 text-sm font-semibold text-paper transition hover:bg-ink-soft"
+          className="glass-btn-primary px-6 py-3 text-sm"
         >
           Try again
         </button>
         <a
           href="/"
-          className="pill border border-line/20 px-6 py-3 text-sm font-semibold text-ink transition hover:bg-ink/5"
+          className="glass-btn px-6 py-3 text-sm"
         >
           Back home
         </a>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Wondeed">
+  <!--
+    Wondeed mark: a monoline "W" on a squircle. Its last stroke climbs past
+    the first, so the W also reads as a views chart going up.
+
+    Light browser UI: ink squircle, white W.
+    Dark browser UI:  white squircle, ink W. (A black icon disappears on a
+    dark tab bar, so the colors swap with the browser's color scheme.)
+    The glass sheen and rim echo the site's Liquid Glass buttons and simply
+    fade out at 16px.
+  -->
+  <style>
+    .tile { fill: #0B0E13; }
+    .mark { stroke: #FFFFFF; }
+    .rim  { stroke: #FFFFFF; stroke-opacity: 0.16; }
+    .sheen-top { stop-color: #FFFFFF; stop-opacity: 0.22; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #F5F5F7; }
+      .mark { stroke: #0B0E13; }
+      .rim  { stroke: #0B0E13; stroke-opacity: 0.12; }
+      .sheen-top { stop-color: #FFFFFF; stop-opacity: 0.6; }
+    }
+  </style>
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" class="sheen-top"/>
+      <stop offset="0.5" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <rect class="tile" width="64" height="64" rx="15"/>
+  <rect width="64" height="64" rx="15" fill="url(#sheen)"/>
+  <rect class="rim" x="0.75" y="0.75" width="62.5" height="62.5" rx="14.25" fill="none" stroke-width="1.5"/>
+  <path class="mark" d="M13 21 L22.5 46 L32 28 L41.5 46 L52 13" fill="none" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

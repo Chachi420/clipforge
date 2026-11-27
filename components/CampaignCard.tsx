@@ -174,14 +174,14 @@ export default function CampaignCard({ campaign, funded = false, budgetUsed }: {
           <button
             type="button"
             onClick={() => setShowPrivate(true)}
-            className="pill mt-2 flex min-h-[48px] w-full items-center justify-center border border-ink/20 text-sm font-semibold text-ink transition-colors duration-micro hover:bg-ink/5"
+            className="glass-btn mt-2 flex min-h-[48px] w-full items-center justify-center text-sm"
           >
             Apply for access
           </button>
         ) : (
           <Link
             href={detailHref}
-            className="pill btn-liquid mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 bg-ink text-sm font-semibold text-paper"
+            className="glass-btn-primary mt-2 flex min-h-[48px] w-full items-center justify-center gap-2 text-sm"
           >
             {campaign.isJoined ? "Open campaign" : "View campaign"} <ArrowRight size={15} aria-hidden />
           </Link>

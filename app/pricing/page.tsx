@@ -63,7 +63,7 @@ export default function PricingPage() {
 
       <main>
         {/* Hero */}
-        <section className="mx-auto max-w-6xl px-6 py-12 text-center md:py-20">
+        <section className="mx-auto max-w-site px-6 py-12 text-center md:py-20">
           <Reveal as="p" className="micro-label">
             Pricing
           </Reveal>
@@ -80,7 +80,7 @@ export default function PricingPage() {
         </section>
 
         {/* Money flow */}
-        <section className="mx-auto max-w-6xl px-6 pb-12 md:pb-20">
+        <section className="mx-auto max-w-site px-6 pb-12 md:pb-20">
           <div className="grid gap-4 md:grid-cols-3">
             {FLOW.map((s, i) => (
               <Reveal key={s.step} delay={i * 0.08} className="h-full">
@@ -101,7 +101,7 @@ export default function PricingPage() {
 
         {/* Rate card */}
         <section className="border-t border-ink/10">
-          <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+          <div className="mx-auto max-w-site px-6 py-12 md:py-20">
             <Reveal as="h2" className="display text-3xl md:text-4xl">
               The rate card
             </Reveal>
@@ -123,7 +123,7 @@ export default function PricingPage() {
 
         {/* Brand budget note */}
         <section className="border-t border-ink/10">
-          <div className="mx-auto max-w-6xl px-6 py-12 md:py-20">
+          <div className="mx-auto max-w-site px-6 py-12 md:py-20">
             <div className="grid gap-8 md:grid-cols-2 md:items-center">
               <div>
                 <Reveal as="h2" className="display text-3xl md:text-4xl">
@@ -150,10 +150,10 @@ export default function PricingPage() {
             </div>
 
             <div className="mt-12 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-              <Link href="/brand/login" className="pill btn-liquid inline-flex min-h-[48px] items-center gap-2 bg-ink px-7 text-sm font-semibold text-paper">
+              <Link href="/brand/login" className="glass-btn-primary inline-flex min-h-[48px] items-center gap-2 px-7 text-sm">
                 Start a campaign <ArrowRight size={16} />
               </Link>
-              <Link href="/login" className="pill inline-flex min-h-[48px] items-center bg-ink px-7 text-sm font-semibold text-paper">
+              <Link href="/login" className="glass-btn-primary inline-flex min-h-[48px] items-center px-7 text-sm">
                 Start clipping
               </Link>
             </div>

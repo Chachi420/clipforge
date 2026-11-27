@@ -56,6 +56,11 @@ const config: Config = {
           soft: "#3A4552",
         },
       },
+      maxWidth: {
+        // Marketing pages: was max-w-6xl (1152px), which left wide empty
+        // gutters on 1440px+ screens.
+        site: "88rem",
+      },
       fontFamily: {
         display: ["var(--font-display)", "system-ui", "sans-serif"],
         sans: ["Satoshi", "system-ui", "sans-serif"],
