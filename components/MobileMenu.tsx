@@ -154,7 +154,7 @@ export default function MobileMenu({
               <Link
                 href={ctaHref}
                 onClick={() => setOpen(false)}
-                className="pill btn-liquid min-h-[52px] w-full bg-ink text-base font-semibold text-paper transition-colors hover:bg-ink-soft"
+                className="glass-btn-primary min-h-[52px] w-full text-base"
               >
                 {ctaLabel}
               </Link>

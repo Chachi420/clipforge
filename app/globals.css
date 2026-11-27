@@ -24,6 +24,16 @@
   --status-error: 220 38 38;     /* #DC2626 */
   --glass-hi: 255 255 255;     /* specular highlight tint */
   --scrollbar: 11 14 19;
+  /* Liquid Glass material (light): frosted white with a dark hairline */
+  --glass-bg: 255 255 255;
+  --glass-bg-a: 0.5;
+  --glass-edge: 11 14 19;
+  --glass-edge-a: 0.1;
+  --glass-rim-a: 0.9;
+  --glass-glow-a: 0.35;
+  --glass-spec-a: 0.75;
+  --glass-shadow-a: 0.18;
+  --glass-blur: 20px;
 }
 
 .dark {
@@ -43,6 +53,31 @@
   --status-error: 248 113 113;   /* softened #F87171 */
   --glass-hi: 255 255 255;
   --scrollbar: 245 245 247;
+  /* Liquid Glass material (dark): clear glass with a bright rim */
+  --glass-bg: 255 255 255;
+  --glass-bg-a: 0.08;
+  --glass-edge: 255 255 255;
+  --glass-edge-a: 0.2;
+  --glass-rim-a: 0.45;
+  --glass-glow-a: 0.06;
+  --glass-spec-a: 0.28;
+  --glass-shadow-a: 0.55;
+  --glass-blur: 18px;
+}
+
+/* Always-black sections (money math, final CTA): use the dark glass and
+   light ink inside them whatever the page theme is. */
+.on-dark {
+  --paper: 0 0 0;
+  --ink: 245 245 247;
+  --glass-bg: 255 255 255;
+  --glass-bg-a: 0.1;
+  --glass-edge: 255 255 255;
+  --glass-edge-a: 0.22;
+  --glass-rim-a: 0.5;
+  --glass-glow-a: 0.08;
+  --glass-spec-a: 0.32;
+  --glass-shadow-a: 0.6;
 }
 
 body {
@@ -154,6 +189,201 @@ body {
       transition: none;
     }
   }
+  /* ── Apple-style Liquid Glass ─────────────────────────────────────
+     Translucent material: backdrop blur + saturation, a bright specular
+     rim on top, a soft inner glow, and a highlight that follows the
+     pointer (--gx/--gy, set by components/GlassPointer.tsx). Theme-aware
+     through --glass-* variables. Put glass over imagery or color, not
+     flat paper, or there is nothing for it to refract. */
+  .glass,
+  .glass-btn,
+  .glass-btn-primary {
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    backdrop-filter: blur(var(--glass-blur)) saturate(180%);
+    border: 1px solid rgb(var(--glass-edge) / var(--glass-edge-a));
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / var(--glass-rim-a)),
+      inset 0 -1px 1px rgb(255 255 255 / 0.06),
+      inset 0 0 18px rgb(255 255 255 / var(--glass-glow-a)),
+      0 12px 32px -12px rgb(0 0 0 / var(--glass-shadow-a));
+  }
+  .glass {
+    background: linear-gradient(
+      180deg,
+      rgb(var(--glass-bg) / calc(var(--glass-bg-a) + 0.06)),
+      rgb(var(--glass-bg) / var(--glass-bg-a))
+    );
+  }
+  .glass-btn,
+  .glass-btn-primary {
+    --gx: 50%;
+    --gy: 0%;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 9999px;
+    font-weight: 600;
+    color: rgb(var(--ink));
+    background: linear-gradient(
+      180deg,
+      rgb(var(--glass-bg) / calc(var(--glass-bg-a) + 0.08)),
+      rgb(var(--glass-bg) / var(--glass-bg-a))
+    );
+    transition:
+      transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 220ms ease,
+      background-color 220ms ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* Primary: the same glass, tinted with ink so it reads as the main action. */
+  .glass-btn-primary {
+    color: rgb(var(--paper));
+    background: linear-gradient(
+      180deg,
+      rgb(var(--ink) / 0.92),
+      rgb(var(--ink) / 0.78)
+    );
+    border-color: rgb(var(--glass-edge) / calc(var(--glass-edge-a) + 0.1));
+  }
+  /* White glass for always-dark sections, regardless of page theme. */
+  .glass-btn-primary.glass-light {
+    color: #000;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.96), rgb(255 255 255 / 0.8));
+    border-color: rgb(255 255 255 / 0.6);
+  }
+  /* Specular highlight that tracks the pointer. */
+  .glass-btn::before,
+  .glass-btn-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background:
+      radial-gradient(
+        120% 90% at var(--gx) var(--gy),
+        rgb(255 255 255 / var(--glass-spec-a)),
+        transparent 55%
+      ),
+      linear-gradient(180deg, rgb(255 255 255 / 0.18), transparent 48%);
+    opacity: 0.85;
+    transition: opacity 220ms ease;
+    pointer-events: none;
+  }
+  /* Light sweep across the surface on hover. */
+  .glass-btn::after,
+  .glass-btn-primary::after {
+    content: "";
+    position: absolute;
+    inset: -30%;
+    z-index: -1;
+    background: linear-gradient(
+      105deg,
+      transparent 42%,
+      rgb(255 255 255 / 0.35) 50%,
+      transparent 58%
+    );
+    transform: translateX(-120%);
+    transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1);
+    pointer-events: none;
+  }
+  .glass-btn:hover,
+  .glass-btn-primary:hover {
+    transform: translateY(-1px) scale(1.015);
+  }
+  .glass-btn:hover::before,
+  .glass-btn-primary:hover::before {
+    opacity: 1;
+  }
+  .glass-btn:hover::after,
+  .glass-btn-primary:hover::after {
+    transform: translateX(120%);
+  }
+  .glass-btn:active,
+  .glass-btn-primary:active {
+    transform: scale(0.97);
+    transition-duration: 90ms;
+  }
+  .glass-btn:focus-visible,
+  .glass-btn-primary:focus-visible {
+    outline: 2px solid rgb(var(--ink));
+    outline-offset: 3px;
+  }
+  /* Browsers without backdrop-filter: solid enough to stay readable. */
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass,
+    .glass-btn {
+      background: rgb(var(--surface));
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .glass-btn,
+    .glass-btn-primary,
+    .glass-btn::after,
+    .glass-btn-primary::after {
+      transition: none;
+    }
+    .glass-btn::after,
+    .glass-btn-primary::after {
+      display: none;
+    }
+    .glass-btn:hover,
+    .glass-btn-primary:hover {
+      transform: none;
+    }
+  }
+
+  /* ── Scrolling strips (brands marquee, clip wall) ─────────────────── */
+  .marquee {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  }
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee-x var(--marquee-duration, 40s) linear infinite;
+  }
+  .marquee:hover .marquee-track,
+  .marquee:focus-within .marquee-track {
+    animation-play-state: paused;
+  }
+  .wall-col {
+    animation: wall-y var(--wall-duration, 60s) linear infinite;
+  }
+  @keyframes marquee-x {
+    to { transform: translateX(-50%); }
+  }
+  @keyframes wall-y {
+    to { transform: translateY(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-track,
+    .wall-col {
+      animation: none;
+    }
+    .marquee-track {
+      flex-wrap: wrap;
+      justify-content: center;
+      width: auto;
+    }
+  }
+
+  /* Above-the-fold entrance that doesn't wait for JS (no blank hero). */
+  .rise {
+    animation: rise 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rise { animation: none; }
+  }
+
   /* Massive display headline */
   .display {
     @apply font-display font-medium tracking-tight text-ink;

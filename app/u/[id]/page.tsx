@@ -77,7 +77,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
           </div>
           <Link
             href="/login"
-            className="pill min-h-[44px] shrink-0 bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+            className="glass-btn-primary min-h-[44px] shrink-0 px-6 py-3 text-sm"
           >
             Start clipping
           </Link>
@@ -112,7 +112,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
                 action={
                   <Link
                     href="/login"
-                    className="pill min-h-[44px] bg-ink px-6 py-3 text-sm font-semibold text-paper transition-colors duration-micro hover:bg-ink-soft"
+                    className="glass-btn-primary min-h-[44px] px-6 py-3 text-sm"
                   >
                     Start clipping
                   </Link>

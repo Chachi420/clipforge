@@ -34,14 +34,14 @@ export default function OnboardPage() {
   return (
     <div className="flex min-h-screen flex-col bg-paper text-ink">
       <nav aria-label="Onboarding" className="border-b border-ink/10">
-        <div className="mx-auto flex max-w-6xl items-center px-6 py-4">
+        <div className="mx-auto flex max-w-site items-center px-6 py-4">
           <Link href="/" className="font-display text-xl font-bold tracking-tight">
             WONDEED
           </Link>
         </div>
       </nav>
 
-      <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 py-12">
+      <main className="mx-auto flex w-full max-w-site flex-1 flex-col justify-center px-6 py-12">
         <Reveal as="p" className="micro-label text-center">
           Get started
         </Reveal>
@@ -71,7 +71,7 @@ export default function OnboardPage() {
                   <p className="mt-3 flex-1 text-sm leading-relaxed text-ink-soft">
                     {r.body}
                   </p>
-                  <span className="pill btn-liquid mt-6 inline-flex min-h-[44px] w-fit items-center gap-2 px-6 text-sm font-semibold">
+                  <span className="glass-btn-primary mt-6 inline-flex min-h-[44px] w-fit items-center gap-2 px-6 text-sm">
                     {r.cta} <ArrowRight size={15} aria-hidden="true" />
                   </span>
                 </Card>

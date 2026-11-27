@@ -117,7 +117,7 @@ export default function BlogPostPage({ params }: { params: { slug: string } }) {
           </p>
           <Link
             href="/login"
-            className="pill mt-6 inline-flex min-h-[44px] bg-white px-7 py-3 text-sm font-semibold text-black transition-colors duration-micro hover:bg-white/85"
+            className="glass-btn-primary glass-light mt-6 inline-flex min-h-[44px] px-7 py-3 text-sm"
           >
             Start clipping <ArrowRight size={16} aria-hidden />
           </Link>

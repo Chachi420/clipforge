@@ -55,7 +55,7 @@ const COLUMNS: { heading: string; external?: boolean; links: { href: string; lab
 export default function MarketingFooter() {
   return (
     <footer className="border-t border-white/10 bg-black text-white/60">
-      <div className="mx-auto max-w-6xl px-6 py-12 lg:py-16">
+      <div className="mx-auto max-w-site px-6 py-12 lg:py-16">
         <div className="grid grid-cols-2 gap-8 sm:grid-cols-3 lg:grid-cols-5">
           {COLUMNS.map((col) => (
             <nav key={col.heading} aria-label={`Footer — ${col.heading}`}>
