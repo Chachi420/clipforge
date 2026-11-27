@@ -161,7 +161,7 @@ export default function BountyManager({
                   <div className="flex items-center gap-2">
                     <h3 className="truncate font-semibold text-ink">{b.name}</h3>
                     <span
-                      className={`text-[11px] font-semibold uppercase tracking-wide ${
+                      className={`text-xs sm:text-[11px] font-semibold uppercase tracking-wide ${
                         b.isActive ? "text-status-success" : "text-ink-faint"
                       }`}
                     >

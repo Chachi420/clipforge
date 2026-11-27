@@ -62,7 +62,7 @@ export default function BrandTable({ initial }: { initial: AdminBrand[] }) {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] text-left text-sm">
               <thead>
-                <tr className="border-b border-line/10 bg-ink/[0.03] text-[11px] uppercase tracking-wider text-ink-faint">
+                <tr className="border-b border-line/10 bg-ink/[0.03] text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                   <th className="px-4 py-3">Brand</th>
                   <th className="px-4 py-3">Owner</th>
                   <th className="px-4 py-3">Status</th>

@@ -79,7 +79,7 @@ function NotificationBell() {
     >
       <Bell size={18} aria-hidden />
       {unread != null && unread > 0 && (
-        <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-[10px] font-bold leading-none text-paper">
+        <span className="absolute right-1 top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-ink px-1 text-xs sm:text-[10px] font-bold leading-none text-paper">
           {unread > 99 ? "99+" : unread}
         </span>
       )}

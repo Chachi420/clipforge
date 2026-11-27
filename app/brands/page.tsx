@@ -186,7 +186,7 @@ export default function BrandsLanding() {
           </Reveal>
           <div className="mt-10 grid gap-6 md:grid-cols-2">
             <Reveal delay={120} className="rounded-card border border-line/10 p-8">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
+              <p className="text-xs sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-faint">
                 The old way
               </p>
               <ul className="mt-6 space-y-6">
@@ -199,7 +199,7 @@ export default function BrandsLanding() {
               </ul>
             </Reveal>
             <Reveal delay={200} className="rounded-card border border-ink bg-surface p-8">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink">
+              <p className="text-xs sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-ink">
                 Wondeed
               </p>
               <ul className="mt-6 space-y-6">

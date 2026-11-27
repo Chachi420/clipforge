@@ -1,4 +1,5 @@
 "use client";
+import { safeHref } from "@/lib/safe-url";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Flag, FlagOff, Search } from "lucide-react";
@@ -218,7 +219,7 @@ export default function ClipReviewQueue({ initial }: { initial: AdminClip[] }) {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] text-left text-sm">
               <thead>
-                <tr className="border-b border-line/10 bg-ink/[0.03] text-[11px] uppercase tracking-wider text-ink-faint">
+                <tr className="border-b border-line/10 bg-ink/[0.03] text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                   {pendingRows.length > 0 && (
                     <th className="w-10 px-4 py-3">
                       <input
@@ -256,7 +257,7 @@ export default function ClipReviewQueue({ initial }: { initial: AdminClip[] }) {
                       </td>
                     )}
                     <td className="px-4 py-3">
-                      <a href={c.postUrl} target="_blank" rel="noreferrer" className="font-medium text-ink underline decoration-line hover:decoration-ink">
+                      <a href={safeHref(c.postUrl)} target="_blank" rel="noreferrer" className="font-medium text-ink underline decoration-line hover:decoration-ink">
                         View clip ↗
                       </a>
                       <div className="mt-1 flex items-center gap-1 text-xs text-ink-soft">

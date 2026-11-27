@@ -1,5 +1,6 @@
 "use client";
 
+import { safeHref } from "@/lib/safe-url";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Check, X, Globe } from "lucide-react";
@@ -59,7 +60,7 @@ export default function BrandRequestQueue({ initial }: { initial: PendingBrandRe
               </p>
               {r.website && (
                 <a
-                  href={r.website.startsWith("http") ? r.website : `https://${r.website}`}
+                  href={safeHref(r.website.startsWith("http") ? r.website : `https://${r.website}`)}
                   target="_blank"
                   rel="noreferrer"
                   className="mt-1 inline-flex items-center gap-1 text-xs text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink"

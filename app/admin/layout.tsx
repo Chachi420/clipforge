@@ -36,7 +36,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="sticky top-0 z-40 border-b border-line/10 bg-paper">
         <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-8">
           <div className="flex min-w-0 items-center gap-4">
-            <span className="shrink-0 rounded-md bg-ink px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-paper">
+            <span className="shrink-0 rounded-md bg-ink px-2.5 py-1 text-xs sm:text-[11px] font-bold uppercase tracking-wider text-paper">
               Admin
             </span>
             <nav className="flex gap-1 overflow-x-auto" aria-label="Admin">

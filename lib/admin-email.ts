@@ -13,7 +13,6 @@
  * beyond RESEND_API_KEY.
  */
 import { createHmac, timingSafeEqual } from "crypto";
-import { headers } from "next/headers";
 import { Resend } from "resend";
 import { ADMIN_EMAIL } from "./admin";
 
@@ -85,18 +84,13 @@ export function verifyAdminAction(
   }
 }
 
+/**
+ * Origin for signed admin links. Deliberately NOT taken from request
+ * headers: a forged Host / X-Forwarded-Host would put a valid signed token
+ * into a link pointing at someone else's domain.
+ */
 async function siteOrigin(): Promise<string> {
-  try {
-    const h = await headers();
-    const host = h.get("x-forwarded-host") || h.get("host");
-    const proto = h.get("x-forwarded-proto") || "https";
-    if (host) return `${proto}://${host}`;
-  } catch {
-    /* headers() unavailable outside a request */
-  }
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL || "https://wondeed.com"
-  );
+  return (process.env.NEXT_PUBLIC_SITE_URL || "https://wondeed.com").replace(/\/+$/, "");
 }
 
 export async function adminActionUrl(

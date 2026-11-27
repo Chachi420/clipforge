@@ -26,27 +26,27 @@ function EligibilityBadge({ campaign }: { campaign: Campaign }) {
   const type = campaign.eligibilityType ?? "open";
   if (type === "open") {
     return (
-      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title="Anyone with a verified account can join">
+      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-xs sm:text-[11px] font-semibold text-ink-soft" title="Anyone with a verified account can join">
         <Users size={11} aria-hidden /> Open to all
       </span>
     );
   }
   if (type === "followers") {
     return (
-      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title={`Requires ${Number(campaign.minFollowers ?? 0).toLocaleString()}+ followers on a verified account`}>
+      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-xs sm:text-[11px] font-semibold text-ink-soft" title={`Requires ${Number(campaign.minFollowers ?? 0).toLocaleString()}+ followers on a verified account`}>
         <Users size={11} aria-hidden /> {compactTight(Number(campaign.minFollowers ?? 0))}+ followers
       </span>
     );
   }
   if (type === "engagement") {
     return (
-      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title={`Requires ${Number(campaign.minAvgViews ?? 0).toLocaleString()}+ average views per clip`}>
+      <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-xs sm:text-[11px] font-semibold text-ink-soft" title={`Requires ${Number(campaign.minAvgViews ?? 0).toLocaleString()}+ average views per clip`}>
         <TrendingUp size={11} aria-hidden /> {compactTight(Number(campaign.minAvgViews ?? 0))}+ avg views
       </span>
     );
   }
   return (
-    <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-[11px] font-semibold text-ink-soft" title="Only invited clippers can join">
+    <span className="flex items-center gap-1 rounded-full border border-line/15 px-2.5 py-1 text-xs sm:text-[11px] font-semibold text-ink-soft" title="Only invited clippers can join">
       <Lock size={11} aria-hidden /> Invite only
     </span>
   );
@@ -82,7 +82,7 @@ export default function CampaignCard({ campaign, funded = false, budgetUsed }: {
             <Badge tone={toneFor(campaign.status)}>{CAMPAIGN_STATUS_LABELS[campaign.status]}</Badge>
             {funded && (
               <span
-                className="flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[11px] font-bold text-paper"
+                className="flex items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-xs sm:text-[11px] font-bold text-paper"
                 title="This brand has deposited funds — payouts are backed by real money"
               >
                 <BadgeCheck size={11} aria-hidden /> Verified funds
@@ -131,7 +131,7 @@ export default function CampaignCard({ campaign, funded = false, budgetUsed }: {
             )}
           </div>
           {campaign.type === "bounty" && (
-            <span className="flex shrink-0 items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-[11px] font-bold text-paper">
+            <span className="flex shrink-0 items-center gap-1 rounded-full bg-ink px-2.5 py-1 text-xs sm:text-[11px] font-bold text-paper">
               <Trophy size={11} aria-hidden /> Bounties
             </span>
           )}
@@ -145,7 +145,7 @@ export default function CampaignCard({ campaign, funded = false, budgetUsed }: {
             </span>
           ))}
         </div>
-        <div className="mt-1.5 flex items-center gap-1.5 text-[11px] text-ink-faint">
+        <div className="mt-1.5 flex items-center gap-1.5 text-xs sm:text-[11px] text-ink-faint">
           <Wallet size={11} aria-hidden /> {PAYOUT_METHOD_LABELS[campaign.payoutMethod]}
         </div>
 

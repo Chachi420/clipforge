@@ -61,7 +61,7 @@ export default function UserTable({ initial }: { initial: AdminUser[] }) {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[800px] text-left text-sm">
               <thead>
-                <tr className="border-b border-line/10 bg-ink/[0.03] text-[11px] uppercase tracking-wider text-ink-faint">
+                <tr className="border-b border-line/10 bg-ink/[0.03] text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                   <th className="px-4 py-3">User</th>
                   <th className="px-4 py-3">Status</th>
                   <th className="px-4 py-3">Role</th>

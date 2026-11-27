@@ -143,15 +143,15 @@ export default function CampaignDetail({
             </div>
             <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3">
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Verified views</div>
+                <div className="text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-white/50">Verified views</div>
                 <div className="tnum mt-1 text-2xl font-bold text-white">{formatCompact(liveCycle.totalViews)}</div>
               </div>
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Your clips</div>
+                <div className="text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-white/50">Your clips</div>
                 <div className="tnum mt-1 text-2xl font-bold text-white">{liveCycle.totalClips}</div>
               </div>
               <div>
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-white/50">Cycle dates</div>
+                <div className="text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-white/50">Cycle dates</div>
                 <div className="tnum mt-1 text-sm font-semibold text-white">
                   {liveCycle.periodStart} → {liveCycle.periodEnd}
                 </div>
@@ -185,7 +185,7 @@ export default function CampaignDetail({
                 {b.budgetCap && (
                   <div className="mt-2">
                     <ProgressBar pct={b.budgetUsedPct} />
-                    <div className="tnum mt-1 text-[11px] text-ink-faint">{b.budgetUsedPct}% of budget used</div>
+                    <div className="tnum mt-1 text-xs sm:text-[11px] text-ink-faint">{b.budgetUsedPct}% of budget used</div>
                   </div>
                 )}
               </div>

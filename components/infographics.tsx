@@ -176,14 +176,14 @@ export function CycleTimeline() {
             aria-hidden
           />
           <span
-            className="absolute -top-7 -translate-x-1/2 text-[11px] font-semibold uppercase tracking-wider text-ink-faint transition-all duration-1000 ease-smooth"
+            className="absolute -top-7 -translate-x-1/2 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint transition-all duration-1000 ease-smooth"
             style={{ left: inView ? markerLeft : "12px" }}
             aria-hidden
           >
             Today
           </span>
         </div>
-        <div className="mt-2 flex justify-between text-[11px] text-ink-faint">
+        <div className="mt-2 flex justify-between text-xs sm:text-[11px] text-ink-faint">
           <span>1st — cycle closes</span>
           <span>
             Next close: 1st of{" "}
@@ -209,14 +209,14 @@ export function CycleTimeline() {
             >
               <div className="flex items-center justify-between">
                 <s.icon size={20} className="text-ink" aria-hidden />
-                <span className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+                <span className="text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
                   {s.when}
                 </span>
               </div>
               <p className="mt-4 font-semibold text-ink">
                 {s.title}
                 {active && (
-                  <span className="ml-2 rounded-full bg-ink px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-paper">
+                  <span className="ml-2 rounded-full bg-ink px-2 py-0.5 text-xs sm:text-[10px] font-bold uppercase tracking-wider text-paper">
                     Now
                   </span>
                 )}

@@ -1,4 +1,5 @@
 "use client";
+import { safeHref } from "@/lib/safe-url";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Clapperboard, CreditCard, Home, LogOut, Settings } from "lucide-react";
@@ -28,7 +29,7 @@ export default function BrandSidebar({
         <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-ink text-base font-black text-paper">
           {brand.logoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={brand.logoUrl} alt="" className="h-9 w-9 rounded-lg object-cover" />
+            <img src={safeHref(brand.logoUrl)} alt="" className="h-9 w-9 rounded-lg object-cover" />
           ) : (
             brand.name.slice(0, 1).toUpperCase()
           )}

@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
 import { getBrand, getUserRole } from "./brand-db";
 import { isAdminUser, ADMIN_EMAIL } from "./admin";
+import { cleanOptionalUrl } from "./safe-url";
 import { adminDb } from "./admin-db";
 import { insertNotificationInternal } from "./admin-internal";
 import type { Platform, PayoutMethod, EligibilityType, RateTier } from "./types";
@@ -175,7 +176,7 @@ export async function createCampaignBrief(input: CampaignBriefInput) {
       max_duration_sec: input.maxDurationSec ?? null,
       required_hashtags: input.requiredHashtags ?? [],
       required_tags: input.requiredTags ?? [],
-      source_material_url: input.sourceMaterialUrl?.trim() || null,
+      source_material_url: cleanOptionalUrl(input.sourceMaterialUrl, "Source material link"),
       min_clips_expected: Math.max(1, Math.floor(input.minClipsExpected ?? 1)),
       requires_preapproval: input.requiresPreapproval ?? false,
     })
@@ -306,7 +307,7 @@ export async function updateCampaignSettings(campaignId: string, patch: Campaign
   if (patch.requiredHashtags !== undefined) update.required_hashtags = patch.requiredHashtags;
   if (patch.requiredTags !== undefined) update.required_tags = patch.requiredTags;
   if (patch.sourceMaterialUrl !== undefined)
-    update.source_material_url = patch.sourceMaterialUrl?.trim() || null;
+    update.source_material_url = cleanOptionalUrl(patch.sourceMaterialUrl, "Source material link");
   if (patch.minClipsExpected !== undefined)
     update.min_clips_expected = Math.max(1, Math.floor(patch.minClipsExpected));
   if (patch.requiresPreapproval !== undefined) update.requires_preapproval = patch.requiresPreapproval;
@@ -495,7 +496,7 @@ export async function updateBrandProfile(input: {
     .from("brands")
     .update({
       name,
-      logo_url: input.logoUrl?.trim() || null,
+      logo_url: cleanOptionalUrl(input.logoUrl, "Logo link"),
       contact_email: input.contactEmail?.trim() || null,
     })
     .eq("id", brandId);

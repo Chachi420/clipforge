@@ -1,4 +1,5 @@
 "use client";
+import { safeHref } from "@/lib/safe-url";
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
@@ -147,7 +148,7 @@ export function ClipTable({ clips }: { clips: Clip[] }) {
             <div className="mt-4 hidden overflow-x-auto md:block">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead>
-                  <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
+                  <tr className="border-b border-line/10 text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                     <th className="px-4 py-3 font-semibold">Status</th>
                     <th className="px-4 py-3 font-semibold">Platform</th>
                     <th className="px-4 py-3 font-semibold">Account</th>
@@ -255,7 +256,7 @@ function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }
           ["Comments", formatCompact(clip.comments)], ["Engagement", `${clip.engagementPct}%`],
         ].map(([l, v]) => (
           <div key={l} className="rounded-card border border-line/10 p-4">
-            <div className="text-[11px] uppercase tracking-wider text-ink-faint">{l}</div>
+            <div className="text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">{l}</div>
             <div className="tnum mt-1 text-xl font-bold text-ink">{v}</div>
           </div>
         ))}
@@ -271,7 +272,7 @@ function ClipDetailDialog({ clip, onClose }: { clip: Clip; onClose: () => void }
             </p>
           )}
           <div className="mt-4 flex items-center justify-between gap-2">
-            <a href={clip.postUrl} target="_blank" rel="noopener noreferrer"
+            <a href={safeHref(clip.postUrl)} target="_blank" rel="noopener noreferrer"
               className="text-sm font-semibold text-ink-soft hover:text-ink hover:underline">
               Open post
             </a>

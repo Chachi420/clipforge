@@ -1,5 +1,6 @@
 "use client";
 
+import { safeHref } from "@/lib/safe-url";
 import { useState } from "react";
 import { ExternalLink } from "lucide-react";
 import { Badge, Card, EmptyState, PlatformDot } from "@/components/ui";
@@ -81,10 +82,46 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
   }
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Phones: stacked clip cards instead of a 720px table. */}
+      <ul className="divide-y divide-line/10 sm:hidden">
+        {clips.map((c) => (
+          <li
+            key={c.id}
+            className={`px-4 py-4 ${
+              c.trackingStatus === "flagged"
+                ? "bg-red-500/[0.07]"
+                : c.trackingStatus === "pending_review"
+                  ? "bg-amber-500/[0.07]"
+                  : ""
+            }`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="flex min-w-0 items-center gap-2 text-sm text-ink-soft">
+                <PlatformDot platform={c.platform} />
+                <span className="truncate">@{c.accountHandle}</span>
+              </span>
+              <Badge tone={TRACKING_TONES[c.trackingStatus]}>{TRACKING_LABELS[c.trackingStatus]}</Badge>
+            </div>
+            <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-soft">
+              <span><span className="font-semibold text-ink">{formatCompact(c.views)}</span> views</span>
+              <span>{formatCompact(c.likes)} likes</span>
+              <span>{c.engagementPct}% engagement</span>
+            </div>
+            <a
+              href={safeHref(c.postUrl)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex min-h-[44px] items-center gap-1 text-sm font-medium text-ink underline decoration-ink/30 underline-offset-2"
+            >
+              View post <ExternalLink size={13} />
+            </a>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[720px] text-sm">
           <thead>
-            <tr className="divide-x divide-line/5 border-b border-line/10 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+            <tr className="divide-x divide-line/5 border-b border-line/10 text-left text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3">Platform</th>
               <th className="px-4 py-3">Account</th>
               <th className="px-4 py-3 text-right">Views</th>
@@ -125,7 +162,7 @@ function ClipsTab({ clips }: { clips: Clip[] }) {
                 </td>
                 <td className="px-4 py-3">
                   <a
-                    href={c.postUrl}
+                    href={safeHref(c.postUrl)}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1 text-sm font-medium text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink"
@@ -154,9 +191,9 @@ function ClippersTab({ clippers }: { clippers: CampaignClipperRow[] }) {
   return (
     <Card className="overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[560px] text-sm">
+        <table className="w-full text-sm sm:min-w-[560px]">
           <thead>
-            <tr className="border-b border-line/10 text-left text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+            <tr className="border-b border-line/10 text-left text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3">Clipper</th>
               <th className="px-4 py-3 text-right">Clips</th>
               <th className="px-4 py-3 text-right">Views</th>

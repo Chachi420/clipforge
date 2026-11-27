@@ -2,6 +2,7 @@
 
 import { requireBrand } from "./brand-actions";
 import { createClient } from "./supabase/server";
+import { createServiceClient } from "./supabase/service";
 import { revalidatePath } from "next/cache";
 import type { CampaignInvite, RateTier, EligibilityType } from "./types";
 
@@ -241,13 +242,19 @@ export async function joinCampaign(campaignId: string): Promise<void> {
     throw new Error(check.reason ?? "You don't meet this campaign's requirements.");
   }
 
-  const { error } = await supabase
+  // Memberships and invite acceptance are service-role writes (migration 021):
+  // clippers can't insert campaign_members themselves, so the eligibility
+  // check above is the only way in.
+  const svc = createServiceClient();
+  if (!svc) throw new Error("Joining is temporarily unavailable. Please try again shortly.");
+
+  const { error } = await svc
     .from("campaign_members")
     .upsert({ user_id: user.id, campaign_id: campaignId }, { onConflict: "user_id,campaign_id" });
   if (error) throw new Error(error.message);
 
   // Consume a pending invite if this was an invite-only join.
-  await supabase
+  await svc
     .from("campaign_invites")
     .update({ status: "accepted" })
     .eq("campaign_id", campaignId)

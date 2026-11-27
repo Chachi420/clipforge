@@ -22,7 +22,7 @@ function Heatmap({ data }: { data: number[] }) {
           </div>
         ))}
       </div>
-      <div className="mt-2 flex items-center justify-end gap-1.5 text-[11px] text-ink-faint">
+      <div className="mt-2 flex items-center justify-end gap-1.5 text-xs sm:text-[11px] text-ink-faint">
         Less {shades.map((s, i) => <span key={i} className={`h-2.5 w-2.5 rounded-[3px] ${s}`} />)} More
       </div>
     </div>

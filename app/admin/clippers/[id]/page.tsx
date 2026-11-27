@@ -1,3 +1,4 @@
+import { safeHref } from "@/lib/safe-url";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
@@ -101,7 +102,7 @@ export default async function AdminClipperDetailPage({
         <div className="overflow-x-auto">
           <table className="w-full min-w-[700px] text-left text-sm">
             <thead>
-              <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
+              <tr className="border-b border-line/10 text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                 <th className="px-5 py-3">Clip</th>
                 <th className="px-5 py-3">Campaign</th>
                 <th className="px-5 py-3 text-right">Views</th>
@@ -120,7 +121,7 @@ export default async function AdminClipperDetailPage({
               {c.clips.map((clip) => (
                 <tr key={clip.id}>
                   <td className="px-5 py-3">
-                    <a href={clip.postUrl} target="_blank" rel="noreferrer" className="font-medium text-ink underline decoration-line hover:decoration-ink">
+                    <a href={safeHref(clip.postUrl)} target="_blank" rel="noreferrer" className="font-medium text-ink underline decoration-line hover:decoration-ink">
                       View clip ↗
                     </a>
                     <div className="text-xs text-ink-soft">

@@ -128,7 +128,7 @@ export function HomeMoneyMath() {
   return (
     <section aria-labelledby="money-math" className="bg-black py-12 text-white md:py-24">
       <div className="mx-auto max-w-6xl px-6">
-        <Reveal as="p" className="text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
+        <Reveal as="p" className="text-xs sm:text-[11px] font-semibold uppercase tracking-[0.24em] text-white/50">
           The business model
         </Reveal>
         <Reveal delay={80}>
