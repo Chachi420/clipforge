@@ -154,7 +154,7 @@ export function EarningsCalculator() {
       </div>
 
       <div className="mt-8 rounded-card border border-white/10 bg-black p-6 text-center text-white md:p-8">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.2em] text-white/50">
+        <div className="text-xs sm:text-[11px] font-semibold uppercase tracking-[0.2em] text-white/50">
           Estimated monthly earnings
         </div>
         <div className="display mt-3 text-5xl text-white md:text-6xl">
@@ -175,7 +175,7 @@ export function EarningsCalculator() {
             aria-hidden
           />
         </div>
-        <div className="mx-auto mt-2 flex max-w-md justify-between text-[11px] text-white/40 tnum">
+        <div className="mx-auto mt-2 flex max-w-md justify-between text-xs sm:text-[11px] text-white/40 tnum">
           <span>$0</span>
           <span>$240K — the slider maximums</span>
         </div>

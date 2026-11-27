@@ -43,12 +43,12 @@ export default function BrandOnboardingModal() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-ink/60 p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-label="Set up your brand account"
     >
-      <div className="w-full max-w-md rounded-2xl border border-line/10 bg-paper p-6 shadow-xl sm:p-8">
+      <div className="my-auto max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto rounded-2xl border border-line/10 bg-paper p-6 shadow-xl sm:p-8">
         <h2 className="display text-2xl">Welcome to Wondeed</h2>
         <p className="mt-2 text-sm text-ink-soft">
           Two quick things before you start running campaigns.

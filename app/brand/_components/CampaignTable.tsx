@@ -16,10 +16,42 @@ const STATUS_TONE: Record<CampaignStatus, "default" | "green" | "amber" | "blue"
 export default function CampaignTable({ campaigns }: { campaigns: BrandCampaign[] }) {
   return (
     <Card className="overflow-hidden">
-      <div className="overflow-x-auto">
+      {/* Phones: one card per campaign instead of a 760px table. */}
+      <ul className="divide-y divide-line/10 sm:hidden">
+        {campaigns.map((c) => (
+          <li key={c.id}>
+            <Link href={`/brand/campaigns/${c.slug}`} className="block px-4 py-4 active:bg-ink/[0.03]">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <div className="truncate font-semibold text-ink">{c.name}</div>
+                  <div className="mt-0.5 text-xs text-ink-faint">{c.category}</div>
+                </div>
+                <Badge tone={STATUS_TONE[c.status]}>{CAMPAIGN_STATUS_LABELS[c.status]}</Badge>
+              </div>
+              {c.budgetCap != null && c.budgetCap > 0 ? (
+                <div className="mt-3">
+                  <ProgressBar pct={(c.spend / c.budgetCap) * 100} />
+                  <div className="mt-1.5 text-xs text-ink-soft">
+                    {formatMoney(c.spend)} <span className="text-ink-faint">of {formatMoney(c.budgetCap)}</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-3 text-xs text-ink-soft">
+                  {formatMoney(c.spend)} spent <span className="text-ink-faint">· no cap</span>
+                </div>
+              )}
+              <div className="mt-2 flex gap-4 text-xs text-ink-soft">
+                <span><span className="font-semibold text-ink">{formatCompact(c.totalViews)}</span> views</span>
+                <span><span className="font-semibold text-ink">{c.clipCount}</span> clips</span>
+              </div>
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden overflow-x-auto sm:block">
         <table className="w-full min-w-[760px] text-sm">
           <thead>
-            <tr className="border-b border-line/10 text-left text-[11px] uppercase tracking-wider text-ink-faint">
+            <tr className="border-b border-line/10 text-left text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
               <th className="px-4 py-3 font-semibold">Campaign</th>
               <th className="px-4 py-3 font-semibold">Status</th>
               <th className="px-4 py-3 font-semibold">Spend vs budget</th>

@@ -62,7 +62,7 @@ export default function MarketingFooter() {
               <h2 className="text-xs font-semibold uppercase tracking-[0.14em] text-white/40">
                 {col.heading}
               </h2>
-              <ul className="mt-4 space-y-3">
+              <ul className="mt-4 space-y-0 sm:space-y-3">
                 {col.links.map((l) => (
                   <li key={l.href}>
                     {col.external ? (
@@ -70,14 +70,14 @@ export default function MarketingFooter() {
                         href={l.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex min-h-[32px] items-center text-sm text-white/60 transition-colors hover:text-white"
+                        className="inline-flex min-h-[44px] items-center text-sm sm:min-h-[32px] text-white/60 transition-colors hover:text-white"
                       >
                         {l.label}
                       </a>
                     ) : (
                       <Link
                         href={l.href}
-                        className="inline-flex min-h-[32px] items-center text-sm text-white/60 transition-colors hover:text-white"
+                        className="inline-flex min-h-[44px] items-center text-sm sm:min-h-[32px] text-white/60 transition-colors hover:text-white"
                       >
                         {l.label}
                       </Link>

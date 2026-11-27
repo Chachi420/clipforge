@@ -1,3 +1,4 @@
+import { safeHref } from "@/lib/safe-url";
 import { ExternalLink } from "lucide-react";
 import { Badge, Card, PlatformDot } from "@/components/ui";
 import {
@@ -100,7 +101,7 @@ export default function CampaignBriefDisplay({ campaign }: { campaign: Campaign 
           {campaign.sourceMaterialUrl && (
             <Row label="Source material">
               <a
-                href={campaign.sourceMaterialUrl}
+                href={safeHref(campaign.sourceMaterialUrl)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1 font-medium text-ink underline decoration-ink/30 underline-offset-2 hover:decoration-ink"

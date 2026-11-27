@@ -203,7 +203,7 @@ export default async function DashboardHome() {
                   <h3 className="font-display text-base font-bold text-ink">
                     This cycle (live estimate)
                   </h3>
-                  <span className="rounded-full border border-line/10 bg-ink/5 px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
+                  <span className="rounded-full border border-line/10 bg-ink/5 px-2.5 py-0.5 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-soft">
                     live estimate, not final
                   </span>
                 </div>
@@ -329,7 +329,7 @@ export default async function DashboardHome() {
                       </div>
                       <div className="tnum shrink-0 text-right">
                         <div className="text-base font-bold text-ink">{formatMoney(clip.payout)}</div>
-                        <div className="text-[11px] text-ink-faint">earned</div>
+                        <div className="text-xs sm:text-[11px] text-ink-faint">earned</div>
                       </div>
                     </div>
                   );

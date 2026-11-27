@@ -38,7 +38,7 @@ export default function DocsShell({ slug }: { slug: string }) {
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Filter guides…"
           aria-label="Filter guides"
-          className="w-full rounded-md border border-line/15 bg-surface py-2.5 pl-9 pr-3 text-sm text-ink placeholder:text-ink-faint/70 outline-none transition-colors duration-micro focus:border-ink/40"
+          className="w-full rounded-md border border-line/15 bg-surface py-2.5 pl-9 pr-3 text-base text-ink sm:text-sm placeholder:text-ink-faint/70 outline-none transition-colors duration-micro focus:border-ink/40"
         />
       </div>
       {sections.length === 0 && (
@@ -46,7 +46,7 @@ export default function DocsShell({ slug }: { slug: string }) {
       )}
       {sections.map((section) => (
         <div key={section.title}>
-          <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-ink-faint">
+          <div className="mb-2 text-xs sm:text-[11px] font-bold uppercase tracking-wider text-ink-faint">
             {section.title}
           </div>
           <ul className="space-y-1">

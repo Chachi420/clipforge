@@ -41,7 +41,7 @@ export function Badge({
     electric: "bg-ink text-paper",
   };
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-wide ${tones[tone]}`}>
+    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs sm:text-[11px] font-semibold uppercase tracking-wide ${tones[tone]}`}>
       {children}
     </span>
   );
@@ -76,7 +76,7 @@ export function Button({
 export function Stat({ label, value, sub, dark = false }: { label: string; value: string; sub?: string; dark?: boolean }) {
   return (
     <div>
-      <div className={`text-[11px] font-semibold uppercase tracking-wider ${dark ? "text-white/50" : "text-ink-faint"}`}>{label}</div>
+      <div className={`text-xs sm:text-[11px] font-semibold uppercase tracking-wider ${dark ? "text-white/50" : "text-ink-faint"}`}>{label}</div>
       <div className={`tnum mt-1 text-2xl font-bold ${dark ? "text-white" : "text-ink"}`}>{value}</div>
       {sub && <div className={`mt-0.5 text-xs ${dark ? "text-white/50" : "text-ink-faint"}`}>{sub}</div>}
     </div>
@@ -126,7 +126,7 @@ export function Dialog({ title, subtitle, onClose, children, wide }: {
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`max-h-[85vh] w-full overflow-y-auto rounded-card border border-line/10 bg-paper p-6 ${wide ? "max-w-3xl" : "max-w-lg"}`}
+        className={`max-h-[85dvh] w-full overflow-y-auto rounded-card border border-line/10 bg-paper p-6 ${wide ? "max-w-3xl" : "max-w-lg"}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-start justify-between">

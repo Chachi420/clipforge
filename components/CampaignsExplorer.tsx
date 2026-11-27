@@ -234,7 +234,7 @@ export default function CampaignsExplorer({ initial }: { initial: Campaign[] }) 
                     ${filters.minRate}+
                   </span>
                 </div>
-                <p className="mt-1 text-[11px] text-ink-faint">per 100K verified views</p>
+                <p className="mt-1 text-xs sm:text-[11px] text-ink-faint">per 100K verified views</p>
               </Field>
               <Field label="Platforms">
                 <div className="flex flex-wrap gap-2" role="group" aria-label="Filter by platform">

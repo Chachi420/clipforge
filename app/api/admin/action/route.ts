@@ -646,11 +646,48 @@ export async function POST(req: NextRequest): Promise<Response> {
     return page("Admin not configured", (e as Error).message, false);
   }
 
+  // One-time use: claim the token before acting (migration 021). The DB-state
+  // guards above don't cover record_topup — replaying that link credited the
+  // brand again — so every link now succeeds at most once. A failed action
+  // is marked failed (never deleted) and the same link may be retried.
+  const sig = token.split(".")[1] ?? token;
+  const { error: claimError } = await db
+    .from("admin_action_uses")
+    .insert({ token_sig: sig, action: parsed.action, target_id: parsed.id });
+  // Code deploys before migration 021 is applied: the table doesn't exist yet,
+  // so fall back to the old (DB-state-guarded) behaviour instead of failing.
+  const tableMissing =
+    claimError && ["42P01", "PGRST205"].includes(String((claimError as any).code));
+  if (claimError && !tableMissing) {
+    if ((claimError as any).code !== "23505") {
+      return page("Something went wrong", `Could not record this action: ${claimError.message}`, false);
+    }
+    // Already claimed: only a previously FAILED attempt may be re-run.
+    const { data: retry } = await db
+      .from("admin_action_uses")
+      .update({ succeeded: null, used_at: new Date().toISOString() })
+      .eq("token_sig", sig)
+      .eq("succeeded", false)
+      .select("token_sig");
+    if (!retry || retry.length === 0) {
+      return page(
+        "Already used",
+        "This link has already been used. Nothing was changed. Open /admin to see the current state.",
+        true
+      );
+    }
+  }
+  const finish = async (ok: boolean) => {
+    if (!tableMissing) await db.from("admin_action_uses").update({ succeeded: ok }).eq("token_sig", sig);
+  };
+
   try {
     const result = await runAction(db, parsed.action, parsed.id);
+    await finish(result.ok);
     const title = actionTitle(parsed.action);
     return page(result.ok ? `${title} ✓` : "Something went wrong", result.message, result.ok);
   } catch (e) {
+    await finish(false);
     return page("Something went wrong", (e as Error).message, false);
   }
 }

@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "./supabase/server";
+import { createServiceClient } from "./supabase/service";
 import { PLATFORM_LABELS, type Platform, type PayoutMethod } from "./types";
 import {
   extractYouTubeVideoId,
@@ -63,6 +64,15 @@ function makeVerificationCode(): string {
 }
 
 const norm = (h: string) => h.replace(/^@/, "").toLowerCase();
+
+/** Verification results are written with the service role: since migration
+ *  021, users can't set verified/follower_count/platform_user_id on their own
+ *  rows. Callers still scope every write by id AND user_id. */
+function verificationDb() {
+  const svc = createServiceClient();
+  if (!svc) throw new Error("Verification is temporarily unavailable. Please try again shortly.");
+  return svc;
+}
 
 /** Submit clip URLs to a campaign. Every link must come from one of the
  *  user's verified accounts for that platform, and every clip waits in
@@ -338,9 +348,15 @@ export async function addPaymentMethod(type: PayoutMethod, identifier: string) {
   if (type === "upi" && !id.includes("@")) {
     throw new Error("Enter a valid UPI ID (e.g. name@upi).");
   }
-  if (type === "paypal" && !id.includes("@")) {
+  if (type === "paypal" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id)) {
     throw new Error("Enter a valid PayPal email.");
   }
+  // USDT/USDC on Ethereum: payouts go to this exact string, so reject typos
+  // and wrong-chain addresses before money is sent to them.
+  if ((type === "usdt_eth" || type === "usdc_eth") && !/^0x[0-9a-fA-F]{40}$/.test(id)) {
+    throw new Error("Enter a valid Ethereum address (0x followed by 40 characters).");
+  }
+  if (id.length > 254) throw new Error("That payment identifier is too long.");
   const { data: existing } = await supabase.from("payment_methods").select("id").eq("user_id", userId);
   const { error } = await supabase.from("payment_methods").insert({
     user_id: userId, type, identifier: id, is_default: !existing || existing.length === 0,
@@ -455,7 +471,7 @@ export async function verifySocialAccount(id: string): Promise<VerifyResult> {
   const result = await verifyYouTubeAccount(acct.handle, acct.verification_code);
   if (!result.ok) return { ok: false, reason: result.reason };
 
-  const { error } = await supabase
+  const { error } = await verificationDb()
     .from("social_accounts")
     .update({
       verified: true,
@@ -512,7 +528,7 @@ async function verifyInstagramAccount(
     };
   }
   const followers = profile.followers ?? 0;
-  const { error } = await supabase
+  const { error } = await verificationDb()
     .from("social_accounts")
     .update({
       verified: true,

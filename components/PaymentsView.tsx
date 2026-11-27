@@ -193,7 +193,7 @@ export default function PaymentsView({
               <div className="hidden overflow-x-auto md:block">
                 <table className="w-full min-w-[560px] text-left text-sm">
                   <thead>
-                    <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
+                    <tr className="border-b border-line/10 text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                       <th className="px-4 py-3">Cycle</th>
                       <th className="px-4 py-3">Status</th>
                       <th className="px-4 py-3">Date</th>

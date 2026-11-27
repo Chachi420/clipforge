@@ -1,3 +1,4 @@
+import { safeHref } from "@/lib/safe-url";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -123,7 +124,7 @@ export default async function PublicProfilePage({ params }: { params: { id: stri
               {clips.slice(0, 24).map((c) => (
                 <a
                   key={c.id}
-                  href={c.postUrl}
+                  href={safeHref(c.postUrl)}
                   target="_blank"
                   rel="noreferrer"
                   className="group rounded-card border border-line/10 bg-surface p-5 transition-colors duration-micro hover:border-ink/30"

@@ -109,11 +109,11 @@ export default function InviteManager({ campaignId }: { campaignId: string }) {
       ) : (
         <Card className="overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[560px] text-sm">
+            <table className="w-full text-sm sm:min-w-[560px]">
               <thead>
                 <tr className="border-b border-line/10 text-left text-xs uppercase tracking-wider text-ink-faint">
                   <th className="px-4 py-3 font-semibold">Clipper</th>
-                  <th className="px-4 py-3 font-semibold">Code</th>
+                  <th className="hidden px-4 py-3 font-semibold sm:table-cell">Code</th>
                   <th className="px-4 py-3 font-semibold">Status</th>
                   <th className="px-4 py-3 font-semibold text-right">Action</th>
                 </tr>
@@ -121,8 +121,8 @@ export default function InviteManager({ campaignId }: { campaignId: string }) {
               <tbody>
                 {invites.map((inv) => (
                   <tr key={inv.id} className="border-b border-line/5 last:border-0">
-                    <td className="px-4 py-3">{inv.email ?? "—"}</td>
-                    <td className="px-4 py-3 font-mono text-xs">{inv.code}</td>
+                    <td className="break-all px-4 py-3">{inv.email ?? "—"}</td>
+                    <td className="hidden px-4 py-3 font-mono text-xs sm:table-cell">{inv.code}</td>
                     <td className="px-4 py-3">
                       <Badge tone={STATUS_TONES[inv.status]}>{inv.status}</Badge>
                     </td>
@@ -130,7 +130,7 @@ export default function InviteManager({ campaignId }: { campaignId: string }) {
                       {inv.status === "pending" && (
                         <button
                           onClick={() => handleRevoke(inv.id)}
-                          className="text-xs font-medium text-status-error hover:underline"
+                          className="inline-flex min-h-[44px] items-center px-2 text-sm font-medium text-status-error hover:underline sm:min-h-0 sm:px-0 sm:text-xs"
                         >
                           Revoke
                         </button>

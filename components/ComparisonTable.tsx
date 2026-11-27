@@ -107,19 +107,19 @@ export default function ComparisonTable() {
         <table className="w-full min-w-[720px] text-left">
           <thead>
             <tr className="border-b border-line/10">
-              <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <th className="px-5 py-4 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
                 Feature
               </th>
-              <th className="bg-ink px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-paper">
+              <th className="bg-ink px-5 py-4 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-paper">
                 Wondeed
               </th>
-              <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <th className="px-5 py-4 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
                 ClipAffiliates
               </th>
-              <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <th className="px-5 py-4 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
                 Whop
               </th>
-              <th className="px-5 py-4 text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+              <th className="px-5 py-4 text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
                 Vyro
               </th>
             </tr>

@@ -30,7 +30,7 @@ export default async function BillingPage() {
           <Stat label="Total spend" value={formatMoney(balance.spent)} />
         </Card>
         <Card className="p-6">
-          <div className="text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
+          <div className="text-xs sm:text-[11px] font-semibold uppercase tracking-wider text-ink-faint">
             Available balance
           </div>
           <div
@@ -59,12 +59,12 @@ export default async function BillingPage() {
         ) : (
           <Card className="overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="w-full min-w-[560px] text-left text-sm">
+              <table className="w-full text-left text-sm sm:min-w-[560px]">
                 <thead>
-                  <tr className="border-b border-line/10 text-[11px] uppercase tracking-wider text-ink-faint">
+                  <tr className="border-b border-line/10 text-xs sm:text-[11px] uppercase tracking-wider text-ink-faint">
                     <th className="px-4 py-3">Date</th>
                     <th className="px-4 py-3 text-right">Amount</th>
-                    <th className="px-4 py-3">Method</th>
+                    <th className="hidden px-4 py-3 sm:table-cell">Method</th>
                     <th className="px-4 py-3">Reference</th>
                   </tr>
                 </thead>
@@ -75,10 +75,10 @@ export default async function BillingPage() {
                       <td className="px-4 py-3 text-right font-bold text-status-success">
                         {formatMoney(t.amount)}
                       </td>
-                      <td className="px-4 py-3 capitalize text-ink-soft">
+                      <td className="hidden px-4 py-3 capitalize text-ink-soft sm:table-cell">
                         {t.method ?? <span className="text-xs text-ink-faint">—</span>}
                       </td>
-                      <td className="px-4 py-3 text-ink-soft">
+                      <td className="break-all px-4 py-3 text-ink-soft">
                         {t.reference ?? <span className="text-xs text-ink-faint">—</span>}
                       </td>
                     </tr>
