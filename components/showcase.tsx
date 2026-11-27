@@ -33,7 +33,7 @@ function Monogram({ name }: { name: string }) {
  */
 export function BrandMarquee({
   brands,
-  label = "Brands paying for views on Wondeed right now",
+  label = "Brands running campaigns on Wondeed",
 }: {
   brands: ShowcaseBrand[];
   label?: string;
@@ -67,6 +67,12 @@ export function BrandMarquee({
                 <Monogram name={b.name} />
               )}
               <span className="whitespace-nowrap font-semibold text-ink">{b.name}</span>
+              {b.live ? (
+                <span className="flex items-center gap-1.5 text-xs font-semibold text-status-success">
+                  <span aria-hidden className="h-2 w-2 rounded-full bg-status-success" />
+                  Live
+                </span>
+              ) : null}
               {b.ratePer100k ? (
                 <span className="tnum whitespace-nowrap text-sm text-ink-faint">
                   ${b.ratePer100k.toLocaleString("en-US")}/100K
