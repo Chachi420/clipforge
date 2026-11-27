@@ -17,6 +17,8 @@ export interface ShowcaseBrand {
   name: string;
   logoUrl?: string;
   ratePer100k?: number;
+  /** Has an active campaign now. Paused/past brands show without a rate. */
+  live: boolean;
 }
 
 export interface ShowcaseClip {
@@ -28,33 +30,47 @@ export interface ShowcaseClip {
   postUrl: string;
 }
 
-/** Brands with an active campaign, best-paying first, one entry per brand. */
+/**
+ * Brands that have run public campaigns on Wondeed: active and paused
+ * (never pending briefs or invite-only "private" ones). Live brands come
+ * first, best-paying first, one entry per brand. Only live brands show a
+ * rate, so a paused campaign never advertises pay it isn't offering.
+ */
 export async function getShowcaseBrands(limit = 24): Promise<ShowcaseBrand[]> {
   const svc = createServiceClient();
   if (!svc) {
     // Demo mode (no Supabase): mock campaigns so the strip can be previewed.
     return (mock.campaigns as any[])
-      .filter((c) => c.status === "active")
-      .map((c) => ({ name: c.name, ratePer100k: c.ratePer100k }));
+      .filter((c) => c.status === "active" || c.status === "paused")
+      .map((c) => ({
+        name: c.name,
+        live: c.status === "active",
+        ratePer100k: c.status === "active" ? c.ratePer100k : undefined,
+      }));
   }
   try {
     const { data, error } = await svc
       .from("campaigns")
-      .select("name, icon_url, rate_per_100k, brands(name, logo_url)")
-      .eq("status", "active")
+      .select("name, status, icon_url, rate_per_100k, brands(name, logo_url)")
+      .in("status", ["active", "paused"])
       .order("rate_per_100k", { ascending: false })
-      .limit(100);
+      .limit(200);
     if (error) throw error;
+    const rows = ((data ?? []) as any[]).sort(
+      (a, b) => Number(b.status === "active") - Number(a.status === "active")
+    );
     const seen = new Set<string>();
     const out: ShowcaseBrand[] = [];
-    for (const row of (data ?? []) as any[]) {
+    for (const row of rows) {
       const name: string = (row.brands?.name || row.name || "").trim();
       if (!name || seen.has(name.toLowerCase())) continue;
       seen.add(name.toLowerCase());
+      const live = row.status === "active";
       out.push({
         name,
+        live,
         logoUrl: safeHref(row.brands?.logo_url || row.icon_url),
-        ratePer100k: Number(row.rate_per_100k) || undefined,
+        ratePer100k: live ? Number(row.rate_per_100k) || undefined : undefined,
       });
       if (out.length >= limit) break;
     }
